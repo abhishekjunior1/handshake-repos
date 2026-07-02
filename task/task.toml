@@ -2,7 +2,6 @@ artifacts = ["/app/output.json"]
 
 [task]
 name = "dynamo/task-runner"
-description = "Debug a multi-stage task execution pipeline with dependency resolution, parallel execution, and retry support."
 
 [metadata]
 category = "software_engineering"
