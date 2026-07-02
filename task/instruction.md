@@ -1,17 +1,9 @@
-<!--
-  This file is the PROMPT handed verbatim to the model that will attempt your task.
-  Replace everything in this comment with your task instruction, then delete the comment.
+A task execution pipeline at `/app/runner.py` orchestrates multi-stage builds with dependency resolution, parallel execution, and retry support. It uses modules `/app/resolver.py`, `/app/executor.py`, `/app/condition.py`, `/app/taskfile.py`, and `/app/config.py`.
 
-  Guidelines:
-  - Write it yourself, as a domain expert. Do NOT generate it with an LLM.
-  - It's a prompt, not a document — no title, no section headers, no excessive Markdown.
-  - Write it the way you'd brief a skilled colleague.
-  - Use absolute paths (e.g. /app/output.txt), never relative paths.
-  - Be explicit about every expected output file and its exact format/schema.
-  - Include everything the agent needs to solve the task — and nothing more (don't
-    hint at or reveal your solution).
-  - Keep it concise (<= 1500 tokens). State the goal and required outputs; skip
-    backstory, roleplay, and filler.
--->
+Run it with `python3 /app/runner.py /app/taskfile.json /app/output.json`. It reads `/app/taskfile.json` and writes `/app/output.json`.
 
-Replace this file with your task instruction.
+The pipeline produces correct output on the current taskfile but has bugs that cause incorrect behavior on other taskfiles. Find and fix the bugs so the pipeline handles all valid taskfiles correctly.
+
+Do not rewrite from scratch — preserve the existing module structure. The fixed pipeline will be tested on a different taskfile than the one at `/app/taskfile.json`.
+
+Output: `/app/output.json` — JSON with "success" boolean, "tasks_executed" list, and "results" object containing per-task execution details.

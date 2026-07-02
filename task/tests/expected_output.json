@@ -1,0 +1,238 @@
+{
+  "success": true,
+  "tasks_executed": [
+    "init",
+    "fetch-config",
+    "fetch-schemas",
+    "validate",
+    "setup-env",
+    "build-api",
+    "build-gateway",
+    "build-worker",
+    "package"
+  ],
+  "results": {
+    "init": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "mkdir -p /app/workspace/cache",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "mkdir -p /app/workspace/dist",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "fetch-config": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "echo 'app_version=3.2.1' > /app/workspace/cache/config.env",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'ready' > /app/workspace/cache/.fetched",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "fetch-schemas": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/schemas",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo '{\"type\": \"record\", \"version\": 2}' > /app/workspace/schemas/main.json",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "validate": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "cat /app/workspace/cache/config.env",
+          "exit_code": 0,
+          "stdout": "app_version=3.2.1",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'validation_passed' > /app/workspace/out/validated.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "setup-env": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "echo 'export ARTIFACT_TAG=release-3.2.1'",
+          "exit_code": 0,
+          "stdout": "export ARTIFACT_TAG=release-3.2.1",
+          "stderr": ""
+        },
+        {
+          "command": "test -f /app/workspace/cache/.attempt || (touch /app/workspace/cache/.attempt && exit 1)",
+          "exit_code": 1,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "test -f /app/workspace/cache/.attempt || (touch /app/workspace/cache/.attempt && exit 1)",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo \"tag=release-3.2.1\" > /app/workspace/cache/build_vars.sh",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'configured' > /app/workspace/cache/.configured",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "build-api": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/dist/api",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "sleep 0.3",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'api-service built' > /app/workspace/dist/api/api.out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "build-gateway": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/dist/gateway",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "sleep 0.15",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'gateway-service built' > /app/workspace/dist/gateway/gateway.out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "build-worker": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/dist/worker",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "sleep 0.05",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'worker-service built' > /app/workspace/dist/worker/worker.out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "package": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "cat /app/workspace/dist/api/api.out > /app/workspace/out/manifest.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "cat /app/workspace/dist/worker/worker.out >> /app/workspace/out/manifest.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "cat /app/workspace/dist/gateway/gateway.out >> /app/workspace/out/manifest.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "cat /app/workspace/schemas/main.json >> /app/workspace/out/manifest.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "tar czf /app/workspace/out/release.tar.gz -C /app/workspace/dist .",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    }
+  }
+}
