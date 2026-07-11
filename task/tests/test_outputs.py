@@ -67,7 +67,7 @@ def test_build_tasks_priority_order(output):
     build_tasks = [t for t in executed if t.startswith("build-")]
     assert build_tasks == ["build-api", "build-gateway", "build-worker"], (
         f"Build task order: {build_tasks}, "
-        f"expected: ['build-api', 'build-gateway', 'build-worker'] (descending priority)"
+        f"expected: ['build-api', 'build-gateway', 'build-worker'] (alphabetical order)"
     )
 
 
@@ -98,6 +98,10 @@ def test_setup_env_variable_resolved(output):
     assert "release-3.2.1" in build_vars_cmd, (
         f"Variable not resolved in build_vars.sh command: '{build_vars_cmd}'. "
         f"Expected 'release-3.2.1' but got unresolved variable reference."
+    )
+    assert "artifact=3.2.1" in build_vars_cmd, (
+        f"VERSION variable not expanded in build_vars.sh command: '{build_vars_cmd}'. "
+        f"Expected 'artifact=3.2.1' from two-pass expansion of DEPLOY_TEMPLATE."
     )
     assert "$ARTIFACT_TAG" not in build_vars_cmd, (
         f"Unresolved variable '$ARTIFACT_TAG' found in command: '{build_vars_cmd}'. "

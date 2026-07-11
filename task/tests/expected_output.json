@@ -112,7 +112,7 @@
           "stderr": ""
         },
         {
-          "command": "echo \"tag=release-3.2.1\" > /app/workspace/cache/build_vars.sh",
+          "command": "echo \"artifact=3.2.1 tag=release-3.2.1\" > /app/workspace/cache/build_vars.sh",
           "exit_code": 0,
           "stdout": "",
           "stderr": ""
