@@ -46,11 +46,10 @@ def test_all_tasks_executed(output, expected):
 
 
 def test_task_execution_order(output, expected):
-    """Verify tasks executed in the correct dependency-respecting priority order.
+    """Verify tasks executed in the correct dependency-respecting order.
 
-    Within each dependency level, tasks must be ordered by descending priority
-    (higher priority runs first). The build tasks must appear as:
-    build-api (priority=10), build-gateway (priority=8), build-worker (priority=5).
+    Within each dependency level, parallel tasks are ordered alphabetically
+    by task name for deterministic scheduling.
     """
     assert output["tasks_executed"] == expected["tasks_executed"], (
         f"Execution order: {output['tasks_executed']}, "
@@ -59,10 +58,10 @@ def test_task_execution_order(output, expected):
 
 
 def test_build_tasks_priority_order(output):
-    """Verify parallel build tasks are ordered by descending effective priority.
+    """Verify parallel build tasks are ordered alphabetically for deterministic output.
 
-    The resolver orders tasks within the same dependency level by priority
-    (higher runs first): build-api=10, build-gateway=8, build-worker=5.
+    The resolver orders tasks within the same dependency level alphabetically
+    by task name: build-api, build-gateway, build-worker.
     """
     executed = output["tasks_executed"]
     build_tasks = [t for t in executed if t.startswith("build-")]

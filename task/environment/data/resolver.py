@@ -2,7 +2,7 @@
 
 Resolves task dependencies using topological sort and groups tasks
 by execution level for parallel scheduling. Within each level, tasks
-are ordered by their effective priority (higher runs first).
+are ordered alphabetically by name for deterministic scheduling.
 """
 
 import logging
@@ -12,12 +12,12 @@ logger = logging.getLogger("taskrunner.resolver")
 
 
 class DependencyResolver:
-    """Resolves task execution order respecting dependencies and priorities.
+    """Resolves task execution order respecting dependencies.
 
     Uses DFS-based topological sort to determine valid execution order,
     then groups tasks by dependency level for parallel scheduling.
-    Within each level, tasks are sorted by effective priority to ensure
-    high-priority tasks execute first when resources are available.
+    Within each level, tasks are sorted alphabetically by name for
+    deterministic output ordering.
     """
 
     def __init__(self, tasks):
