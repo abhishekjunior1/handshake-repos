@@ -1,0 +1,91 @@
+{
+  "max_burst_length": 16,
+  "max_cycles": 64,
+  "interrupt_status": 0,
+  "memory_map": {
+    "bus_offset": 4096,
+    "bus_address_range": {
+      "start": 0,
+      "end": 4294967295
+    },
+    "iommu_mappings": [],
+    "coherency_regions": []
+  },
+  "channels": [
+    {
+      "channel_id": 0,
+      "enabled": true,
+      "priority": 1,
+      "urgency": 0,
+      "source_address": 1048580,
+      "destination_address": 2097156,
+      "transfer_size": 4096,
+      "descriptor_size": 64,
+      "payload_size": 4096,
+      "descriptors": [
+        {
+          "address": 1048580,
+          "size": 4096,
+          "next": 1,
+          "flags": 0
+        },
+        {
+          "address": 1052676,
+          "size": 4096,
+          "next": 2,
+          "flags": 0
+        },
+        {
+          "address": 1056772,
+          "size": 4096,
+          "next": null,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "channel_id": 1,
+      "enabled": true,
+      "priority": 3,
+      "urgency": 1,
+      "source_address": 3145728,
+      "destination_address": 4194304,
+      "transfer_size": 2048,
+      "descriptor_size": 32,
+      "payload_size": 2048,
+      "descriptors": [
+        {
+          "address": 3145728,
+          "size": 2048,
+          "next": 1,
+          "flags": 0
+        },
+        {
+          "address": 3147776,
+          "size": 2048,
+          "next": null,
+          "flags": 0
+        }
+      ]
+    },
+    {
+      "channel_id": 2,
+      "enabled": true,
+      "priority": 0,
+      "urgency": 0,
+      "source_address": 5242880,
+      "destination_address": 6291456,
+      "transfer_size": 1024,
+      "descriptor_size": 128,
+      "payload_size": 1024,
+      "descriptors": [
+        {
+          "address": 5242880,
+          "size": 1024,
+          "next": null,
+          "flags": 0
+        }
+      ]
+    }
+  ]
+}

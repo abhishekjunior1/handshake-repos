@@ -1,0 +1,200 @@
+{
+  "suite": "payment_integration",
+  "analysis_summary": {
+    "total_tests": 8,
+    "total_runs": 6,
+    "tests_with_failures": 6
+  },
+  "classifications": [
+    {
+      "test_id": "checkout.test_ch_payment",
+      "category": "deterministic_bug",
+      "metrics": {
+        "failure_rate": 1.0,
+        "recent_failure_rate": 1.0,
+        "flip_rate": 0.0,
+        "timing_cv": 0.0252,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [
+        "checkout.test_ch_receipt",
+        "checkout.test_ch_validate"
+      ],
+      "windowed_rates": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "trend": "stable",
+      "confidence": 0.9231
+    },
+    {
+      "test_id": "checkout.test_ch_receipt",
+      "category": "deterministic_bug",
+      "metrics": {
+        "failure_rate": 1.0,
+        "recent_failure_rate": 1.0,
+        "flip_rate": 0.2,
+        "timing_cv": 0.0243,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [
+        "checkout.test_ch_payment",
+        "checkout.test_ch_validate"
+      ],
+      "windowed_rates": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "trend": "increasing",
+      "confidence": 0.6102
+    },
+    {
+      "test_id": "checkout.test_ch_validate",
+      "category": "deterministic_bug",
+      "metrics": {
+        "failure_rate": 1.0,
+        "recent_failure_rate": 1.0,
+        "flip_rate": 0.0,
+        "timing_cv": 0.0181,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [
+        "checkout.test_ch_payment",
+        "checkout.test_ch_receipt"
+      ],
+      "windowed_rates": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "trend": "stable",
+      "confidence": 0.9231
+    },
+    {
+      "test_id": "inventory.test_inv_reserve",
+      "category": "healthy",
+      "metrics": {
+        "failure_rate": 0.0,
+        "recent_failure_rate": 0.0,
+        "flip_rate": 0.0,
+        "timing_cv": 0.0103,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [],
+      "windowed_rates": [],
+      "trend": "stable",
+      "confidence": 0.9828
+    },
+    {
+      "test_id": "inventory.test_inv_stock",
+      "category": "environment_dependent",
+      "metrics": {
+        "failure_rate": 0.5,
+        "recent_failure_rate": 0.5,
+        "flip_rate": 1.0,
+        "timing_cv": 0.0335,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [],
+      "windowed_rates": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "trend": "stable",
+      "confidence": 0.8571
+    },
+    {
+      "test_id": "shipping.test_sh_calculate",
+      "category": "flaky",
+      "metrics": {
+        "failure_rate": 0.0,
+        "recent_failure_rate": 0.0,
+        "flip_rate": 0.8,
+        "timing_cv": 0.0213,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [],
+      "windowed_rates": [
+        0.5,
+        0.5,
+        0.0
+      ],
+      "trend": "decreasing",
+      "confidence": 0.1159
+    },
+    {
+      "test_id": "shipping.test_sh_notify",
+      "category": "environment_dependent",
+      "metrics": {
+        "failure_rate": 0.0,
+        "recent_failure_rate": 0.0,
+        "flip_rate": 0.4,
+        "timing_cv": 0.2698,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [],
+      "windowed_rates": [
+        0.0,
+        0.5,
+        0.0
+      ],
+      "trend": "stable",
+      "confidence": 0.0293
+    },
+    {
+      "test_id": "shipping.test_sh_track",
+      "category": "healthy",
+      "metrics": {
+        "failure_rate": 0.0,
+        "recent_failure_rate": 0.0,
+        "flip_rate": 0.0,
+        "timing_cv": 0.0044,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [],
+      "windowed_rates": [],
+      "trend": "stable",
+      "confidence": 0.9828
+    }
+  ],
+  "correlation_matrix": {
+    "checkout.test_ch_payment:checkout.test_ch_receipt": 0.9704,
+    "checkout.test_ch_payment:checkout.test_ch_validate": 1.0,
+    "checkout.test_ch_payment:inventory.test_inv_stock": 0.0963,
+    "checkout.test_ch_payment:shipping.test_sh_calculate": -0.1876,
+    "checkout.test_ch_payment:shipping.test_sh_notify": -0.2299,
+    "checkout.test_ch_receipt:checkout.test_ch_validate": 0.9704,
+    "checkout.test_ch_receipt:inventory.test_inv_stock": 0.0795,
+    "checkout.test_ch_receipt:shipping.test_sh_calculate": -0.0598,
+    "checkout.test_ch_receipt:shipping.test_sh_notify": -0.4144,
+    "checkout.test_ch_validate:inventory.test_inv_stock": 0.0963,
+    "checkout.test_ch_validate:shipping.test_sh_calculate": -0.1876,
+    "checkout.test_ch_validate:shipping.test_sh_notify": -0.2299,
+    "inventory.test_inv_stock:shipping.test_sh_calculate": -0.5153,
+    "inventory.test_inv_stock:shipping.test_sh_notify": 0.2471,
+    "shipping.test_sh_calculate:shipping.test_sh_notify": -0.2916
+  },
+  "timing_baselines": {
+    "checkout": {
+      "mean_ms": 49.461,
+      "stddev_ms": 5.255
+    },
+    "inventory": {
+      "mean_ms": 192.0,
+      "stddev_ms": 10.943
+    },
+    "shipping": {
+      "mean_ms": 494.511,
+      "stddev_ms": 98.559
+    }
+  },
+  "overall_health": {
+    "healthy_pct": 0.25,
+    "flaky_pct": 0.125,
+    "deterministic_pct": 0.375,
+    "env_dependent_pct": 0.25
+  }
+}

@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/experiment-analysis"
+description = "A/B test experiment analysis pipeline with hypothesis testing, multiple testing correction, effect sizes, and statistical power estimation."
+
+[metadata]
+category = "Data Science and Reporting"
+subcategory = "Experiment and metrics analysis"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "analyze"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 6 modules (~720 lines) implementing A/B test analysis from scratch. Two bugs are in pipeline.py's data-flow logic: (1) power analysis receives pooled_variance (both groups combined) instead of control_variance — power measures ability to detect departure FROM control, so should use control variability only. Comment justifies: 'pooled variance reflects overall experimental variability.' Masked when variances are equal (pooled = control). Hidden data has 9x variance ratio. (2) Multiple testing correction is applied to the primary metric BEFORE secondary metrics are computed, leaving secondaries uncorrected. Comment justifies: 'corrections applied to accumulated set for sequential reporting.' Masked with single metric (correction on 1 value is identity). Hidden data has 4 metrics where Bonferroni should quadruple all p-values. The pipeline uses Welch's t-test and Hedges' g which are correct modern statistical practice but appear as departures from textbook Student's t and Cohen's d. Data is synthetic experiment observations shaped like online A/B tests — work a data scientist or experimentation platform engineer would perform."
+solution_explanation = "Two fixes in pipeline.py: (1) Change power analysis variance from pooled_var to control_stats['variance'] — power should reflect control group variability since we're detecting departures from control. (2) Move multiple testing correction AFTER all secondary metric p-values are computed — collect all p-values first, then apply Bonferroni/BH to the complete set simultaneously. The Welch's t-test and Hedges' g must NOT be modified."
+verification_explanation = "The verifier substitutes a 4-metric experiment with n=25 per group, unequal variances (control var=4.75, treatment var=43.25). Bug 1 causes power=0.059 (using pooled var=24.0) instead of correct 0.095 (using control var=4.75) — 38% relative deviation. Bug 2 causes secondary corrected_p=0.513 (uncorrected) instead of 1.0 (Bonferroni × 4) — completely different significance conclusions. Tests compare at rel_tol=1e-3."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

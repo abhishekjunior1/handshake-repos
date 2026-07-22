@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/mesh-router"
+description = "Debug a container service mesh traffic routing pipeline with orchestration-order bugs."
+
+[metadata]
+category = "Systems Infrastructure and Operations"
+subcategory = "Containers and Orchestration"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1100 lines) implementing service mesh traffic routing without external libraries. Three bugs in the orchestrator exploit container orchestration conventions: (1) circuit breaker evaluation AFTER retry budget consumption instead of before — the comment justifies post-routing assessment for accurate budget tracking; (2) consistent hash uses only source service name instead of source+destination pair — the comment frames this as connection pool affinity optimization; (3) health staleness uses registration_timestamp instead of last_heartbeat_timestamp — the comment describes registration-anchored TTL for deterministic expiry. On the visible 2-service/1-backend/0-failure config: Bug 1 invisible because CB always closed (0 failures), Bug 2 invisible because 1 backend means any hash gives same result, Bug 3 invisible because registration_ts equals last_heartbeat_ts (just registered). Two decoys look suspicious: descending route priority sort (Envoy/Istio convention) and Knuth multiplicative hash in ring (better distribution). Data is synthetic, shaped like production Kubernetes service mesh traffic. A platform engineer or SRE would do this work."
+solution_explanation = "Fix 1: Move circuit breaker evaluation before retry budget consumption — if the selected backend circuit is open, skip to an alternate backend without decrementing the retry counter. Fix 2: Change the consistent hash key from source-only to source+destination pair so that backend selection is per-service-pair rather than per-source. Fix 3: Use last_heartbeat_timestamp instead of registration_timestamp for backend health staleness — a long-running backend with recent heartbeats should not be marked stale. All three fixes are in pipeline.py; domain modules remain unchanged."
+verification_explanation = "The verifier substitutes a hidden config with 4 services, 3 backends per service, circuit breaker failures, and old registration timestamps with fresh heartbeats. Bug 1 causes retries exhausted when CB should have redirected to healthy backend. Bug 2 selects wrong backend (hash collision without destination). Bug 3 marks healthy backends as stale (old registration despite recent heartbeat). Tests verify: per-request routed_to backend, final_status, remaining_retries, and summary counts. 5 of 6 requests produce different results when bugs are present."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

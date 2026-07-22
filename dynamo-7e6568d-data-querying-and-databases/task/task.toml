@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/graph-analysis-engine"
+description = "Debug a graph analysis pipeline that computes betweenness centrality, PageRank, directed clustering coefficients, and influence spread on directed property graphs."
+
+[metadata]
+category = "Data Querying and Databases"
+subcategory = "Graph and semantic queries"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "database_or_structured_store"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 6 modules (850+ lines) implementing graph analytics from scratch without external libraries. Three bugs are in the orchestrator's pipeline.py where correct analysis functions receive incorrect parameters or miss constraints. Bug 1: betweenness centrality counts paths through intermediate nodes without verifying they lie on shortest paths (missing d_sv + d_vt == d_st check). Bug 2: PageRank uses global edge weight normalization instead of per-node outgoing normalization, producing non-stochastic transitions. Bug 3: directed clustering coefficient uses undirected neighborhoods (in+out neighbors) instead of outgoing-only neighbors. On the visible linear graph (A→B→C→D→E): Bug 1 is invisible because all intermediate nodes ARE on shortest paths in a linear chain. Bug 3 is invisible because no node has triangles in its neighborhood regardless of direction. Bug 2 produces different absolute scores but the same ranking, making it non-obvious from local testing. The pipeline contains correct-but-suspicious patterns: self-loop exclusion in clustering and (n-1)(n-2) normalization for directed betweenness that look like off-by-one errors but are correct. The data is synthetic, shaped like infrastructure dependency graphs encountered in network operations. A graph database engineer or network reliability specialist would perform this work professionally."
+solution_explanation = "Fix 1: Add 'd_st = distances[s][t]' lookup and 'if d_sv + d_vt != d_st: continue' guard before counting paths through v in the betweenness loop. Fix 2: Change 'normalize_weights_global(graph)' to 'normalize_weights_per_node(graph)' for PageRank transitions. Fix 3: Change 'graph.get_all_neighbors(nid)' to 'graph.get_out_neighbors(nid)' for directed clustering neighborhoods. Each fix is 1-2 lines. The self-loop exclusion and (n-1)(n-2) normalization must be preserved."
+verification_explanation = "The verifier substitutes a hidden 8-node directed graph with 3 node types, non-uniform edge weights, cycles, and reciprocal edges. Bug 1 produces completely different betweenness ranking (s1/s2 instead of c1/k1 in top positions) because non-shortest paths get counted. Bug 2 produces PageRank scores 10x lower (0.022 vs 0.242) and different top-3 ordering (s2 instead of k2 in position 3). Bug 3 produces non-zero clustering coefficients (avg 0.208) instead of the correct all-zeros because the undirected neighborhood includes in-neighbors creating spurious triangles. All tests use 1e-4 tolerance which rejects all buggy deviations exceeding 4%."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

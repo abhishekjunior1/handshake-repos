@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/netpol-eval"
+description = "Debug a Kubernetes NetworkPolicy evaluation engine with policy-ordering and scope bugs."
+
+[metadata]
+category = "Systems Infrastructure and Operations"
+subcategory = "Containers and Orchestration"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1200 lines) implementing Kubernetes NetworkPolicy evaluation without external libraries. Three bugs are in pipeline.py which overrides correct module functions with buggy local implementations: (1) merge_policies_across_namespaces sorts by alphabetical namespace+name instead of creation_timestamp — the comment justifies this as deterministic audit ordering; (2) determine_egress_default checks only if policies SELECT the pod instead of whether ANY egress policy EXISTS in the namespace — the comment frames this as minimal blast radius; (3) evaluate_cidr_match calls matches_cidr (range-only) instead of allows_ip (range minus exceptions) — the comment describes post-match exception filtering. The correct implementations exist in policy_engine.py and traffic_matcher.py but pipeline.py bypasses them. On the visible config: Bug 1 invisible (1 policy per namespace), Bug 2 invisible (no egress policies), Bug 3 invisible (no except blocks). Two decoys: additive OR-semantics for ingress rules and empty-selector-matches-all. Data is synthetic, shaped like production K8s NetworkPolicies. A platform engineer or cluster administrator would do this work."
+solution_explanation = "Fix 1: In pipeline.py merge_policies_across_namespaces, sort by creation_timestamp instead of alphabetical namespace+name. Fix 2: In pipeline.py determine_egress_default, check if ANY egress policy exists in the namespace (not just policies selecting the pod) — or delegate to the correct policy_engine.get_default_egress_stance. Fix 3: In pipeline.py evaluate_cidr_match, use allows_ip (which checks exceptions) instead of matches_cidr (range-only) — or delegate to traffic_matcher.match_cidr_peer. All three fixes are in pipeline.py; domain modules are already correct."
+verification_explanation = "The verifier substitutes a hidden config with 4 namespaces, 8 policies with overlapping selectors, CIDR exception blocks, and egress isolation. Bug 1 causes wrong policy attribution (allow-web-broad vs restrict-web-ingress for overlapping selectors). Bug 2 causes unselected pods to get ALLOW egress instead of DENY when egress policies exist in their namespace. Bug 3 causes traffic to excepted CIDRs to be ALLOWed instead of DENied. Tests verify per-flow verdicts, policy names, and exact output match."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

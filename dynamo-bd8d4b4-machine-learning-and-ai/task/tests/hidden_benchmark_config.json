@@ -1,0 +1,14 @@
+{
+  "benchmark_name": "classification_model_comparison",
+  "models": ["gradient_boost", "neural_net", "random_forest", "svm_rbf"],
+  "datasets": [
+    {"name": "image_classification", "n_samples": 500, "n_classes": 10},
+    {"name": "text_sentiment", "n_samples": 200, "n_classes": 3},
+    {"name": "fraud_detection", "n_samples": 50, "n_classes": 2}
+  ],
+  "n_folds": 5,
+  "metrics": ["accuracy"],
+  "significance_level": 0.05,
+  "normalization_method": "min_max",
+  "aggregation_method": "geometric_mean"
+}

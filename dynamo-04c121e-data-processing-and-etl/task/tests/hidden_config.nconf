@@ -1,0 +1,36 @@
+# Production deployment configuration
+# Uses cross-references for DRY configuration
+
+[Environment]
+root_dir = "C:\\Projects\\webapp"
+data_dir = "D:\\Data\\storage"
+temp_path = "C:\\Users\\admin\\temp"
+platform = windows
+
+[DatabaseSettings]
+host = db-prod-01.internal
+port = 5432
+name = analytics_prod
+connection_prefix = postgresql://
+
+[Paths]
+base_dir = ${Environment.root_dir}
+data_store = ${Environment.data_dir}
+temp = ${Environment.temp_path}
+
+[AppConfig]
+title = "Production Analytics"
+version = "3.2.1"
+install_path = ${Paths.base_dir}
+data_path = ${Paths.data_store}
+db_host = ${DatabaseSettings.host}
+db_port = ${DatabaseSettings.port}
+db_name = ${DatabaseSettings.name}
+db_prefix = ${DatabaseSettings.connection_prefix}
+temp_dir = ${Paths.temp}
+
+[Logging]
+level = warning
+output_dir = ${AppConfig.install_path}
+max_size_mb = 50
+rotate_count = 5

@@ -1,0 +1,23 @@
+{
+  "stream_name": "sensor_telemetry",
+  "window_config": {
+    "window_size_sec": 100
+  },
+  "processing_config": {
+    "decay_factor": 0.9
+  },
+  "events": [
+    {"timestamp": 5, "value": 22.1, "key": "temp_north", "event_id": "s001"},
+    {"timestamp": 12, "value": 18.4, "key": "temp_south", "event_id": "s002"},
+    {"timestamp": 19, "value": 25.7, "key": "temp_north", "event_id": "s003"},
+    {"timestamp": 26, "value": 20.3, "key": "temp_south", "event_id": "s004"},
+    {"timestamp": 33, "value": 23.8, "key": "humidity", "event_id": "s005"},
+    {"timestamp": 40, "value": 19.6, "key": "temp_north", "event_id": "s006"},
+    {"timestamp": 47, "value": 21.2, "key": "temp_south", "event_id": "s007"},
+    {"timestamp": 54, "value": 24.5, "key": "humidity", "event_id": "s008"},
+    {"timestamp": 61, "value": 17.8, "key": "temp_north", "event_id": "s009"},
+    {"timestamp": 68, "value": 22.9, "key": "temp_south", "event_id": "s010"},
+    {"timestamp": 75, "value": 26.1, "key": "humidity", "event_id": "s011"},
+    {"timestamp": 82, "value": 20.7, "key": "temp_north", "event_id": "s012"}
+  ]
+}

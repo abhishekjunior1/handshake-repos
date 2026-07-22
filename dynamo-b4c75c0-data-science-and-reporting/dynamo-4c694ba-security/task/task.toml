@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/crypto-envelope"
+description = "Debug a multi-module cryptographic envelope pipeline with key derivation, encryption, and MAC computation bugs."
+
+[metadata]
+category = "Security"
+subcategory = "Cryptography"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact", "security_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 6 modules (~970 lines) implementing a bespoke cryptographic envelope protocol without external libraries. Three bugs reside exclusively in the orchestrator (pipeline.py) — all domain modules are individually correct. Bug 1: MAC key derived using the encryption label instead of the MAC label, with a comment justifying this as 'symmetric key hierarchy for session binding.' Bug 2: Per-message IV preparation XORs the message sequence counter into the nonce, with a comment justifying this as 'counter space partitioning for nonce reuse prevention.' Bug 3: The process_message function passes enc_key to compute_envelope_mac, with a comment about 'binding authentication to encryption capability.' Each bug has a plausible security engineering rationale that makes it look like an intentional design choice. Visible data masks all bugs: enc_info equals mac_info (making both derived keys identical, masking Bugs 1 and 3), and only one message exists (msg_index=0 makes the XOR a no-op, masking Bug 2). Two correct-but-suspicious patterns (rotation-based key schedule, full-block PKCS#7 padding) act as decoys. Data is synthetic, representative of secure messaging systems that a cryptographic protocol engineer would design and audit."
+solution_explanation = "Fix 1: In derive_session_keys(), change the MAC key derivation from using enc_label to mac_label, establishing proper cryptographic domain separation. Fix 2: In prepare_cipher_iv(), remove the msg_sequence XOR operation — the cipher's CTR mode internally handles counter incrementing, and XORing the sequence corrupts the counter space producing wrong ciphertext for messages after the first. Fix 3: In process_message(), change keys['enc_key'] to keys['mac_key'] in the compute_envelope_mac call, using the dedicated authentication key for MAC computation. Each fix is 1-3 lines but requires understanding why each comment-justified pattern is actually incorrect despite its plausible security rationale."
+verification_explanation = "The verifier substitutes a hidden configuration where enc_info differs from mac_info (making derived keys distinct, triggering Bugs 1 and 3) and contains 3 messages (making msg_index > 0, triggering Bug 2). Tests compare pipeline output field-by-field against expected_output.json: exact match on envelope hex content, MAC tags, envelope digests, ciphertext lengths, and key fingerprints for all 3 messages. All three bugs must be fixed simultaneously — Bug 1 alone changes the MAC fingerprint, Bug 2 alone changes ciphertext for messages 2+, Bug 3 alone changes MAC tags. The pipeline is fully deterministic with fixed inputs and no randomness."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

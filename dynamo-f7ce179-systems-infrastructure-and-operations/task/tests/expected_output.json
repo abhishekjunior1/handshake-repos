@@ -1,0 +1,67 @@
+{
+  "pipeline_version": "1.0.0",
+  "current_time": 1000.0,
+  "total_requests": 6,
+  "results": [
+    {
+      "request_id": "req-101",
+      "source": "checkout-flow",
+      "destination": "order-service",
+      "status": "routed",
+      "routed_to": "order-backend-3",
+      "remaining_retries": 3,
+      "attempts": 1,
+      "route_rule": "route-orders"
+    },
+    {
+      "request_id": "req-102",
+      "source": "checkout-flow",
+      "destination": "payment-service",
+      "status": "routed",
+      "routed_to": "payment-backend-2",
+      "remaining_retries": 3,
+      "attempts": 1,
+      "route_rule": "route-payments"
+    },
+    {
+      "request_id": "req-103",
+      "source": "admin-panel",
+      "destination": "inventory-service",
+      "status": "routed",
+      "routed_to": "inv-backend-1",
+      "remaining_retries": 3,
+      "attempts": 1,
+      "route_rule": "route-inventory"
+    },
+    {
+      "request_id": "req-104",
+      "source": "checkout-flow",
+      "destination": "notification-service",
+      "status": "routed",
+      "routed_to": "notif-backend-3",
+      "remaining_retries": 2,
+      "attempts": 2,
+      "route_rule": "route-notifications-priority"
+    },
+    {
+      "request_id": "req-105",
+      "source": "batch-processor",
+      "destination": "order-service",
+      "status": "routed",
+      "routed_to": "order-backend-2",
+      "remaining_retries": 3,
+      "attempts": 1,
+      "route_rule": "route-orders"
+    },
+    {
+      "request_id": "req-106",
+      "source": "admin-panel",
+      "destination": "payment-service",
+      "status": "routed",
+      "routed_to": "payment-backend-3",
+      "remaining_retries": 2,
+      "attempts": 2,
+      "route_rule": "route-payments"
+    }
+  ]
+}

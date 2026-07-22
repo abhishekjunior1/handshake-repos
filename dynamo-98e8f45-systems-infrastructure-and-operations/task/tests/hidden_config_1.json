@@ -1,0 +1,466 @@
+{
+  "cluster": {
+    "default_max_pods": 110,
+    "nodes": [
+      {
+        "name": "edge-node-01",
+        "labels": {
+          "kubernetes.io/hostname": "edge-node-01",
+          "topology.kubernetes.io/zone": "edge-west",
+          "node.kubernetes.io/instance-type": "t3.small",
+          "workload-tier": "edge",
+          "region": "west"
+        },
+        "status": {
+          "allocatable": {
+            "cpu_millicores": 1000,
+            "memory_mb": 2048,
+            "pods": 4
+          }
+        },
+        "taints": [
+          {
+            "key": "node-role",
+            "value": "edge",
+            "effect": "NoSchedule"
+          }
+        ]
+      },
+      {
+        "name": "edge-node-02",
+        "labels": {
+          "kubernetes.io/hostname": "edge-node-02",
+          "topology.kubernetes.io/zone": "edge-west",
+          "node.kubernetes.io/instance-type": "t3.medium",
+          "workload-tier": "edge",
+          "region": "west"
+        },
+        "status": {
+          "allocatable": {
+            "cpu_millicores": 2000,
+            "memory_mb": 4096,
+            "pods": 30
+          }
+        },
+        "taints": [
+          {
+            "key": "node-role",
+            "value": "edge",
+            "effect": "NoSchedule"
+          }
+        ]
+      },
+      {
+        "name": "edge-node-03",
+        "labels": {
+          "kubernetes.io/hostname": "edge-node-03",
+          "topology.kubernetes.io/zone": "edge-east",
+          "node.kubernetes.io/instance-type": "t3.medium",
+          "workload-tier": "edge",
+          "region": "east"
+        },
+        "status": {
+          "allocatable": {
+            "cpu_millicores": 2000,
+            "memory_mb": 4096,
+            "pods": 30
+          }
+        },
+        "taints": [
+          {
+            "key": "node-role",
+            "value": "edge",
+            "effect": "NoSchedule"
+          }
+        ]
+      }
+    ]
+  },
+  "pending_pods": [
+    {
+      "name": "iot-collector-x9k2m",
+      "namespace": "telemetry",
+      "containers": [
+        {
+          "name": "collector",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 200,
+              "memory_mb": 256
+            },
+            "limits": {
+              "cpu_millicores": 800,
+              "memory_mb": 2048
+            }
+          }
+        },
+        {
+          "name": "sidecar-proxy",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 100,
+              "memory_mb": 128
+            },
+            "limits": {
+              "cpu_millicores": 400,
+              "memory_mb": 1024
+            }
+          }
+        }
+      ],
+      "tolerations": [
+        {
+          "key": "node-role",
+          "operator": "Equal",
+          "value": "edge",
+          "effect": "NoSchedule"
+        }
+      ],
+      "affinity": {
+        "nodeAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": [
+            {
+              "weight": 60,
+              "preference": {
+                "matchExpressions": [
+                  {
+                    "key": "region",
+                    "operator": "In",
+                    "values": [
+                      "west"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "podAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": [
+            {
+              "weight": 40,
+              "podAffinityTerm": {
+                "labelSelector": {
+                  "matchLabels": {
+                    "app": "iot-gateway"
+                  }
+                },
+                "topologyKey": "topology.kubernetes.io/zone"
+              }
+            }
+          ]
+        },
+        "podAntiAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": [
+            {
+              "weight": 70,
+              "podAffinityTerm": {
+                "labelSelector": {
+                  "matchLabels": {
+                    "tier": "system"
+                  }
+                },
+                "topologyKey": "kubernetes.io/hostname"
+              }
+            }
+          ]
+        }
+      },
+      "priority_class": "standard"
+    },
+    {
+      "name": "edge-proxy-b7n4w",
+      "namespace": "networking",
+      "containers": [
+        {
+          "name": "envoy",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 300,
+              "memory_mb": 512
+            },
+            "limits": {
+              "cpu_millicores": 1200,
+              "memory_mb": 3072
+            }
+          }
+        }
+      ],
+      "tolerations": [
+        {
+          "key": "node-role",
+          "operator": "Equal",
+          "value": "edge",
+          "effect": "NoSchedule"
+        }
+      ],
+      "affinity": {
+        "nodeAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": [
+            {
+              "weight": 30,
+              "preference": {
+                "matchExpressions": [
+                  {
+                    "key": "node.kubernetes.io/instance-type",
+                    "operator": "In",
+                    "values": [
+                      "t3.medium"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "podAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": []
+        },
+        "podAntiAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": [
+            {
+              "weight": 45,
+              "podAffinityTerm": {
+                "labelSelector": {
+                  "matchLabels": {
+                    "tier": "telemetry"
+                  }
+                },
+                "topologyKey": "kubernetes.io/hostname"
+              }
+            }
+          ]
+        }
+      },
+      "priority_class": "high-priority"
+    },
+    {
+      "name": "metrics-agent-q2w8e",
+      "namespace": "monitoring",
+      "containers": [
+        {
+          "name": "prometheus-agent",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 150,
+              "memory_mb": 256
+            },
+            "limits": {
+              "cpu_millicores": 500,
+              "memory_mb": 1024
+            }
+          }
+        }
+      ],
+      "tolerations": [
+        {
+          "key": "node-role",
+          "operator": "Equal",
+          "value": "edge",
+          "effect": "NoSchedule"
+        }
+      ],
+      "affinity": {
+        "nodeAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": []
+        },
+        "podAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": []
+        },
+        "podAntiAffinity": {
+          "preferredDuringSchedulingIgnoredDuringExecution": []
+        }
+      },
+      "priority_class": "standard"
+    }
+  ],
+  "existing_pods": [
+    {
+      "name": "iot-collector-a1b2c",
+      "namespace": "telemetry",
+      "node_name": "edge-node-02",
+      "labels": {
+        "app": "iot-collector",
+        "tier": "telemetry"
+      },
+      "topology_labels": {
+        "kubernetes.io/hostname": "edge-node-02",
+        "topology.kubernetes.io/zone": "edge-west"
+      },
+      "containers": [
+        {
+          "name": "collector",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 200,
+              "memory_mb": 256
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "iot-collector-d3e4f",
+      "namespace": "telemetry",
+      "node_name": "edge-node-03",
+      "labels": {
+        "app": "iot-collector",
+        "tier": "telemetry"
+      },
+      "topology_labels": {
+        "kubernetes.io/hostname": "edge-node-03",
+        "topology.kubernetes.io/zone": "edge-east"
+      },
+      "containers": [
+        {
+          "name": "collector",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 200,
+              "memory_mb": 256
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "iot-gateway-g5h6i",
+      "namespace": "telemetry",
+      "node_name": "edge-node-02",
+      "labels": {
+        "app": "iot-gateway",
+        "tier": "networking"
+      },
+      "topology_labels": {
+        "kubernetes.io/hostname": "edge-node-02",
+        "topology.kubernetes.io/zone": "edge-west"
+      },
+      "containers": [
+        {
+          "name": "gateway",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 500,
+              "memory_mb": 1024
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "system-agent-k8l9m",
+      "namespace": "kube-system",
+      "node_name": "edge-node-01",
+      "labels": {
+        "app": "node-agent",
+        "tier": "system"
+      },
+      "topology_labels": {
+        "kubernetes.io/hostname": "edge-node-01",
+        "topology.kubernetes.io/zone": "edge-west"
+      },
+      "containers": [
+        {
+          "name": "agent",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 100,
+              "memory_mb": 128
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "system-proxy-n0p1q",
+      "namespace": "kube-system",
+      "node_name": "edge-node-01",
+      "labels": {
+        "app": "kube-proxy",
+        "tier": "system"
+      },
+      "topology_labels": {
+        "kubernetes.io/hostname": "edge-node-01",
+        "topology.kubernetes.io/zone": "edge-west"
+      },
+      "containers": [
+        {
+          "name": "proxy",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 100,
+              "memory_mb": 128
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "system-dns-r2s3t",
+      "namespace": "kube-system",
+      "node_name": "edge-node-01",
+      "labels": {
+        "app": "coredns",
+        "tier": "system"
+      },
+      "topology_labels": {
+        "kubernetes.io/hostname": "edge-node-01",
+        "topology.kubernetes.io/zone": "edge-west"
+      },
+      "containers": [
+        {
+          "name": "coredns",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 100,
+              "memory_mb": 128
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "system-monitor-u4v5w",
+      "namespace": "kube-system",
+      "node_name": "edge-node-01",
+      "labels": {
+        "app": "node-monitor",
+        "tier": "system"
+      },
+      "topology_labels": {
+        "kubernetes.io/hostname": "edge-node-01",
+        "topology.kubernetes.io/zone": "edge-west"
+      },
+      "containers": [
+        {
+          "name": "monitor",
+          "resources": {
+            "requests": {
+              "cpu_millicores": 50,
+              "memory_mb": 64
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "priority_classes": {
+    "system-critical": {
+      "value": 1000
+    },
+    "high-priority": {
+      "value": 500
+    },
+    "standard": {
+      "value": 100
+    },
+    "low-priority": {
+      "value": 10
+    }
+  },
+  "scheduling_profile": {
+    "scoring_strategy": "LeastAllocated",
+    "affinity_weight": 1.0,
+    "utilization_weight": 1.0
+  }
+}

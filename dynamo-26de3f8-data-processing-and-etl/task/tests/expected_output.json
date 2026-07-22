@@ -1,0 +1,99 @@
+{
+  "stream_name": "payment_transactions",
+  "config": {
+    "window_size_sec": 10,
+    "decay_factor": 0.8
+  },
+  "windows": [
+    {
+      "window_start": 0,
+      "window_end": 10,
+      "event_count": 5,
+      "window_sum": 925.0,
+      "running_sum": 925.0,
+      "population_mean": 185.0,
+      "variance": 600.0,
+      "std_dev": 24.494897,
+      "keys": {
+        "merchant_A": {
+          "count": 3,
+          "sum": 495.0,
+          "min": 75.0,
+          "max": 320.0,
+          "avg": 165.0,
+          "weighted_sum": 444.0
+        },
+        "merchant_B": {
+          "count": 2,
+          "sum": 430.0,
+          "min": 180.0,
+          "max": 250.0,
+          "avg": 215.0,
+          "weighted_sum": 380.0
+        }
+      }
+    },
+    {
+      "window_start": 10,
+      "window_end": 20,
+      "event_count": 5,
+      "window_sum": 1168.0,
+      "running_sum": 1908.0,
+      "population_mean": 233.6,
+      "variance": 5654.94,
+      "std_dev": 75.199335,
+      "keys": {
+        "merchant_A": {
+          "count": 3,
+          "sum": 885.0,
+          "min": 155.0,
+          "max": 420.0,
+          "avg": 295.0,
+          "weighted_sum": 745.2
+        },
+        "merchant_B": {
+          "count": 2,
+          "sum": 283.0,
+          "min": 88.0,
+          "max": 195.0,
+          "avg": 141.5,
+          "weighted_sum": 265.4
+        }
+      }
+    },
+    {
+      "window_start": 20,
+      "window_end": 30,
+      "event_count": 5,
+      "window_sum": 990.0,
+      "running_sum": 2664.4,
+      "population_mean": 198.0,
+      "variance": 1980.166667,
+      "std_dev": 44.499064,
+      "keys": {
+        "merchant_A": {
+          "count": 3,
+          "sum": 485.0,
+          "min": 92.0,
+          "max": 275.0,
+          "avg": 161.666667,
+          "weighted_sum": 367.6
+        },
+        "merchant_B": {
+          "count": 2,
+          "sum": 505.0,
+          "min": 165.0,
+          "max": 340.0,
+          "avg": 252.5,
+          "weighted_sum": 472.0
+        }
+      }
+    }
+  ],
+  "summary": {
+    "total_events": 16,
+    "events_after_dedup": 15,
+    "duplicates_removed": 1,
+    "windows_produced": 3
+  }
+}

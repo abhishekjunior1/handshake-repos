@@ -1,0 +1,140 @@
+{
+  "oscillator_mhz": 8.0,
+  "pll": {
+    "ref_freq_mhz": 8.0,
+    "mult_factor": 12,
+    "post_divider": 2,
+    "lock_cycles": 200
+  },
+  "bus_divider": 4,
+  "peripheral_divider": 2,
+  "bus_protocol": "spi",
+  "cs_polarity": "active_low",
+  "power_domains": [
+    {
+      "name": "vdd_io",
+      "type": "io",
+      "voltage_v": 3.3,
+      "ramp_time_us": 200.0
+    },
+    {
+      "name": "vdd_core",
+      "type": "core",
+      "voltage_v": 1.2,
+      "ramp_time_us": 500.0
+    },
+    {
+      "name": "vdd_analog",
+      "type": "core",
+      "voltage_v": 1.8,
+      "ramp_time_us": 300.0
+    }
+  ],
+  "peripherals": [
+    {
+      "device_id": "accel_sensor",
+      "bus_address": 104,
+      "slot": 0,
+      "enabled": true,
+      "id_register": 0,
+      "expected_device_id": 209,
+      "auto_increment_configured": false,
+      "init_registers": [
+        {
+          "address": 16,
+          "value": 48,
+          "mask": 255,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": true
+        },
+        {
+          "address": 17,
+          "value": 8,
+          "mask": 15,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": false
+        },
+        {
+          "address": 18,
+          "value": 192,
+          "mask": 224,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": true
+        }
+      ]
+    },
+    {
+      "device_id": "pressure_sensor",
+      "bus_address": 118,
+      "slot": 1,
+      "enabled": true,
+      "id_register": 0,
+      "expected_device_id": 88,
+      "auto_increment_configured": false,
+      "init_registers": [
+        {
+          "address": 32,
+          "value": 39,
+          "mask": 63,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": true
+        },
+        {
+          "address": 33,
+          "value": 5,
+          "mask": 7,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": false
+        }
+      ]
+    },
+    {
+      "device_id": "mag_sensor",
+      "bus_address": 30,
+      "slot": 2,
+      "enabled": true,
+      "id_register": 0,
+      "expected_device_id": 72,
+      "auto_increment_configured": false,
+      "init_registers": [
+        {
+          "address": 0,
+          "value": 112,
+          "mask": 255,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": false
+        },
+        {
+          "address": 1,
+          "value": 160,
+          "mask": 224,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": false
+        },
+        {
+          "address": 2,
+          "value": 0,
+          "mask": 3,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": true
+        },
+        {
+          "address": 9,
+          "value": 29,
+          "mask": 31,
+          "width_bits": 8,
+          "bank": 1,
+          "verify": false
+        }
+      ]
+    }
+  ]
+}

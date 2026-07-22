@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "format": "compiled-env-profile",
+  "environment": {
+    "APP_HOME": "/opt/myapp",
+    "APP_VERSION": "3.2.1",
+    "BINDING": "\"0.0.0.0:9090\"",
+    "CERT_SUBJECT": "\"CN=worker-03.prod\"",
+    "CONFIG_DIR": "/opt/myapp/conf",
+    "DATA_DIR": "/opt/myapp/conf/data",
+    "FLAG_VALUE": "\"\"\"\"--verbose",
+    "HOSTNAME": "worker-node-03-override",
+    "LANG": "en_US.UTF-8",
+    "LIB_PATH": "/usr/lib",
+    "LOG_DIR": "/opt/myapp/conf/data/logs",
+    "PATH": "/usr/local/bin:/usr/bin:/bin",
+    "QUOTED_PREFIX": "\"\"",
+    "STARTUP_MSG": "Starting application.\nLoading configuration.\nReady to serve.",
+    "TZ": "America/New_York",
+    "WORKER_COUNT": "4"
+  },
+  "metadata": {
+    "source_attribution": {
+      "APP_HOME": "application",
+      "APP_VERSION": "application",
+      "BINDING": "application",
+      "CERT_SUBJECT": "application",
+      "CONFIG_DIR": "application",
+      "DATA_DIR": "system",
+      "FLAG_VALUE": "system",
+      "HOSTNAME": "overrides",
+      "LANG": "system",
+      "LIB_PATH": "system",
+      "LOG_DIR": "system",
+      "PATH": "system",
+      "QUOTED_PREFIX": "application",
+      "STARTUP_MSG": "application",
+      "TZ": "overrides",
+      "WORKER_COUNT": "application"
+    },
+    "layers": [
+      {
+        "name": "system",
+        "priority": 5,
+        "variable_count": 9
+      },
+      {
+        "name": "application",
+        "priority": 30,
+        "variable_count": 8
+      },
+      {
+        "name": "overrides",
+        "priority": 5,
+        "variable_count": 2
+      }
+    ],
+    "total_variables": 16,
+    "settings": {
+      "strict_mode": true
+    }
+  }
+}

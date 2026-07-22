@@ -1,0 +1,69 @@
+{
+  "pipeline_output": {
+    "encryption_results": {
+      "shared_secret": "7aba5cddf0b0b82cd71ffc815c97070b6bb76e857ef35207366e591011dd5a7c",
+      "derived_key": "fbda6640ec6fe0ea8901a0cc43529238",
+      "derived_key_length_bytes": 16,
+      "ciphertext": "d1752e5db7fb0cce7cf4e6778ac66bc8ccb073e1b7057c6ee543d91d810655feb5156d62c5768b635a0b96af3f633aa92776fdd6c4acda0b83cddfbebb7550a1243d6321838ebffc85",
+      "nonce": "5d58a5bd0b963f6399736500",
+      "gcm_tag": "055f0704dcf9c9ebb8f2b8bb459311ca",
+      "hmac_tag": "8ec653ded714670f5a0b6730a5026cb066699a9c104f0a816d868a3f851f2859",
+      "mac_key": "87dcd9afc878e99eedb61903f764bf0bc2fed9798e5a3e9062ebc0f369454137",
+      "key_check_value": "041020e4c13287b8"
+    },
+    "verification_results": {
+      "decryption_success": true,
+      "mac_verification": true,
+      "key_agreement_valid": true,
+      "round_trip_text": "Patient record transfer: ID-78432 lab results pending review by Dr. Chen."
+    },
+    "envelope": {
+      "header": {
+        "version": 2,
+        "format": "hybrid-kem-dem",
+        "cipher_suite": "AES-128-GCM",
+        "kdf": "HKDF-SHA-256",
+        "created_at": 1720100000,
+        "sender_id": "secure-gateway-01",
+        "recipient_id": "backend-service-03"
+      },
+      "kem": {
+        "encapsulated_key_hex": "21006d2298bcd7402eae519923197993c387d18581724ada852713ac2e0c756285254551121d1430cf74b9abec06e65fbc60324f84d3f82667664f8cb98eee757dfd3896ea09f4599f525b84d17bc45c7ebfd97464af933297afc34510a6992840bfa23d6a79f9f0f4f04e0c307268cf64bda8df204efc52698252de722963030b29214056889f2a0af03c9787074986fe3d9fa5ed7249ab9a0f6b5ac4619346a0f312be2e9ff7adc430458636372a1b2a8170caf61f2c6e5bb0c13722e29005a082d548f763aba634f85a553955fb5936854af79340c8bddbca60c12762443873fbd26ee188b2cc790a3258b13a09340938238df3ec8d53fcf21f25045eb834",
+        "encapsulated_key_length": 256
+      },
+      "payload": {
+        "ciphertext_hex": "d1752e5db7fb0cce7cf4e6778ac66bc8ccb073e1b7057c6ee543d91d810655feb5156d62c5768b635a0b96af3f633aa92776fdd6c4acda0b83cddfbebb7550a1243d6321838ebffc85",
+        "ciphertext_length": 73,
+        "nonce_hex": "5d58a5bd0b963f6399736500",
+        "nonce_length": 12,
+        "gcm_tag_hex": "055f0704dcf9c9ebb8f2b8bb459311ca"
+      },
+      "authentication": {
+        "hmac_tag_hex": "8ec653ded714670f5a0b6730a5026cb066699a9c104f0a816d868a3f851f2859",
+        "aad_hex": "73657373696f6e2d69643a37663361326239313b6368616e6e656c3a746c732d312e333b7365713a3030303432",
+        "aad_length": 45
+      },
+      "integrity": {
+        "envelope_digest": "c5ef421d02e054eda1933d97bf51287d9290f084772a13598ac9d3cdf97a2105",
+        "digest_algorithm": "SHA-256"
+      }
+    },
+    "security_assessment": {
+      "cipher_suite": "AES-128-GCM",
+      "effective_security_bits": 112,
+      "key_length_bytes": 16,
+      "nonce_bits": 96,
+      "kdf_algorithm": "HKDF-SHA-256",
+      "mac_algorithm": "HMAC-SHA-256",
+      "rsa_key_bits": 2048,
+      "compliance": {
+        "nist_approved_algorithms": true,
+        "minimum_112_bit_security": true,
+        "authenticated_encryption": true,
+        "key_derivation_standard": "RFC 5869",
+        "nonce_generation": "deterministic-synthetic-iv",
+        "gcm_nonce_96_bit": true
+      }
+    }
+  }
+}

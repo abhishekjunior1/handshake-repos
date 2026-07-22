@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/model-benchmark"
+description = "Debug a model comparison benchmark pipeline that computes rankings, significance tests, and aggregate scores."
+
+[metadata]
+category = "Machine Learning and AI"
+subcategory = "Model evaluation and benchmarking"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1400 lines) implementing cross-validated model comparison without external libraries. Two bugs in the orchestrator pass wrong values to correct functions: (1) aggregate computation receives raw unnormalized scores instead of normalized scores, and (2) confidence penalty pools fold scores across heterogeneous-scale datasets instead of computing per-dataset coefficient of variation. Both bugs are comment-justified as deliberate design choices. Visible data (normalization=none, n_folds=1) creates mathematical equivalence making both bugs invisible. Two correct patterns (Bonferroni correction, confidence penalty concept) appear suspicious but must be preserved — agents who remove them break the output. Data is synthetic, shaped like multi-dataset ML model evaluation performed by ML researchers comparing classification systems."
+solution_explanation = "Fix 1: In main(), change aggregate computation from compute_aggregate_performance(per_dataset_scores, ...) to compute_aggregate_performance(per_dataset_normalized, ...) so aggregation operates on scale-normalized values. Fix 2: In apply_confidence_penalty(), replace the pooled all_folds approach with per-dataset CV computation — iterate datasets separately, compute CV for each, then average the per-dataset CVs before applying the confidence factor."
+verification_explanation = "The verifier substitutes hidden evaluation data (3 datasets with different score ranges, 5 folds, 4 models with normalization=min_max) and compares pipeline output against expected_output.json. Bug 1 causes aggregate scores to use raw scales (0.75-0.99) instead of normalized [0,1], completely changing magnitudes and ordering. Bug 2 inflates CV by mixing scores from different-scale datasets (pooled std includes between-dataset variance), changing the confidence penalty. Both bugs must be fixed simultaneously. Comparison uses relative tolerance of 1e-4, calibrated to accommodate 6-decimal rounding in report_generator.py and minor floating-point order-of-operations variation, while remaining far tighter than the magnitude shifts the bugs induce (Bug 1 changes aggregates by ~40-60% relative; Bug 2 shifts confidence penalties by 5-25%)."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

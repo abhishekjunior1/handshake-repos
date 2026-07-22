@@ -1,0 +1,41 @@
+{
+  "transaction": {
+    "txn_id": 100,
+    "start_timestamp": 1000,
+    "current_cid": 0,
+    "write_set": []
+  },
+  "commit_log": [
+    {"txn_id": 10, "start_ts": 100, "commit_ts": 200, "write_set": ["r1", "r2"]},
+    {"txn_id": 20, "start_ts": 300, "commit_ts": 400, "write_set": ["r3"]},
+    {"txn_id": 30, "start_ts": 500, "commit_ts": 600, "write_set": ["r2", "r4"]},
+    {"txn_id": 40, "start_ts": 700, "commit_ts": 800, "write_set": ["r5"]}
+  ],
+  "version_store": {
+    "r1": [
+      {"xmin": 10, "xmax": 0, "cid": 0, "data": {"id": 1, "name": "Alice", "balance": 1000}}
+    ],
+    "r2": [
+      {"xmin": 10, "xmax": 30, "cid": 0, "data": {"id": 2, "name": "Bob", "balance": 500}},
+      {"xmin": 30, "xmax": 0, "cid": 0, "data": {"id": 2, "name": "Bob", "balance": 750}}
+    ],
+    "r3": [
+      {"xmin": 20, "xmax": 0, "cid": 0, "data": {"id": 3, "name": "Carol", "balance": 2000}}
+    ],
+    "r4": [
+      {"xmin": 30, "xmax": 0, "cid": 0, "data": {"id": 4, "name": "Dave", "balance": 300}}
+    ],
+    "r5": [
+      {"xmin": 40, "xmax": 0, "cid": 0, "data": {"id": 5, "name": "Eve", "balance": 1500}}
+    ]
+  },
+  "query": {
+    "select": ["id", "name", "balance"],
+    "predicates": [
+      {"column": "balance", "operator": ">=", "value": 500}
+    ],
+    "order_by": [
+      {"column": "id", "direction": "asc"}
+    ]
+  }
+}

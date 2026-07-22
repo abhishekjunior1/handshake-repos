@@ -1,0 +1,12 @@
+[
+  {"event_id": "h001", "timestamp": "2024-01-15T10:05:00Z", "category": "auth", "priority": 5, "impact": 1.5, "severity": "high"},
+  {"event_id": "h002", "timestamp": "2024-01-15T10:05:00Z", "category": "auth", "priority": 3, "impact": 2.5, "severity": "critical"},
+  {"event_id": "h003", "timestamp": "2024-01-15T10:30:00Z", "category": "auth", "priority": 4, "impact": 1.5, "severity": "medium"},
+  {"event_id": "h004", "timestamp": "2024-01-15T10:30:00Z", "category": "network", "priority": 7, "impact": 1.5, "severity": "high"},
+  {"event_id": "h005", "timestamp": "2024-01-15T11:10:00Z", "category": "network", "priority": 2, "impact": 3.5, "severity": "low"},
+  {"event_id": "h006", "timestamp": "2024-01-15T11:10:00Z", "category": "network", "priority": 6, "impact": 1.5, "severity": "critical"},
+  {"event_id": "h007", "timestamp": "2024-01-15T11:10:00Z", "category": "network", "priority": 3, "impact": 2.5, "severity": "medium"},
+  {"event_id": "h008", "timestamp": "2024-01-15T12:00:00Z", "category": "system", "priority": 4, "impact": 2.5, "severity": "high"},
+  {"event_id": "h009", "timestamp": "2024-01-15T12:30:00Z", "category": "system", "priority": 5, "impact": 1.5, "severity": "medium"},
+  {"event_id": "h010", "timestamp": "2024-01-15T12:30:00Z", "category": "auth", "priority": 8, "impact": 1.5, "severity": "critical"}
+]

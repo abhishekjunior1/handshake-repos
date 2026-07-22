@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/cis-scanner"
+description = "CIS-style compliance scanner pipeline with rule inheritance, exception handling, and risk-weighted scoring."
+
+[metadata]
+category = "Security"
+subcategory = "Security hardening"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 8 modules (~1400 lines) implementing a CIS compliance evaluation engine without external libraries. Two bugs in the orchestrator pass the wrong intermediate result set to downstream functions — the waived_results are computed but never propagated. A suspicious but correct section density normalization step draws agents to 'fix' it, causing 34% score deviation. The shipped configuration has no waivers, making both bugs invisible (pre-waiver == post-waiver). A security engineer or compliance automation specialist would build this kind of system. Data is synthetic, shaped like a real enterprise CIS Level 2 benchmark scan."
+solution_explanation = "The solver must identify two data-flow issues in pipeline.py: (1) the waiver application loop tracks consumed IDs preventing the same waiver from applying to multiple matching resources — the fix is to use apply_waivers directly on all_results, (2) downstream scoring, waiver statistics, and report generation all receive all_results (pre-waiver) instead of waived_results (post-waiver) — three variable references must change. The section density normalization must be preserved (it's correct). Each fix is a string replacement but locating Bug 2 requires tracing that waived_results is computed but unused."
+verification_explanation = "The verifier substitutes a hidden multi-resource configuration with 3 servers, nested sections, and glob-pattern waivers where one waiver matches multiple failing resources. It runs the fixed pipeline and compares output.json against expected values using exact field matching and rel_tol=1e-4 for floats. The hidden config triggers both bugs: Bug 1 prevents waiver-001 from applying to both server-prod-web-01 and server-prod-db-01 (only first gets waived), Bug 2 means even correctly-waived results don't propagate to scores/report. Buggy output shows 0 waivers and 0.555 overall score vs expected 4 waivers and 0.700."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

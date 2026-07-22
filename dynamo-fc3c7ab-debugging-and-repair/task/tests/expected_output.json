@@ -1,0 +1,539 @@
+{
+  "evaluations": {
+    "hdev-001": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "conflict"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-002": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "conflict"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "neural_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "predictive_caching": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-003": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "conflict"
+      },
+      "predictive_caching": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-004": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-005": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "predictive_caching": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "voice_assistant": {
+        "enabled": false,
+        "reason": "targeting"
+      }
+    },
+    "hdev-006": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "conflict"
+      },
+      "predictive_caching": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-007": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "neural_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-008": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-009": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "voice_assistant": {
+        "enabled": false,
+        "reason": "targeting"
+      }
+    },
+    "hdev-010": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "neural_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "predictive_caching": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-011": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "predictive_caching": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "remote_diagnostics": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "voice_assistant": {
+        "enabled": false,
+        "reason": "targeting"
+      }
+    },
+    "hdev-012": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-013": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "conflict"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-014": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "dependency"
+      },
+      "haptic_feedback": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "conflict"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "spatial_audio": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "voice_assistant": {
+        "enabled": true,
+        "reason": "rollout"
+      }
+    },
+    "hdev-015": {
+      "auto_update": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "gesture_control": {
+        "enabled": false,
+        "reason": "rollout"
+      },
+      "haptic_feedback": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "neural_audio": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "predictive_caching": {
+        "enabled": true,
+        "reason": "rollout"
+      },
+      "remote_diagnostics": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "spatial_audio": {
+        "enabled": false,
+        "reason": "targeting"
+      },
+      "voice_assistant": {
+        "enabled": false,
+        "reason": "targeting"
+      }
+    }
+  },
+  "summary": {
+    "total_devices": 15,
+    "total_flags": 8,
+    "total_evaluations": 120,
+    "enabled_count": 53,
+    "disabled_count": 67,
+    "dependency_overrides": 12,
+    "conflict_resolutions": 6
+  },
+  "metadata": {
+    "flags_evaluated": [
+      "auto_update",
+      "gesture_control",
+      "haptic_feedback",
+      "neural_audio",
+      "predictive_caching",
+      "remote_diagnostics",
+      "spatial_audio",
+      "voice_assistant"
+    ],
+    "devices_evaluated": 15,
+    "mutex_groups_processed": 2,
+    "dependency_chains_resolved": 12,
+    "rollout_hash_method": "device_flag_composite"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "layers": [
+    {
+      "name": "defaults",
+      "priority": 10,
+      "content": "# Base defaults\nAPP_NAME=myservice\nAPP_PORT=8080\nLOG_LEVEL=info\nDB_HOST=localhost\nDB_PORT=5432\nDB_URL=\"postgresql://${DB_HOST}:${DB_PORT}/appdb\""
+    }
+  ],
+  "settings": {
+    "strict_mode": false
+  },
+  "export_rules": {
+    "include_prefixes": [],
+    "exclude_prefixes": ["_"],
+    "exclude_names": []
+  }
+}

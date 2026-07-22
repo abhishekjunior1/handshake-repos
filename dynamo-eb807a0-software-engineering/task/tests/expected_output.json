@@ -1,0 +1,25 @@
+{
+  "program": "let to_int = fun b -> if b then 1 else 0 in let result = to_int true in result + 5",
+  "status": "success",
+  "inferred_type": "Int",
+  "substitution": {
+    "t1": "Bool",
+    "t2": "Int"
+  },
+  "constraints_generated": 5,
+  "bindings": {
+    "to_int": "(Bool -> Int)",
+    "result": "Int"
+  },
+  "generalized_types": {
+    "to_int": {
+      "quantified": [],
+      "body": "(Bool -> Int)"
+    },
+    "result": {
+      "quantified": [],
+      "body": "Int"
+    }
+  },
+  "error": null
+}

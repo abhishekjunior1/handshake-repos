@@ -1,0 +1,27 @@
+{
+  "layers": [
+    {
+      "name": "system",
+      "priority": 5,
+      "content": "# System defaults\nHOSTNAME=worker-node-03\nTZ=UTC\nLANG=en_US.UTF-8\nPATH=/usr/local/bin:/usr/bin:/bin\nLIB_PATH=/usr/lib\nCONFIG_DIR=/etc/myapp\nDATA_DIR=${CONFIG_DIR}/data\nLOG_DIR=${DATA_DIR}/logs\nFLAG_VALUE=${QUOTED_PREFIX}--verbose"
+    },
+    {
+      "name": "application",
+      "priority": 30,
+      "content": "# Application config\nAPP_VERSION=3.2.1\nAPP_HOME=/opt/myapp\nCONFIG_DIR=/opt/myapp/conf\nWORKER_COUNT=4\nBINDING=\"\"0.0.0.0:9090\"\"\nCERT_SUBJECT=\"\"CN=worker-03.prod\"\"\nSTARTUP_MSG='Starting application.\nLoading configuration.\nReady to serve.'\nQUOTED_PREFIX=\"\"\"\""
+    },
+    {
+      "name": "overrides",
+      "priority": 5,
+      "content": "# Same priority as system - later wins\nHOSTNAME=worker-node-03-override\nTZ=America/New_York"
+    }
+  ],
+  "settings": {
+    "strict_mode": true
+  },
+  "export_rules": {
+    "include_prefixes": [],
+    "exclude_prefixes": [],
+    "exclude_names": []
+  }
+}

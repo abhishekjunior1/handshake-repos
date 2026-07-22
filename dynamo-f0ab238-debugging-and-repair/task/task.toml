@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/mesh-policy-eval"
+description = "Debug a service mesh traffic policy evaluation pipeline with routing, mTLS, circuit breaker, and load balancing bugs."
+
+[metadata]
+category = "Debugging and Repair"
+subcategory = "Configuration Repair"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 8 modules (~1200 lines) implementing service mesh traffic policy evaluation without external libraries. Three bugs are data-flow issues in the orchestrator: (1) denied requests have routing context cleared instead of preserved for observability, (2) static route priority is reported instead of health-adjusted effective weight, and (3) circuit breaker health impact is hardcoded to 1.0 instead of using computed values. On visible data (mTLS disabled, single upstream per service with health_score=1.0, no error traffic), all three bugs produce mathematically identical output. Hidden data uses strict mTLS (triggering denials), multiple upstreams with varying health scores, and error traffic that opens circuit breakers. The prime-modular round-robin and inverse failure probability model serve as correct-but-suspicious code that agents may incorrectly modify. Data is synthetic, shaped like a multi-zone Kubernetes service mesh. A platform reliability engineer would perform this work when debugging routing policy evaluation discrepancies."
+solution_explanation = "Three one-line fixes in pipeline.py: (1) Remove the if-block that clears selected_upstream_id and lb_weight when policy_result decision is deny — the report should preserve full evaluation context. (2) Replace get_route_priority(selected_upstream) with compute_effective_weight(selected_upstream, dest_service) for the lb_weight calculation. (3) Replace the hardcoded cb_impact = 1.0 with cb_impact = compute_health_impact(cb_result) in _evaluate_service_endpoints. All modules are correct and unchanged."
+verification_explanation = "The verifier substitutes two hidden service mesh configurations (hidden_config.json with strict mTLS, multiple upstreams, error traffic triggering circuit breakers; hidden_config_2.json with different topology and error patterns). It runs the fixed pipeline and compares output against pre-computed expected values using relative tolerance of 1e-4 for floating-point fields and exact match for strings/integers. Bug 1 causes denied requests to lose upstream selection info ('' vs 'payment-us'). Bug 2 causes weight deviations of 17-48% (priority vs effective weight). Bug 3 causes service health aggregate deviation of 40%+ when circuit breakers open. All three bugs must be fixed simultaneously to pass."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

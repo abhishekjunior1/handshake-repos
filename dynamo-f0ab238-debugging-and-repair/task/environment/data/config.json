@@ -1,0 +1,182 @@
+{
+  "mesh_name": "production-mesh",
+  "evaluation_mode": "strict",
+  "global_policies": {
+    "mtls_mode": "disabled",
+    "default_timeout_ms": 5000,
+    "retry_budget_percent": 20,
+    "circuit_breaker_threshold": 0.5
+  },
+  "services": [
+    {
+      "service_id": "api-gateway",
+      "namespace": "frontend",
+      "port": 8080,
+      "protocol": "HTTP",
+      "mtls_required": false,
+      "health_check_path": "/healthz",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": false
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percent": 50,
+        "recovery_timeout_ms": 30000,
+        "half_open_requests": 3
+      },
+      "upstreams": [
+        {
+          "upstream_id": "api-gateway",
+          "address": "10.0.1.1",
+          "port": 8080,
+          "weight": 100,
+          "priority": 100,
+          "health_score": 1.0,
+          "zone": "us-east-1a"
+        }
+      ]
+    },
+    {
+      "service_id": "user-service",
+      "namespace": "backend",
+      "port": 9090,
+      "protocol": "gRPC",
+      "mtls_required": false,
+      "health_check_path": "/grpc.health.v1.Health/Check",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": false
+      },
+      "circuit_breaker": {
+        "enabled": false,
+        "error_threshold_percent": 60,
+        "recovery_timeout_ms": 45000,
+        "half_open_requests": 5
+      },
+      "upstreams": [
+        {
+          "upstream_id": "user-service",
+          "address": "10.0.2.1",
+          "port": 9090,
+          "weight": 100,
+          "priority": 100,
+          "health_score": 1.0,
+          "zone": "us-east-1a"
+        }
+      ]
+    },
+    {
+      "service_id": "order-processor",
+      "namespace": "backend",
+      "port": 7070,
+      "protocol": "HTTP",
+      "mtls_required": false,
+      "health_check_path": "/health",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": true
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percent": 40,
+        "recovery_timeout_ms": 60000,
+        "half_open_requests": 2
+      },
+      "upstreams": [
+        {
+          "upstream_id": "order-processor",
+          "address": "10.0.3.1",
+          "port": 7070,
+          "weight": 100,
+          "priority": 100,
+          "health_score": 1.0,
+          "zone": "us-east-1b"
+        }
+      ]
+    }
+  ],
+  "routing_rules": [
+    {
+      "rule_id": "route-001",
+      "source_service": "api-gateway",
+      "destination_service": "user-service",
+      "match_criteria": {
+        "path_prefix": "/api/users",
+        "headers": {}
+      },
+      "traffic_policy": {
+        "timeout_ms": 3000,
+        "retries": 2,
+        "retry_on": [
+          "5xx",
+          "reset",
+          "connect-failure"
+        ]
+      }
+    },
+    {
+      "rule_id": "route-002",
+      "source_service": "api-gateway",
+      "destination_service": "order-processor",
+      "match_criteria": {
+        "path_prefix": "/api/orders",
+        "headers": {
+          "x-priority": "high"
+        }
+      },
+      "traffic_policy": {
+        "timeout_ms": 5000,
+        "retries": 3,
+        "retry_on": [
+          "5xx",
+          "connect-failure"
+        ]
+      }
+    },
+    {
+      "rule_id": "route-003",
+      "source_service": "user-service",
+      "destination_service": "order-processor",
+      "match_criteria": {
+        "path_prefix": "/internal/orders",
+        "headers": {}
+      },
+      "traffic_policy": {
+        "timeout_ms": 4000,
+        "retries": 1,
+        "retry_on": [
+          "5xx"
+        ]
+      }
+    }
+  ],
+  "traffic_samples": [
+    {
+      "request_id": "req-001",
+      "source": "api-gateway",
+      "destination": "user-service",
+      "path": "/api/users/123",
+      "headers": {},
+      "timestamp_ms": 1700000000000
+    },
+    {
+      "request_id": "req-002",
+      "source": "api-gateway",
+      "destination": "order-processor",
+      "path": "/api/orders/456",
+      "headers": {
+        "x-priority": "high"
+      },
+      "timestamp_ms": 1700000001000
+    },
+    {
+      "request_id": "req-003",
+      "source": "user-service",
+      "destination": "order-processor",
+      "path": "/internal/orders/789",
+      "headers": {},
+      "timestamp_ms": 1700000002000
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "decomposition_scores": {
+    "snr_score": 0.137969,
+    "whiteness_score": 0.233213,
+    "overall_quality": 0.032176
+  },
+  "segment_results": [
+    {
+      "start": 0,
+      "end": 11,
+      "mean_residual_score": 6.407468,
+      "n_anomalies": 1,
+      "anomaly_indices": [
+        1
+      ],
+      "threshold": 7.622439,
+      "residual_variance": 41.904234
+    },
+    {
+      "start": 11,
+      "end": 60,
+      "mean_residual_score": 2.71573,
+      "n_anomalies": 3,
+      "anomaly_indices": [
+        52,
+        53,
+        57
+      ],
+      "threshold": 7.31951,
+      "residual_variance": 13.207186
+    }
+  ],
+  "total_anomalies": 4,
+  "harmonic_components": {
+    "frequencies": [
+      0.10472,
+      0.10472,
+      0.10472,
+      0.10472,
+      0.10472
+    ],
+    "amplitudes": [
+      3.327811,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "phases": [
+      -3.039759,
+      -0.674105,
+      2.502327,
+      2.034769,
+      -1.144924
+    ],
+    "n_harmonics": 5,
+    "total_power": 66.008134,
+    "variance_explained": 1.0
+  },
+  "trend_diagnostics": {
+    "trend_variance_ratio": 0.334861,
+    "detrended_variance": 12.163372,
+    "trend_range": 4.811211,
+    "detrended_mean": 2.510964
+  },
+  "residual_diagnostics": {
+    "residual_mean": 2.510964,
+    "residual_variance": 12.163372,
+    "autocorrelations": [
+      0.766787,
+      0.618658,
+      0.514801,
+      0.464159,
+      0.459215,
+      0.411903,
+      0.394262,
+      0.287767,
+      0.201103,
+      0.100655
+    ],
+    "ljung_box_statistic": 139.716329,
+    "n_runs": 7,
+    "expected_runs": 30.966667,
+    "max_lag_tested": 10
+  },
+  "parameters": {
+    "window_type": "hann",
+    "max_harmonics": 5,
+    "trend_bandwidth": 0.15,
+    "anomaly_percentile": 95.0,
+    "min_segment_length": 10,
+    "n_observations": 60,
+    "n_segments": 2,
+    "n_effective": 39.333333
+  }
+}

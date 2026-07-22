@@ -1,0 +1,9 @@
+An event stream watermark pipeline at `/app/pipeline.py` processes timestamped sensor events through windowing, watermark tracking, late data handling, and output triggering. It uses modules `/app/event_parser.py`, `/app/window_assigner.py`, `/app/watermark_tracker.py`, `/app/late_handler.py`, `/app/trigger_evaluator.py`, and `/app/output_emitter.py`.
+
+Run it with `python3 /app/pipeline.py`. It reads `/app/stream_config.json` and writes `/app/output.json`.
+
+The pipeline produces correct output on the current stream configuration but has bugs that cause incorrect results on other configurations with multiple partitions and different event distributions. Find and fix the bugs so the pipeline handles all valid stream configurations correctly.
+
+Do not rewrite from scratch — preserve the existing module structure. In particular, preserve the half-open window interval semantics [start, end) for boundary-correct aggregation, the bounded-memory late event dropping for events beyond allowed_lateness, and the partition-weighted watermark dampening for normalized lag diagnostics. The fixed pipeline will be tested on a different stream configuration than the one at `/app/stream_config.json`.
+
+Output: `/app/output.json` — a JSON object with fields: `window_results` (array of window records with `window_key`, `window_start`, `window_end`, `event_count`, `sum_value`, `avg_value`, `min_value`, `max_value`, `partition_count`, `combined_avg`, `combined_sum`), `watermark` (object with `global_watermark`, `partition_progress`, `watermark_history`, `num_partitions`, `partition_lag`, `output_statistics`), `late_event_handling` (object with `on_time_count`, `late_allowed_count`, `dropped_count`, `total_processed`, `total_dropped`), `trigger_summary` (object with `triggered_count`, `pending_count`, `trigger_history`), and `pipeline_metadata` (object with `total_windows_emitted`, `total_events_processed`).

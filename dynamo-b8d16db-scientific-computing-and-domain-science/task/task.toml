@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/adaptive-quadrature"
+description = "Fix bugs in an adaptive quadrature integration pipeline that computes definite integrals using Richardson extrapolation and error estimation."
+
+[metadata]
+category = "Scientific Computing and Domain Science"
+subcategory = "Numerical methods"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 7 modules (~1200 lines) implementing adaptive numerical integration without external libraries. Three bugs are distributed across three different files (pipeline.py, error_estimator.py, extrapolator.py), requiring the solver to trace data flow across module boundaries. Bug 1 is a parameter-scaling error in the subdivision tolerance that only manifests on multi-subinterval computations. Bug 2 is a conservative error estimation fallback that underestimates for oscillatory integrands. Bug 3 is a Richardson extrapolation order mismatch that only matters for non-polynomial integrands. Each bug is comment-justified and produces correct results on the visible polynomial input (Simpson is exact for cubics, making extrapolation trivially converge and the subdivision loop never execute). Two correct-but-suspicious patterns (1/3-2/3 anti-resonance subdivision and power-law singularity transformation) serve as decoys that trap over-fixers. The data is synthetic, representing integration tasks a computational physicist or applied mathematician would encounter when building custom quadrature routines."
+solution_explanation = "Fix 1: In pipeline.py, change the subdivision tolerance from absolute (local_tolerance = tolerance) to relative (local_tolerance = tolerance * width / (b - a)), ensuring each subinterval's error budget is proportional to its fraction of the total domain. Fix 2: In error_estimator.py, replace the 3-point Simpson second-difference error indicator with the pure paired rule comparison (abs(fine - coarse) / 15), which correctly estimates the leading error term via Richardson correction for Simpson's rule. Fix 3: In extrapolator.py, change the default Richardson extrapolation order from 2 (trapezoidal) to 4 (Simpson), matching the actual base quadrature method used in the pipeline. Each fix is 1-3 lines and requires understanding the numerical analysis conventions that connect the modules."
+verification_explanation = "The verifier substitutes hidden test data (exp(x)*sin(12x) on [0, 2.5] with tolerance 1e-7) which is oscillatory and triggers all three bugs simultaneously. The test checks integral_value within rel_tol=1e-7 (correct answer -0.155770323709, buggy gives -0.155770394381 — a 4.5e-7 relative difference that exceeds the 1e-7 threshold). Subdivision count is checked within max(3, 15%) (expected 50, buggy gives 37 — a difference of 13 exceeding the allowed 8). Convergence order is checked within 8% (expected 3.87, buggy gives 3.32 — 14.2% deviation exceeds threshold). Error estimate ratio must be in [0.2, 5.0] (buggy ratio is 5.64, exceeding upper bound). The tolerance bands reject all four buggy deviations while accepting valid implementations using the correct numerical conventions."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

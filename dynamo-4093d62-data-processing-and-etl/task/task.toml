@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/data-validation"
+description = "Debug a multi-module data validation pipeline that computes quality scores and flags constraint violations."
+
+[metadata]
+category = "Data Processing and ETL"
+subcategory = "Data validation"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 8 modules (1200+ lines) implementing data validation without external libraries. Three bugs are cross-module data-flow issues in the orchestrator — each receiving module is individually correct, and the wrong values passed to them only manifest with specific data characteristics (invalid records contaminating statistics, pre-coercion string values failing type-aware comparisons, and incorrect column lookups for multi-table foreign keys). The visible dataset is a clean single-table string-only dataset that mathematically masks all three bugs. A data quality engineer working with multi-table validation pipelines would encounter these issues. Data is synthetic, shaped like a production sales platform schema."
+solution_explanation = "Fix 1: Change compute_threshold_stats(records, table_schema) to compute_threshold_stats(valid_records, table_schema) so quality baselines exclude invalid records. Fix 2: Change the conditional rule evaluation to pass coerced_records instead of valid_records (pre-coercion), so numeric comparisons in conditional rules work correctly with type-aware evaluation. Fix 3: Replace the reference value lookup that uses ref_columns[0]['name'] (first schema column) with ref_column (the declared references_column from the foreign key definition), so referential integrity checks use the correct target column."
+verification_explanation = "Tests substitute a hidden multi-table dataset (products + orders) with 20% invalid records, numeric string columns requiring coercion, conditional rules with numeric thresholds, and cross-table foreign keys where the reference column is not the first column in the schema. The verifier compares 20 specific fields including per-column quality scores (rel_tol=1e-3), violation counts, conditional violation counts, and integrity violation values. All three bugs must be fixed simultaneously — fixing any subset still fails multiple tests because the bugs produce independent measurable differences."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

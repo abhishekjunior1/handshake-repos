@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/experiment-analysis"
+description = "A/B test experiment analysis pipeline with statistical testing, multiple comparison correction, and power analysis."
+
+[metadata]
+category = "Data Science and Reporting"
+subcategory = "Experiment and metrics analysis"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "analyze"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 6 modules implementing A/B test analysis (hypothesis testing, multiple comparison correction, power analysis, confidence intervals) without external statistical libraries beyond scipy for distributions. Two bugs in the orchestrator are domain-specific value-passing issues disguised as valid design choices with justifying comments — not formula errors or code smells. Two additional patterns (finite-sample effect size correction, Welch's t-test) are correct but look suspicious, creating a discrimination problem. The difficulty lies in determining which of four suspicious-looking patterns are bugs versus valid statistical methodology. A statistician running platform experiments would do this work. Data is synthetic, shaped like a multi-arm conversion optimization experiment."
+solution_explanation = "Fix 1: Replace 'power_alpha = primary_metric[\"alpha\"] / num_comparisons' with 'power_alpha = primary_metric[\"alpha\"]' — power analysis should use the per-metric alpha, not a Bonferroni-adjusted alpha (correction applies to p-values, not to power computation). Fix 2: In _compute_ci_treatment_ref, change 'treatment_stats[\"variance\"] / n_c' to 'control_stats[\"variance\"] / n_c' — the SE of the difference requires each group's own variance, not treatment variance for both. The finite-sample correction factor and Welch's t-test must be preserved (they are correct)."
+verification_explanation = "The verifier copies a hidden experiment with 4 metrics, n=25 per group, and treatment variance 9x control variance (sigma_t=15 vs sigma_c=5). Bug 1 causes 89% power deviation and 25% MDE inflation (alpha/4=0.0125 vs alpha=0.05 changes critical values substantially with small n). Bug 2 causes 34-37% CI SE inflation across all metrics (using var_t=225 instead of var_c=25 for control term). Tests use rel_tol=1e-3 for CI fields and rel_tol=1e-4 for power fields. The two decoys (effect size correction factor, Welch's t-test) produce correct output that changes dramatically if removed — agents who over-fix break the expected values."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

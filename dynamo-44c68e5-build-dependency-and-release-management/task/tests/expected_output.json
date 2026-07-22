@@ -1,0 +1,70 @@
+{
+  "build_plan": {
+    "to_build": [
+      {
+        "action": "build",
+        "builder": "/bin/bash",
+        "name": "fetchgit-zlib",
+        "store_path": "/nix/store/av711r9yd87aa80vn3pbn9k0sxiyia6n-fetchgit-zlib"
+      },
+      {
+        "action": "build",
+        "builder": "/bin/bash",
+        "name": "fetchurl-openssl",
+        "store_path": "/nix/store/hiwrgd6d9yg2v71zmbqs7z3jb865nzxc-fetchurl-openssl"
+      },
+      {
+        "action": "build",
+        "builder": "/bin/bash",
+        "name": "zlib",
+        "store_path": "/nix/store/cwl7kmzf3x1cxzc1r540injia1w6b9l4-zlib"
+      },
+      {
+        "action": "build",
+        "builder": "/bin/bash",
+        "name": "python",
+        "store_path": "/nix/store/iy2cywk7gx9r8yxwwkr46fb12kq3n0sm-python"
+      },
+      {
+        "action": "build",
+        "builder": "/bin/bash",
+        "name": "myapp",
+        "store_path": "/nix/store/99jhkcqfvrd81v6yx619jznhzrl8xs68-myapp"
+      }
+    ],
+    "to_substitute": [
+      {
+        "action": "substitute",
+        "name": "standalone-tool",
+        "store_path": "/nix/store/9haagi29l5g4hndq3cgnaxc2j2vbq1q3-standalone-tool"
+      },
+      {
+        "action": "substitute",
+        "name": "openssl",
+        "store_path": "/nix/store/gslznnszcb5zyxmg0nam9npqf19r9wqp-openssl"
+      },
+      {
+        "action": "substitute",
+        "name": "curl",
+        "store_path": "/nix/store/838zrhpvvmvpb01hd1l619wayg4q3jly-curl"
+      }
+    ],
+    "total_builds": 5,
+    "total_substitutes": 3
+  },
+  "store_paths": {
+    "curl": "/nix/store/838zrhpvvmvpb01hd1l619wayg4q3jly-curl",
+    "fetchgit-zlib": "/nix/store/av711r9yd87aa80vn3pbn9k0sxiyia6n-fetchgit-zlib",
+    "fetchurl-openssl": "/nix/store/hiwrgd6d9yg2v71zmbqs7z3jb865nzxc-fetchurl-openssl",
+    "myapp": "/nix/store/99jhkcqfvrd81v6yx619jznhzrl8xs68-myapp",
+    "openssl": "/nix/store/gslznnszcb5zyxmg0nam9npqf19r9wqp-openssl",
+    "python": "/nix/store/iy2cywk7gx9r8yxwwkr46fb12kq3n0sm-python",
+    "standalone-tool": "/nix/store/9haagi29l5g4hndq3cgnaxc2j2vbq1q3-standalone-tool",
+    "zlib": "/nix/store/cwl7kmzf3x1cxzc1r540injia1w6b9l4-zlib"
+  },
+  "system": {
+    "arch": "x86_64",
+    "os": "linux",
+    "platform": "x86_64-linux"
+  }
+}

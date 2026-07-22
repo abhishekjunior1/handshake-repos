@@ -1,0 +1,226 @@
+{
+  "database": "warehouse_db",
+  "staleness_threshold_seconds": 3600,
+  "current_timestamp": 1700000000,
+  "seq_page_cost": 1.0,
+  "random_page_cost": 4.0,
+  "cpu_tuple_cost": 0.01,
+  "cpu_index_tuple_cost": 0.005,
+  "cpu_operator_cost": 0.0025,
+  "effective_cache_size": 65536,
+  "default_fill_factor": 0.9,
+  "page_capacity": 256,
+  "tables": {
+    "departments": {
+      "n_rows": 100,
+      "total_pages": 5,
+      "pages_in_buffer": 5,
+      "last_analyze_timestamp": 1699995000,
+      "last_modified_timestamp": 1699999000,
+      "columns": {
+        "dept_id": {
+          "n_distinct": 100,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.99
+        },
+        "dept_name": {
+          "n_distinct": 100,
+          "null_fraction": 0.0,
+          "avg_width": 20,
+          "correlation": 0.5
+        },
+        "budget": {
+          "n_distinct": 80,
+          "null_fraction": 0.0,
+          "avg_width": 8,
+          "correlation": 0.3
+        }
+      },
+      "indexes": {
+        "departments_pkey": {
+          "columns": [
+            "dept_id"
+          ],
+          "is_unique": true,
+          "is_primary": true
+        }
+      }
+    },
+    "employees": {
+      "n_rows": 50000,
+      "total_pages": 1000,
+      "pages_in_buffer": 200,
+      "last_analyze_timestamp": 1699990000,
+      "last_modified_timestamp": 1699999500,
+      "columns": {
+        "emp_id": {
+          "n_distinct": 50000,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.98
+        },
+        "dept_id": {
+          "n_distinct": 25,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.85
+        },
+        "salary": {
+          "n_distinct": 5000,
+          "null_fraction": 0.0,
+          "avg_width": 8,
+          "correlation": 0.1
+        },
+        "hire_year": {
+          "n_distinct": 20,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.15
+        }
+      },
+      "indexes": {
+        "employees_pkey": {
+          "columns": [
+            "emp_id"
+          ],
+          "is_unique": true,
+          "is_primary": true
+        },
+        "employees_dept_year_idx": {
+          "columns": [
+            "dept_id",
+            "hire_year"
+          ],
+          "is_unique": false,
+          "is_primary": false
+        }
+      }
+    },
+    "projects": {
+      "n_rows": 5000,
+      "total_pages": 100,
+      "pages_in_buffer": 50,
+      "last_analyze_timestamp": 1699992000,
+      "last_modified_timestamp": 1699998000,
+      "columns": {
+        "project_id": {
+          "n_distinct": 5000,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.95
+        },
+        "dept_id": {
+          "n_distinct": 40,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.9
+        },
+        "priority": {
+          "n_distinct": 5,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.2
+        },
+        "status": {
+          "n_distinct": 4,
+          "null_fraction": 0.0,
+          "avg_width": 10,
+          "correlation": 0.4
+        }
+      },
+      "indexes": {
+        "projects_pkey": {
+          "columns": [
+            "project_id"
+          ],
+          "is_unique": true,
+          "is_primary": true
+        },
+        "projects_dept_priority_idx": {
+          "columns": [
+            "dept_id",
+            "priority"
+          ],
+          "is_unique": false,
+          "is_primary": false
+        }
+      }
+    },
+    "assignments": {
+      "n_rows": 200000,
+      "total_pages": 4000,
+      "pages_in_buffer": 500,
+      "last_analyze_timestamp": 1699993000,
+      "last_modified_timestamp": 1699999800,
+      "columns": {
+        "assign_id": {
+          "n_distinct": 200000,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.97
+        },
+        "emp_id": {
+          "n_distinct": 30000,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.6
+        },
+        "project_id": {
+          "n_distinct": 2000,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.3
+        },
+        "hours": {
+          "n_distinct": 500,
+          "null_fraction": 0.0,
+          "avg_width": 4,
+          "correlation": 0.05
+        }
+      },
+      "indexes": {
+        "assignments_pkey": {
+          "columns": [
+            "assign_id"
+          ],
+          "is_unique": true,
+          "is_primary": true
+        },
+        "assignments_emp_idx": {
+          "columns": [
+            "emp_id"
+          ],
+          "is_unique": false,
+          "is_primary": false
+        },
+        "assignments_project_idx": {
+          "columns": [
+            "project_id"
+          ],
+          "is_unique": false,
+          "is_primary": false
+        }
+      }
+    }
+  },
+  "queries": [
+    {
+      "sql": "SELECT e.emp_id, p.project_id, d.dept_name FROM employees e JOIN projects p ON e.dept_id = p.dept_id JOIN departments d ON p.dept_id = d.dept_id WHERE e.hire_year = 2020 AND p.priority = 1",
+      "alias_map": {
+        "e": "employees",
+        "p": "projects",
+        "d": "departments"
+      }
+    },
+    {
+      "sql": "SELECT a.assign_id, e.emp_id, p.project_id, d.dept_name FROM assignments a JOIN employees e ON a.emp_id = e.emp_id JOIN projects p ON a.project_id = p.project_id JOIN departments d ON e.dept_id = d.dept_id WHERE p.status = 'active'",
+      "alias_map": {
+        "a": "assignments",
+        "e": "employees",
+        "p": "projects",
+        "d": "departments"
+      }
+    }
+  ]
+}

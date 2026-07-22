@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/tabular-rollup"
+description = "Weighted hierarchical tabular rollup pipeline with temporal decay, contribution scoring, and outlier adjustment."
+
+[metadata]
+category = "Data Processing and ETL"
+subcategory = "Tabular transformation"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 7 modules (~1000 lines) implementing a weighted hierarchical rollup on synthetic transaction data. Three bugs are distributed across three different files (pipeline.py, contribution_scorer.py, hierarchy_aggregator.py), each with misleading comments justifying the incorrect behavior. Visible data creates degenerate conditions: uniform weights make count==sum_of_weights, single category makes global==per-group normalization, and absence of outliers makes raw==adjusted values. A data engineer building production rollup systems would work on this. Data is synthetic."
+solution_explanation = "Fix 1 (pipeline.py): Pass outlier_adjusted_values to hierarchy_aggregator instead of raw_values. Fix 2 (contribution_scorer.py): Use per-group min/max for min-max normalization instead of global. Fix 3 (hierarchy_aggregator.py): Divide weighted sum by sum_of_weights instead of count. Each fix is 1-3 lines but requires understanding the data flow and recognizing that visible data masks all issues."
+verification_explanation = "Verifier substitutes hidden data with 3 categories, varying transaction ages (0-60 days creating weight range 0.3-1.0), and outlier values (>3.5 MAD). Fixed pipeline produces correct hierarchical rollup values. Exact JSON match on all output fields. All 3 bugs trigger simultaneously on hidden data."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

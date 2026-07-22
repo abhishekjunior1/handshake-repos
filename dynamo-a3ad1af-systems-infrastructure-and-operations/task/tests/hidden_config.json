@@ -1,0 +1,80 @@
+{
+  "topology_file": "/app/hidden_topology.json",
+  "acl_rules": [
+    {
+      "id": "ACL-10",
+      "action": "deny",
+      "protocol": "any",
+      "source": "any",
+      "destination": "interface_scope"
+    },
+    {
+      "id": "ACL-11",
+      "action": "permit",
+      "protocol": "tcp",
+      "source": {"network": "172.16.10.0", "prefix_length": 24},
+      "destination": {"network": "172.16.30.0", "prefix_length": 24},
+      "destination_port": 443
+    },
+    {
+      "id": "ACL-12",
+      "action": "permit",
+      "protocol": "tcp",
+      "source": {"network": "172.16.20.0", "prefix_length": 24},
+      "destination": {"network": "172.16.40.0", "prefix_length": 24},
+      "destination_port": 8080
+    },
+    {
+      "id": "ACL-13",
+      "action": "permit",
+      "protocol": "tcp",
+      "source": {"network": "172.16.0.0", "prefix_length": 12},
+      "destination": {"network": "172.16.0.0", "prefix_length": 12},
+      "destination_port": {"start": 80, "end": 8443}
+    },
+    {
+      "id": "ACL-14",
+      "action": "deny",
+      "protocol": "any",
+      "source": "any",
+      "destination": "any"
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow-10",
+      "source_ip": "172.16.10.50",
+      "destination_ip": "172.16.30.100",
+      "protocol": "tcp",
+      "destination_port": 443
+    },
+    {
+      "id": "flow-11",
+      "source_ip": "172.16.20.25",
+      "destination_ip": "172.16.40.80",
+      "protocol": "tcp",
+      "destination_port": 8080
+    },
+    {
+      "id": "flow-12",
+      "source_ip": "172.16.10.15",
+      "destination_ip": "172.16.30.50",
+      "protocol": "tcp",
+      "destination_port": 443
+    },
+    {
+      "id": "flow-13",
+      "source_ip": "172.16.10.10",
+      "destination_ip": "172.16.20.200",
+      "protocol": "tcp",
+      "destination_port": 3306
+    },
+    {
+      "id": "flow-14",
+      "source_ip": "172.16.30.5",
+      "destination_ip": "172.16.10.99",
+      "protocol": "tcp",
+      "destination_port": 443
+    }
+  ]
+}

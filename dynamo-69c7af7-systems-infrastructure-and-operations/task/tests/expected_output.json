@@ -1,0 +1,146 @@
+{
+  "config_name": "complex-multi-namespace",
+  "connection_stats": {
+    "established": 5,
+    "evaluations": 10,
+    "total_connections": 5
+  },
+  "evaluations": [
+    {
+      "destination": "10.1.1.10",
+      "egress_policy": "monitoring-egress",
+      "egress_verdict": "ALLOW",
+      "final_verdict": "ALLOW",
+      "flow_id": "flow-1",
+      "ingress_policy": "restrict-web-ingress",
+      "ingress_verdict": "ALLOW",
+      "port": 8080,
+      "protocol": "TCP",
+      "reason": "ingress: Matched ingress rule in policy; egress: Matched egress rule in policy",
+      "source": "10.4.1.10"
+    },
+    {
+      "destination": "10.1.1.10",
+      "egress_policy": "api-egress-restricted",
+      "egress_verdict": "DENY",
+      "final_verdict": "DENY",
+      "flow_id": "flow-2",
+      "ingress_policy": "allow-web-broad",
+      "ingress_verdict": "ALLOW",
+      "port": 8080,
+      "protocol": "TCP",
+      "reason": "ingress: Matched ingress rule in policy; egress: Selected by egress policy but no rules matched",
+      "source": "10.2.1.10"
+    },
+    {
+      "destination": "10.3.1.10",
+      "egress_policy": "",
+      "egress_verdict": "DENY",
+      "final_verdict": "DENY",
+      "flow_id": "flow-3",
+      "ingress_policy": "db-ingress-strict",
+      "ingress_verdict": "DENY",
+      "port": 5432,
+      "protocol": "TCP",
+      "reason": "ingress: Selected by ingress policy but no rules matched; egress: Default deny - egress policies exist in namespace",
+      "source": "10.2.1.20"
+    },
+    {
+      "destination": "10.0.5.15",
+      "egress_policy": "api-egress-restricted",
+      "egress_verdict": "DENY",
+      "final_verdict": "DENY",
+      "flow_id": "flow-4",
+      "ingress_policy": "",
+      "ingress_verdict": "ALLOW",
+      "port": 443,
+      "protocol": "TCP",
+      "reason": "ingress: External destination; egress: Selected by egress policy but no rules matched",
+      "source": "10.2.1.10"
+    },
+    {
+      "destination": "10.3.1.10",
+      "egress_policy": "api-egress-restricted",
+      "egress_verdict": "ALLOW",
+      "final_verdict": "ALLOW",
+      "flow_id": "flow-5",
+      "ingress_policy": "db-ingress-strict",
+      "ingress_verdict": "ALLOW",
+      "port": 5432,
+      "protocol": "TCP",
+      "reason": "ingress: Matched ingress rule in policy; egress: Matched egress rule in policy",
+      "source": "10.2.1.10"
+    },
+    {
+      "destination": "10.2.1.10",
+      "egress_policy": "",
+      "egress_verdict": "ALLOW",
+      "final_verdict": "ALLOW",
+      "flow_id": "flow-6",
+      "ingress_policy": "api-ingress-policy",
+      "ingress_verdict": "ALLOW",
+      "port": 3000,
+      "protocol": "TCP",
+      "reason": "ingress: Matched ingress rule in policy; egress: Default allow - no egress policies select pod",
+      "source": "10.1.1.10"
+    },
+    {
+      "destination": "10.2.1.10",
+      "egress_policy": "monitoring-egress",
+      "egress_verdict": "ALLOW",
+      "final_verdict": "ALLOW",
+      "flow_id": "flow-7",
+      "ingress_policy": "api-ingress-policy",
+      "ingress_verdict": "ALLOW",
+      "port": 9090,
+      "protocol": "TCP",
+      "reason": "ingress: Matched ingress rule in policy; egress: Matched egress rule in policy",
+      "source": "10.4.1.10"
+    },
+    {
+      "destination": "10.2.1.10",
+      "egress_policy": "",
+      "egress_verdict": "DENY",
+      "final_verdict": "DENY",
+      "flow_id": "flow-8",
+      "ingress_policy": "api-ingress-policy",
+      "ingress_verdict": "DENY",
+      "port": 3000,
+      "protocol": "TCP",
+      "reason": "ingress: Selected by ingress policy but no rules matched; egress: Default deny - egress policies exist in namespace",
+      "source": "10.3.1.20"
+    },
+    {
+      "destination": "10.2.1.10",
+      "egress_policy": "",
+      "egress_verdict": "DENY",
+      "final_verdict": "DENY",
+      "flow_id": "flow-9",
+      "ingress_policy": "api-ingress-policy",
+      "ingress_verdict": "ALLOW",
+      "port": 3000,
+      "protocol": "TCP",
+      "reason": "ingress: Matched ingress rule in policy; egress: Default deny - egress policies exist in namespace",
+      "source": "10.4.1.20"
+    },
+    {
+      "destination": "10.0.6.100",
+      "egress_policy": "api-egress-restricted",
+      "egress_verdict": "ALLOW",
+      "final_verdict": "ALLOW",
+      "flow_id": "flow-10",
+      "ingress_policy": "",
+      "ingress_verdict": "ALLOW",
+      "port": 443,
+      "protocol": "TCP",
+      "reason": "ingress: External destination; egress: Matched CIDR egress rule in policy",
+      "source": "10.2.1.10"
+    }
+  ],
+  "summary": {
+    "allow_rate": 0.5,
+    "allowed": 5,
+    "denied": 5,
+    "total_flows_evaluated": 10
+  }
+}

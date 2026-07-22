@@ -1,0 +1,44 @@
+{
+  "gev_params": {
+    "location": 156.76123,
+    "scale": 14.810825,
+    "shape": -0.095859
+  },
+  "gpd_params": {
+    "scale": 53.767058,
+    "shape": -0.4486
+  },
+  "return_levels": {
+    "10": 100.3888,
+    "25": 132.2282,
+    "50": 148.9651,
+    "100": 161.229,
+    "200": 170.2155
+  },
+  "exceedance_rate": 0.45,
+  "cluster_rate": 0.17,
+  "exceedance_count": 45,
+  "cluster_count": 17,
+  "extremal_index": 0.377778,
+  "threshold": 75.0,
+  "qq_statistics": {
+    "ad_statistic": 2.578584,
+    "correlation": 0.990186
+  },
+  "goodness_of_fit": {
+    "p_value": 5e-05,
+    "pass": false
+  },
+  "block_maxima_summary": {
+    "count": 5,
+    "mean": 146.6703,
+    "max": 171.5986,
+    "min": 127.686,
+    "std": 18.5468
+  },
+  "diagnostic_flags": {
+    "shape_significant": true,
+    "threshold_stable": true,
+    "fit_adequate": false
+  }
+}

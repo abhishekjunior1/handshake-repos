@@ -1,0 +1,123 @@
+{
+  "scheduling_summary": {
+    "total_pods": 3,
+    "scheduled": 3,
+    "preempting": 0,
+    "unschedulable": 0,
+    "scheduling_rate": 1.0
+  },
+  "pod_decisions": [
+    {
+      "pod_name": "iot-collector-x9k2m",
+      "namespace": "telemetry",
+      "phase": "Scheduled",
+      "selected_node": "edge-node-02",
+      "score_breakdown": {
+        "edge-node-02": {
+          "node_affinity": 60.0,
+          "pod_affinity": 40.0,
+          "utilization": 100.0,
+          "combined": 200.0
+        },
+        "edge-node-03": {
+          "node_affinity": 0.0,
+          "pod_affinity": 0.0,
+          "utilization": 100.0,
+          "combined": 100.0
+        }
+      },
+      "filtered_nodes": [
+        {
+          "node": "edge-node-01",
+          "reason": "pod_capacity_exceeded",
+          "current": 4,
+          "limit": 4
+        }
+      ],
+      "preemption_attempted": false,
+      "preemption_victims": []
+    },
+    {
+      "pod_name": "edge-proxy-b7n4w",
+      "namespace": "networking",
+      "phase": "Scheduled",
+      "selected_node": "edge-node-02",
+      "score_breakdown": {
+        "edge-node-02": {
+          "node_affinity": 30.0,
+          "pod_affinity": -45.0,
+          "utilization": 100.0,
+          "combined": 85.0
+        },
+        "edge-node-03": {
+          "node_affinity": 30.0,
+          "pod_affinity": -45.0,
+          "utilization": 100.0,
+          "combined": 85.0
+        }
+      },
+      "filtered_nodes": [
+        {
+          "node": "edge-node-01",
+          "reason": "pod_capacity_exceeded",
+          "current": 4,
+          "limit": 4
+        }
+      ],
+      "preemption_attempted": false,
+      "preemption_victims": []
+    },
+    {
+      "pod_name": "metrics-agent-q2w8e",
+      "namespace": "monitoring",
+      "phase": "Scheduled",
+      "selected_node": "edge-node-02",
+      "score_breakdown": {
+        "edge-node-02": {
+          "node_affinity": 0.0,
+          "pod_affinity": 0.0,
+          "utilization": 100.0,
+          "combined": 100.0
+        },
+        "edge-node-03": {
+          "node_affinity": 0.0,
+          "pod_affinity": 0.0,
+          "utilization": 100.0,
+          "combined": 100.0
+        }
+      },
+      "filtered_nodes": [
+        {
+          "node": "edge-node-01",
+          "reason": "pod_capacity_exceeded",
+          "current": 4,
+          "limit": 4
+        }
+      ],
+      "preemption_attempted": false,
+      "preemption_victims": []
+    }
+  ],
+  "node_placements": {
+    "edge-node-01": {
+      "scheduled_pods": [],
+      "preempted_pods": []
+    },
+    "edge-node-02": {
+      "scheduled_pods": [
+        "iot-collector-x9k2m",
+        "edge-proxy-b7n4w",
+        "metrics-agent-q2w8e"
+      ],
+      "preempted_pods": []
+    },
+    "edge-node-03": {
+      "scheduled_pods": [],
+      "preempted_pods": []
+    }
+  },
+  "cluster_info": {
+    "total_nodes": 3,
+    "scoring_strategy": "LeastAllocated"
+  }
+}

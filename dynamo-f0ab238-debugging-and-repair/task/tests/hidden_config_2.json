@@ -1,0 +1,239 @@
+{
+  "mesh_name": "canary-mesh",
+  "evaluation_mode": "strict",
+  "global_policies": {
+    "mtls_mode": "strict",
+    "default_timeout_ms": 8000,
+    "retry_budget_percent": 10,
+    "circuit_breaker_threshold": 0.35
+  },
+  "services": [
+    {
+      "service_id": "edge-router",
+      "namespace": "gateway",
+      "port": 8443,
+      "protocol": "HTTP2",
+      "mtls_required": true,
+      "health_check_path": "/status",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": false
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percent": 35,
+        "recovery_timeout_ms": 25000,
+        "half_open_requests": 3
+      },
+      "upstreams": [
+        {
+          "upstream_id": "edge-primary",
+          "address": "10.5.1.1",
+          "port": 8443,
+          "weight": 150,
+          "priority": 120,
+          "health_score": 0.82,
+          "zone": "eu-west-1a"
+        },
+        {
+          "upstream_id": "edge-secondary",
+          "address": "10.5.1.2",
+          "port": 8443,
+          "weight": 75,
+          "priority": 90,
+          "health_score": 0.94,
+          "zone": "eu-west-1b"
+        }
+      ]
+    },
+    {
+      "service_id": "catalog-api",
+      "namespace": "products",
+      "port": 9090,
+      "protocol": "gRPC",
+      "mtls_required": true,
+      "health_check_path": "/grpc.health.v1.Health/Check",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": false
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percent": 40,
+        "recovery_timeout_ms": 20000,
+        "half_open_requests": 2
+      },
+      "upstreams": [
+        {
+          "upstream_id": "catalog-node-1",
+          "address": "10.5.2.10",
+          "port": 9090,
+          "weight": 100,
+          "priority": 85,
+          "health_score": 0.77,
+          "zone": "eu-west-1a"
+        },
+        {
+          "upstream_id": "catalog-node-2",
+          "address": "10.5.2.11",
+          "port": 9090,
+          "weight": 120,
+          "priority": 95,
+          "health_score": 0.89,
+          "zone": "eu-west-1a"
+        }
+      ]
+    },
+    {
+      "service_id": "inventory-service",
+      "namespace": "warehouse",
+      "port": 7070,
+      "protocol": "HTTP",
+      "mtls_required": false,
+      "health_check_path": "/health",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": true
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percent": 30,
+        "recovery_timeout_ms": 45000,
+        "half_open_requests": 2
+      },
+      "upstreams": [
+        {
+          "upstream_id": "inventory-east",
+          "address": "10.5.3.20",
+          "port": 7070,
+          "weight": 180,
+          "priority": 130,
+          "health_score": 0.91,
+          "zone": "eu-west-1a"
+        },
+        {
+          "upstream_id": "inventory-west",
+          "address": "10.5.3.21",
+          "port": 7070,
+          "weight": 90,
+          "priority": 70,
+          "health_score": 0.73,
+          "zone": "eu-central-1a"
+        }
+      ]
+    }
+  ],
+  "routing_rules": [
+    {
+      "rule_id": "route-catalog-001",
+      "source_service": "edge-router",
+      "destination_service": "catalog-api",
+      "match_criteria": {
+        "path_prefix": "/products",
+        "headers": {}
+      },
+      "traffic_policy": {
+        "timeout_ms": 3000,
+        "retries": 2,
+        "retry_on": ["5xx", "reset"]
+      }
+    },
+    {
+      "rule_id": "route-inventory-001",
+      "source_service": "edge-router",
+      "destination_service": "inventory-service",
+      "match_criteria": {
+        "path_prefix": "/stock",
+        "headers": {"x-warehouse": "primary"}
+      },
+      "traffic_policy": {
+        "timeout_ms": 4000,
+        "retries": 1,
+        "retry_on": ["5xx"]
+      }
+    },
+    {
+      "rule_id": "route-inventory-002",
+      "source_service": "catalog-api",
+      "destination_service": "inventory-service",
+      "match_criteria": {
+        "path_prefix": "/internal/stock",
+        "headers": {}
+      },
+      "traffic_policy": {
+        "timeout_ms": 2500,
+        "retries": 1,
+        "retry_on": ["5xx", "connect-failure"]
+      }
+    }
+  ],
+  "traffic_samples": [
+    {
+      "request_id": "req-c001",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "path": "/products/search",
+      "headers": {},
+      "timestamp_ms": 1700200000000
+    },
+    {
+      "request_id": "req-c002",
+      "source": "edge-router",
+      "destination": "inventory-service",
+      "path": "/stock/check",
+      "headers": {"x-warehouse": "primary"},
+      "timestamp_ms": 1700200001000
+    },
+    {
+      "request_id": "req-c003",
+      "source": "catalog-api",
+      "destination": "inventory-service",
+      "path": "/internal/stock/reserve",
+      "headers": {},
+      "timestamp_ms": 1700200002000
+    },
+    {
+      "request_id": "req-c004",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "path": "/products/detail/item-42",
+      "headers": {},
+      "timestamp_ms": 1700200003000
+    },
+    {
+      "request_id": "req-c005",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "path": "/products/list",
+      "headers": {},
+      "timestamp_ms": 1700200004000,
+      "status_code": 500
+    },
+    {
+      "request_id": "req-c006",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "path": "/products/detail/item-99",
+      "headers": {},
+      "timestamp_ms": 1700200005000,
+      "status_code": 500
+    },
+    {
+      "request_id": "req-c007",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "path": "/products/categories",
+      "headers": {},
+      "timestamp_ms": 1700200006000,
+      "status_code": 500
+    },
+    {
+      "request_id": "req-c008",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "path": "/products/featured",
+      "headers": {},
+      "timestamp_ms": 1700200007000
+    }
+  ]
+}

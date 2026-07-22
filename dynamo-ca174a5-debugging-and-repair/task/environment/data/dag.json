@@ -1,0 +1,9 @@
+{
+  "stages": [
+    {"name": "ingest", "depends_on": [], "transform": "passthrough", "output_key": "raw_data"},
+    {"name": "branch_alpha", "depends_on": ["ingest"], "transform": "passthrough", "output_key": "alpha_out"},
+    {"name": "branch_beta", "depends_on": ["ingest"], "transform": "passthrough", "output_key": "beta_out"},
+    {"name": "combine", "depends_on": ["branch_alpha", "branch_beta"], "transform": "merge", "output_key": "merged"},
+    {"name": "output", "depends_on": ["combine"], "transform": "compute", "output_key": "final"}
+  ]
+}

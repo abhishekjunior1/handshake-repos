@@ -1,0 +1,205 @@
+{
+  "document_count": 4,
+  "documents": [
+    {
+      "id": "doc_001",
+      "title": "distributed systems overview",
+      "entities": [],
+      "statistics": {
+        "word_count": 23,
+        "sentence_count": 3,
+        "unique_words": 23,
+        "top_frequencies": {
+          "microservices": 0.043478,
+          "architecture": 0.043478,
+          "enables": 0.043478,
+          "horizontal": 0.043478,
+          "scaling": 0.043478,
+          "across": 0.043478,
+          "multiple": 0.043478,
+          "nodes": 0.043478,
+          "container": 0.043478,
+          "orchestration": 0.043478
+        },
+        "top_bigrams": {
+          "microservices architecture": 1,
+          "architecture enables": 1,
+          "enables horizontal": 1,
+          "horizontal scaling": 1,
+          "scaling across": 1,
+          "across multiple": 1,
+          "multiple nodes": 1,
+          "nodes container": 1,
+          "container orchestration": 1,
+          "orchestration platforms": 1
+        },
+        "readability": {
+          "avg_words_per_sentence": 7.67,
+          "readability_score": 76.99
+        }
+      }
+    },
+    {
+      "id": "doc_002",
+      "title": "machine learning pipeline",
+      "entities": [],
+      "statistics": {
+        "word_count": 24,
+        "sentence_count": 3,
+        "unique_words": 24,
+        "top_frequencies": {
+          "feature": 0.041667,
+          "engineering": 0.041667,
+          "transforms": 0.041667,
+          "raw": 0.041667,
+          "numerical": 0.041667,
+          "data": 0.041667,
+          "toward": 0.041667,
+          "model-ready": 0.041667,
+          "representations": 0.041667,
+          "gradient": 0.041667
+        },
+        "top_bigrams": {
+          "feature engineering": 1,
+          "engineering transforms": 1,
+          "transforms raw": 1,
+          "raw numerical": 1,
+          "numerical data": 1,
+          "data toward": 1,
+          "toward model-ready": 1,
+          "model-ready representations": 1,
+          "representations gradient": 1,
+          "gradient descent": 1
+        },
+        "readability": {
+          "avg_words_per_sentence": 8.0,
+          "readability_score": 76.0
+        }
+      }
+    },
+    {
+      "id": "doc_003",
+      "title": "database optimization techniques",
+      "entities": [],
+      "statistics": {
+        "word_count": 21,
+        "sentence_count": 3,
+        "unique_words": 21,
+        "top_frequencies": {
+          "query": 0.047619,
+          "execution": 0.047619,
+          "planners": 0.047619,
+          "analyze": 0.047619,
+          "predicate": 0.047619,
+          "selectivity": 0.047619,
+          "statistics": 0.047619,
+          "index-only": 0.047619,
+          "scans": 0.047619,
+          "eliminate": 0.047619
+        },
+        "top_bigrams": {
+          "query execution": 1,
+          "execution planners": 1,
+          "planners analyze": 1,
+          "analyze predicate": 1,
+          "predicate selectivity": 1,
+          "selectivity statistics": 1,
+          "statistics index-only": 1,
+          "index-only scans": 1,
+          "scans eliminate": 1,
+          "eliminate unnecessary": 1
+        },
+        "readability": {
+          "avg_words_per_sentence": 7.0,
+          "readability_score": 79.0
+        }
+      }
+    },
+    {
+      "id": "doc_004",
+      "title": "network security fundamentals",
+      "entities": [],
+      "statistics": {
+        "word_count": 21,
+        "sentence_count": 3,
+        "unique_words": 21,
+        "top_frequencies": {
+          "transport": 0.047619,
+          "layer": 0.047619,
+          "encryption": 0.047619,
+          "protects": 0.047619,
+          "data-in-transit": 0.047619,
+          "across": 0.047619,
+          "endpoints": 0.047619,
+          "certificate": 0.047619,
+          "pinning": 0.047619,
+          "prevents": 0.047619
+        },
+        "top_bigrams": {
+          "transport layer": 1,
+          "layer encryption": 1,
+          "encryption protects": 1,
+          "protects data-in-transit": 1,
+          "data-in-transit across": 1,
+          "across endpoints": 1,
+          "endpoints certificate": 1,
+          "certificate pinning": 1,
+          "pinning prevents": 1,
+          "prevents man-in-the-middle": 1
+        },
+        "readability": {
+          "avg_words_per_sentence": 7.0,
+          "readability_score": 79.0
+        }
+      }
+    }
+  ],
+  "corpus_statistics": {
+    "total_documents": 4,
+    "total_tokens": 89,
+    "total_unique_tokens": 87,
+    "corpus_frequencies": {
+      "across": 0.022472,
+      "distributed": 0.022472,
+      "microservices": 0.011236,
+      "architecture": 0.011236,
+      "enables": 0.011236,
+      "horizontal": 0.011236,
+      "scaling": 0.011236,
+      "multiple": 0.011236,
+      "nodes": 0.011236,
+      "container": 0.011236,
+      "orchestration": 0.011236,
+      "platforms": 0.011236,
+      "manage": 0.011236,
+      "deployment": 0.011236,
+      "lifecycle": 0.011236,
+      "automatically": 0.011236,
+      "service": 0.011236,
+      "mesh": 0.011236,
+      "provides": 0.011236,
+      "observability": 0.011236
+    },
+    "corpus_bigrams": {
+      "microservices architecture": 1,
+      "architecture enables": 1,
+      "enables horizontal": 1,
+      "horizontal scaling": 1,
+      "scaling across": 1,
+      "across multiple": 1,
+      "multiple nodes": 1,
+      "nodes container": 1,
+      "container orchestration": 1,
+      "orchestration platforms": 1,
+      "platforms manage": 1,
+      "manage deployment": 1,
+      "deployment lifecycle": 1,
+      "lifecycle automatically": 1,
+      "automatically service": 1
+    },
+    "corpus_readability": {
+      "avg_words_per_sentence": 7.42,
+      "readability_score": 77.74
+    }
+  }
+}

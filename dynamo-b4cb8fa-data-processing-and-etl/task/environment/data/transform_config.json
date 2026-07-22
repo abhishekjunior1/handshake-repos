@@ -1,0 +1,110 @@
+{
+  "tables": [
+    {
+      "name": "sales_records",
+      "rows": [
+        {
+          "region": "north",
+          "quarter": "Q1",
+          "product": "widget",
+          "revenue": "1200",
+          "units": "10"
+        },
+        {
+          "region": "north",
+          "quarter": "Q2",
+          "product": "widget",
+          "revenue": "1500",
+          "units": "12"
+        },
+        {
+          "region": "south",
+          "quarter": "Q1",
+          "product": "gadget",
+          "revenue": "800",
+          "units": "8"
+        },
+        {
+          "region": "south",
+          "quarter": "Q2",
+          "product": "gadget",
+          "revenue": "950",
+          "units": "9"
+        },
+        {
+          "region": "east",
+          "quarter": "Q1",
+          "product": "widget",
+          "revenue": "1100",
+          "units": "11"
+        },
+        {
+          "region": "east",
+          "quarter": "Q2",
+          "product": "gadget",
+          "revenue": "700",
+          "units": "7"
+        },
+        {
+          "region": "west",
+          "quarter": "Q1",
+          "product": "gadget",
+          "revenue": "600",
+          "units": "6"
+        },
+        {
+          "region": "west",
+          "quarter": "Q2",
+          "product": "widget",
+          "revenue": "1300",
+          "units": "13"
+        }
+      ]
+    }
+  ],
+  "operations": [
+    {
+      "type": "derived_columns",
+      "columns": [
+        {
+          "name": "region_product",
+          "type": "concat",
+          "columns": [
+            "region",
+            "product"
+          ],
+          "separator": "_"
+        }
+      ]
+    },
+    {
+      "type": "pivot",
+      "index_col": "region",
+      "pivot_col": "quarter",
+      "value_col": "revenue"
+    },
+    {
+      "type": "aggregate",
+      "group_by": [
+        "region"
+      ],
+      "aggregations": [
+        {
+          "column": "Q1",
+          "function": "first",
+          "alias": "q1_revenue"
+        },
+        {
+          "column": "Q2",
+          "function": "first",
+          "alias": "q2_revenue"
+        }
+      ]
+    }
+  ],
+  "output": {
+    "sort_by": "region",
+    "sort_order": "descending",
+    "columns": null
+  }
+}

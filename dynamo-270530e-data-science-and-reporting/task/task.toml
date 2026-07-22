@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/ssa-decomposition"
+description = "Debug a Singular Spectrum Analysis pipeline that decomposes time series into trend, oscillatory, and noise components via trajectory embedding and SVD."
+
+[metadata]
+category = "Data Science and Reporting"
+subcategory = "Time-series analysis"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1100 lines) implementing Singular Spectrum Analysis without external libraries beyond numpy. Two bugs are domain-specific value-passing errors in pipeline.py and grouper.py — not formula errors or code smells. Bug 1 swaps the L (window length) and K (trajectory column count) arguments when calling the reconstructor, causing incorrect anti-diagonal averaging dimensions that produce wrong reconstructed component series. Bug 2 uses squared singular values (eigenvalues) instead of singular values for the w-correlation weighted norm computation. Each module function is individually correct — bugs are in which VALUES are passed between stages. Visible data uses N=7 with L=4 giving K=4=L, making the dimension swap invisible (L==K), and a simple 2-component decomposition where the w-correlation is trivial. Hidden data uses N=50, L=20, K=31 with a periodic signal and 4-component grouped decomposition that amplifies both errors. The data is synthetic periodic sensor telemetry — a signal processing engineer working on time-series decomposition would do this work. Two decoy patterns (economy SVD via Gram matrix and Kendall tau rank-based trend detection) are correct but look suspicious, drawing agents toward incorrect modifications."
+solution_explanation = "Fix two value-passing bugs: (1) In pipeline.py, change reconstruct_groups(grouped_matrices, N, K, L) to reconstruct_groups(grouped_matrices, N, L, K) — the L and K arguments were swapped, causing the diagonal averaging to use wrong row/column bounds. (2) In grouper.py, change weights[i]**2 to weights[i] in the weighted norm computation so w-correlation uses singular values (standard SSA weighting) instead of eigenvalues. Each fix is one token change. The Gram-matrix economy SVD and Kendall tau correlation must be preserved as correct."
+verification_explanation = "The verifier substitutes a hidden configuration with a 50-point periodic series, window length 20, and 4 components grouped into 2 groups. It runs the fixed pipeline and compares all output fields against expected values. Core numerical fields (reconstructed_components, contribution_ratios, eigenvalue_spectrum, w_correlation_matrix, residual_series, trajectory_norm, total_variance_explained) use rel_tol=1e-8, which absorbs only floating-point rounding variation from the deterministic SVD and matrix arithmetic — the algorithm is exact for fixed inputs so any implementation producing the same mathematical operations must match within machine epsilon accumulation. The trend_correlation diagnostic uses rel_tol=1e-2 because it is a Kendall tau statistic computed on the first reconstructed component: the SVD sign convention (eigenvector sign ambiguity) can flip the component's orientation across platforms, causing concordant/discordant pair counts to shift by up to ~2% while the reconstruction magnitude remains identical. Buggy outputs diverge by 15-40% on reconstructed_components (wrong anti-diagonal bounds from swapped L/K) and produce completely different w_correlation_matrix values (eigenvalue weighting distorts all 12 off-diagonal entries), far exceeding both tolerance bands."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

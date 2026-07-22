@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/geostatistical-kriging"
+description = "Geostatistical pipeline performing variogram estimation and ordinary kriging with cross-validation."
+
+[metadata]
+category = "Data Science and Reporting"
+subcategory = "Statistical analysis and inference"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "This task requires debugging cross-module data-flow issues in a geostatistical pipeline where the orchestrator passes incorrect values to individually-correct spatial statistics modules. The bugs are value-propagation errors masked by a degenerate visible configuration (single lag bin, zero nugget, large sample size). A geostatistician or spatial data scientist would need to trace how pipeline.py transforms variogram estimation results before passing them to the kriging and cross-validation modules. The downstream modules are all correct — bugs exist solely in value handoff. Data is synthetic, shaped like real environmental monitoring or mineral exploration surveys."
+solution_explanation = "Two value-passing bugs and one degrees-of-freedom bug in pipeline.py: (1) Passes bin edges instead of bin centers to variogram fitting — the fit function expects distances at bin midpoints, not boundaries. (2) Passes partial sill (sill - nugget) to kriging instead of total sill — the kriging covariance function C(h) = sill - gamma(h) needs total sill. (3) Uses n_points as degrees-of-freedom for standardized error instead of n_points - n_model_params. Each fix is 1 line in pipeline.py."
+verification_explanation = "Hidden config uses 10 irregularly-spaced points with 5 variogram bins, non-zero nugget, and small sample size. Tests compare: (1) Variogram model parameters within 15% relative — this accommodates floating-point variation in scipy.optimize.least_squares convergence while rejecting the buggy fit which shifts range by 28% (7.49 vs 5.85) due to wrong lag distances. (2) Kriging predictions within max(0.15, 5%) — absorbs minor solver differences in np.linalg.solve for near-singular systems while catching the 3-5% prediction shift from corrupted covariance matrices (partial vs total sill). (3) Standardized RMSE within 10% — permits legitimate float precision but rejects the 34% inflation (2.20 vs 1.64) caused by using n=10 instead of df=7 for variance normalization. (4) RMSE within 10% — catches the 6% deviation from wrong model fit propagating through predictions. Tolerances validated: buggy output deviates 15-34% on key metrics while alternative correct implementations (using different least_squares initial guesses or linalg.lstsq fallback) produce values within 1-2% of expected."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

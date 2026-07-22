@@ -1,0 +1,182 @@
+[
+  {
+    "id": "TXN-001",
+    "timestamp": "2024-03-01T10:00:00",
+    "amount": 250.0,
+    "category": "electronics",
+    "region": "north",
+    "status": "active",
+    "priority": "high",
+    "description": "Server rack components"
+  },
+  {
+    "id": "TXN-002",
+    "timestamp": "2024-03-01T14:30:00",
+    "amount": 89.5,
+    "category": "clothing",
+    "region": "south",
+    "status": "completed",
+    "priority": "low",
+    "description": "Uniform order batch"
+  },
+  {
+    "id": "TXN-003",
+    "timestamp": "2024-03-02T09:15:00",
+    "amount": 1200.0,
+    "category": "services",
+    "region": "west",
+    "status": "active",
+    "priority": "critical",
+    "description": "Consulting engagement Q1"
+  },
+  {
+    "id": "TXN-004",
+    "timestamp": "2024-03-02T16:45:00",
+    "amount": 45.0,
+    "category": "food",
+    "region": "central",
+    "status": "pending",
+    "priority": "low",
+    "description": "Cafeteria supplies"
+  },
+  {
+    "id": "TXN-005",
+    "timestamp": "2024-03-03T08:00:00",
+    "amount": 780.0,
+    "category": "utilities",
+    "region": "east",
+    "status": "active",
+    "priority": "medium",
+    "description": "Monthly power bill"
+  },
+  {
+    "id": "TXN-006",
+    "timestamp": "2024-03-04T11:20:00",
+    "amount": 320.0,
+    "category": "healthcare",
+    "region": "north",
+    "status": "completed",
+    "priority": "high",
+    "description": "Annual screening program"
+  },
+  {
+    "id": "TXN-007",
+    "timestamp": "2024-03-05T13:00:00",
+    "amount": 150.0,
+    "category": "transportation",
+    "region": "south",
+    "status": "active",
+    "priority": "medium",
+    "description": "Fleet fuel procurement"
+  },
+  {
+    "id": "TXN-008",
+    "timestamp": "2024-03-06T10:30:00",
+    "amount": 2100.0,
+    "category": "electronics",
+    "region": "west",
+    "status": "active",
+    "priority": "critical",
+    "description": "Network switch upgrade"
+  },
+  {
+    "id": "TXN-009",
+    "timestamp": "2024-03-07T15:45:00",
+    "amount": 67.0,
+    "category": "food",
+    "region": "east",
+    "status": "completed",
+    "priority": "low",
+    "description": "Break room restocking"
+  },
+  {
+    "id": "TXN-010",
+    "timestamp": "2024-03-08T09:00:00",
+    "amount": 430.0,
+    "category": "services",
+    "region": "central",
+    "status": "pending",
+    "priority": "high",
+    "description": "Legal review retainer"
+  },
+  {
+    "id": "TXN-011",
+    "timestamp": "2024-03-09T12:00:00",
+    "amount": 195.0,
+    "category": "clothing",
+    "region": "north",
+    "status": "active",
+    "priority": "medium",
+    "description": "Safety equipment order"
+  },
+  {
+    "id": "TXN-012",
+    "timestamp": "2024-03-10T14:00:00",
+    "amount": 890.0,
+    "category": "utilities",
+    "region": "south",
+    "status": "active",
+    "priority": "high",
+    "description": "Water treatment contract"
+  },
+  {
+    "id": "TXN-013",
+    "timestamp": "2024-03-11T08:30:00",
+    "amount": 560.0,
+    "category": "healthcare",
+    "region": "west",
+    "status": "pending",
+    "priority": "critical",
+    "description": "Emergency supplies restock"
+  },
+  {
+    "id": "TXN-014",
+    "timestamp": "2024-03-12T16:00:00",
+    "amount": 275.0,
+    "category": "transportation",
+    "region": "east",
+    "status": "completed",
+    "priority": "medium",
+    "description": "Vehicle maintenance batch"
+  },
+  {
+    "id": "TXN-015",
+    "timestamp": "2024-03-13T10:15:00",
+    "amount": 1500.0,
+    "category": "electronics",
+    "region": "central",
+    "status": "active",
+    "priority": "high",
+    "description": "Workstation deployment"
+  },
+  {
+    "id": "TXN-016",
+    "timestamp": "2024-03-14T11:00:00",
+    "amount": 340.0,
+    "category": "services",
+    "region": "north",
+    "status": "active",
+    "priority": "medium",
+    "description": "Cleaning contract renewal"
+  },
+  {
+    "id": "TXN-017",
+    "timestamp": "2024-03-15T09:30:00",
+    "amount": 125.0,
+    "category": "food",
+    "region": "south",
+    "status": "pending",
+    "priority": "low",
+    "description": "Vending machine restock"
+  },
+  {
+    "id": "TXN-018",
+    "timestamp": "2024-03-16T14:45:00",
+    "amount": 950.0,
+    "category": "utilities",
+    "region": "west",
+    "status": "active",
+    "priority": "high",
+    "description": "HVAC quarterly service"
+  }
+]

@@ -1,0 +1,4 @@
+{
+  "dataset_path": "/app/dataset.json",
+  "group_column": "region"
+}

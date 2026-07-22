@@ -1,0 +1,33 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/polynomial-gcd"
+description = "Modular polynomial GCD computation pipeline with Chinese Remainder reconstruction over integer coefficient rings."
+
+[metadata]
+category = "Mathematics and Formal Reasoning"
+subcategory = "Symbolic computation"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 7 modules (~900 lines) implementing polynomial GCD via modular arithmetic, Chinese Remainder Algorithm, and subresultant PRS. Three bugs span the module boundaries. Bug 1 (modular_gcd.py): the modular GCD uses the first prime's result to set a target degree and only accepts primes matching that degree. If the first prime is 'unlucky' (gives higher-degree GCD mod p due to spurious common factor), the algorithm locks onto the wrong degree and discards all good primes giving the correct lower degree. The misleading comment claims sequential selection ensures deterministic reconstruction. Bug 2 (pipeline.py): the pipeline correctly computes content_gcd = gcd(content_f, content_g) but then scales the primitive GCD by content_f instead of content_gcd. The comment claims content_f provides the natural scaling since the GCD divides f. When content_f == content_gcd (visible data has content=1), the bug is invisible; when content_f > content_gcd, the result is over-scaled. Bug 3 (resultant.py): the subresultant PRS defect calculation uses delta = deg_prev - deg_curr + 1 instead of the correct delta = deg_prev - deg_curr. The extra +1 corrupts the psi scaling coefficient, producing wrong signs in the cofactor resultant. On visible data, the cofactors include a constant (degree 0) polynomial, so the resultant uses a special-case formula bypassing the PRS entirely — making the bug invisible. On hidden data, the cofactors have degrees 3 and 1, requiring the PRS with a degree drop of 2 where the delta calculation matters. Each module works correctly in isolation on the visible input; the bugs require understanding how data flows between components and only trigger on inputs with non-unit content (Bug 2), unlucky primes (Bug 1), or high-degree cofactors (Bug 3). Two correct-but-suspicious patterns serve as decoys: symmetric_mod after CRA (necessary for sign recovery) and trial division verification (necessary to catch CRA errors). Data is synthetic, consisting of small integer polynomials with carefully chosen content factors and root structures to exercise all computation paths. A computer algebra system developer maintaining polynomial GCD implementations for symbolic computation libraries would do this work."
+solution_explanation = "Three fixes: (1) modular_gcd.py: After computing GCD mod p for all primes, find the MINIMUM degree across results. Discard all primes whose modular GCD has degree > minimum (these are unlucky primes). Only use consistent minimum-degree results for CRA reconstruction. (2) pipeline.py: Change 'content_f' to 'content_gcd' in the GCD scaling step — the correct scaling factor is gcd(content_f, content_g), not content_f alone. (3) resultant.py: Change 'delta = deg_prev - deg_curr + 1' to 'delta = deg_prev - deg_curr' — remove the spurious +1 from the defect calculation. The +1 corrupts the psi scaling in the subresultant PRS, producing wrong signs in the cofactor resultant computation."
+verification_explanation = "The verifier uses hidden polynomials f=[12,18,6,6,6]=6(x+1)(x^3+x+2) and g=[8,12,4]=4(x+1)(x+2) with content_f=6, content_g=4, content_gcd=2, and true GCD=2(x+1)=[2,2]. Bug 1 triggers because prime 2 is unlucky for the primitive parts: prim_f mod 2 factors as x(x+1)^3 and prim_g mod 2 factors as x(x+1), giving GCD mod 2 of degree 2 instead of the true degree 1. The buggy algorithm locks onto degree 2 from this first prime and discards all correct degree-1 results from subsequent primes. Bug 2 triggers because the pipeline scales by content_f=6 instead of content_gcd=2, over-scaling any non-constant result (though the wrong-degree candidate from Bug 1 fails trial division, producing a fallback to constant GCD=[2] instead of the correct [2,2]). Bug 3 triggers through the cofactor_resultant field: with the correct GCD=[2,2], the cofactors 3(x^3+x+2) and 2(x+2) have degrees 3 and 1, creating a degree drop of 2 in their subresultant PRS. The wrong delta (deg_prev-deg_curr+1 instead of deg_prev-deg_curr) corrupts the PRS scaling, flipping the cofactor resultant sign from 192 to -192. Tests check GCD coefficients [2,2], degree 1, leading_coefficient 2, verified=true, resultant value 0, subresultant_degrees [4,2,1], cofactor_resultant 192, content_f=6, content_g=4, content_gcd=2, primitive_gcd [1,1], square_free_gcd, coprime=false, algorithm, and gcd_degree=1."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+

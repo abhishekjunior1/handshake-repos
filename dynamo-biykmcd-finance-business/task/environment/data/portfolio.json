@@ -1,0 +1,61 @@
+{
+  "valuation_date": "2025-06-15",
+  "config": {
+    "yield_precision": 8,
+    "price_precision": 6,
+    "risk_free_rate": 0.042
+  },
+  "holdings": [
+    {
+      "bond_id": "UST-ZC-2027",
+      "issuer": "US Treasury",
+      "description": "US Treasury Zero-Coupon Note 2027",
+      "face_value": 1000.0,
+      "coupon_rate": 0.0,
+      "coupon_frequency": 1,
+      "maturity_date": "2027-06-15",
+      "clean_price": 91.85,
+      "quantity": 500,
+      "day_count_convention": "ACT/ACT",
+      "last_coupon_date": "2025-06-15",
+      "next_coupon_date": "2026-06-15",
+      "settlement_days": 0,
+      "credit_rating": "AAA",
+      "sector": "government"
+    },
+    {
+      "bond_id": "UST-ZC-2030",
+      "issuer": "US Treasury",
+      "description": "US Treasury Zero-Coupon Bond 2030",
+      "face_value": 1000.0,
+      "coupon_rate": 0.0,
+      "coupon_frequency": 1,
+      "maturity_date": "2030-06-15",
+      "clean_price": 78.12,
+      "quantity": 300,
+      "day_count_convention": "30/360",
+      "last_coupon_date": "2025-06-15",
+      "next_coupon_date": "2026-06-15",
+      "settlement_days": 0,
+      "credit_rating": "AAA",
+      "sector": "government"
+    },
+    {
+      "bond_id": "CORP-ZC-2028",
+      "issuer": "Apex Industrial Corp",
+      "description": "Apex Industrial Zero-Coupon Note 2028",
+      "face_value": 1000.0,
+      "coupon_rate": 0.0,
+      "coupon_frequency": 1,
+      "maturity_date": "2028-06-15",
+      "clean_price": 85.40,
+      "quantity": 200,
+      "day_count_convention": "ACT/360",
+      "last_coupon_date": "2025-06-15",
+      "next_coupon_date": "2026-06-15",
+      "settlement_days": 0,
+      "credit_rating": "BBB+",
+      "sector": "corporate"
+    }
+  ]
+}

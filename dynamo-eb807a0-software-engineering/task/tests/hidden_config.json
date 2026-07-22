@@ -1,0 +1,5 @@
+{
+  "program": "let to_int = fun b -> if b then 1 else 0 in let result = to_int true in result + 5",
+  "environment": {},
+  "settings": {}
+}

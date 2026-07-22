@@ -1,0 +1,29 @@
+{
+  "program": "let choose = fun sel -> fun a -> fun b -> if sel then a else b in let val = choose false 10 20 in val * 2",
+  "status": "success",
+  "inferred_type": "Int",
+  "substitution": {
+    "t1": "Bool",
+    "t2": "Int",
+    "t3": "Int",
+    "t4": "(Int -> (Int -> Int))",
+    "t5": "(Int -> Int)",
+    "t6": "Int"
+  },
+  "constraints_generated": 7,
+  "bindings": {
+    "choose": "(Bool -> (Int -> (Int -> Int)))",
+    "val": "Int"
+  },
+  "generalized_types": {
+    "choose": {
+      "quantified": [],
+      "body": "(Bool -> (Int -> (Int -> Int)))"
+    },
+    "val": {
+      "quantified": [],
+      "body": "Int"
+    }
+  },
+  "error": null
+}

@@ -1,0 +1,278 @@
+[
+  {
+    "month": 1,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 20417,
+        "principal_paid": 162630,
+        "loss_allocated": 0,
+        "ending_balance": 6837370
+      },
+      "Mezz_B": {
+        "interest_paid": 9167,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 2000000
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1000000
+      }
+    }
+  },
+  {
+    "month": 2,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 19942,
+        "principal_paid": 163105,
+        "loss_allocated": 0,
+        "ending_balance": 6674265
+      },
+      "Mezz_B": {
+        "interest_paid": 9167,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 2000000
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1000000
+      }
+    }
+  },
+  {
+    "month": 3,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 19467,
+        "principal_paid": 629987,
+        "loss_allocated": 0,
+        "ending_balance": 6044278
+      },
+      "Mezz_B": {
+        "interest_paid": 9167,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 2000000
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 558226,
+        "ending_balance": 441774
+      }
+    }
+  },
+  {
+    "month": 4,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 17629,
+        "principal_paid": 633135,
+        "loss_allocated": 0,
+        "ending_balance": 5411143
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 2000000
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 441774
+      }
+    }
+  },
+  {
+    "month": 5,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 15783,
+        "principal_paid": 118450,
+        "loss_allocated": 0,
+        "ending_balance": 5292693
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 429824,
+        "ending_balance": 1570176
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 441774,
+        "ending_balance": 0
+      }
+    }
+  },
+  {
+    "month": 6,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 15437,
+        "principal_paid": 116826,
+        "loss_allocated": 0,
+        "ending_balance": 5175867
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1570176
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 0
+      }
+    }
+  },
+  {
+    "month": 7,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 15096,
+        "principal_paid": 117167,
+        "loss_allocated": 0,
+        "ending_balance": 5058700
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1570176
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 0
+      }
+    }
+  },
+  {
+    "month": 8,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 14755,
+        "principal_paid": 117508,
+        "loss_allocated": 0,
+        "ending_balance": 4941192
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1570176
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 0
+      }
+    }
+  },
+  {
+    "month": 9,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 14412,
+        "principal_paid": 117851,
+        "loss_allocated": 0,
+        "ending_balance": 4823341
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1570176
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 0
+      }
+    }
+  },
+  {
+    "month": 10,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 14068,
+        "principal_paid": 118195,
+        "loss_allocated": 0,
+        "ending_balance": 4705146
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1570176
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 0
+      }
+    }
+  },
+  {
+    "month": 11,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 13723,
+        "principal_paid": 118540,
+        "loss_allocated": 0,
+        "ending_balance": 4586606
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1570176
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 0
+      }
+    }
+  },
+  {
+    "month": 12,
+    "tranches": {
+      "Senior_A": {
+        "interest_paid": 13378,
+        "principal_paid": 118885,
+        "loss_allocated": 0,
+        "ending_balance": 4467721
+      },
+      "Mezz_B": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 1570176
+      },
+      "Equity_C": {
+        "interest_paid": 0,
+        "principal_paid": 0,
+        "loss_allocated": 0,
+        "ending_balance": 0
+      }
+    }
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "name": "employee_directory",
+  "version": "1.0",
+  "description": "Employee directory for validation",
+  "records": [
+    {"emp_id": "EMP-001", "first_name": "Alice", "last_name": "Johnson", "department": "Engineering", "email": "alice.johnson@company.com", "status": "active"},
+    {"emp_id": "EMP-002", "first_name": "Bob", "last_name": "Smith", "department": "Marketing", "email": "bob.smith@company.com", "status": "active"},
+    {"emp_id": "EMP-003", "first_name": "Carol", "last_name": "Williams", "department": "Engineering", "email": "carol.williams@company.com", "status": "active"},
+    {"emp_id": "EMP-004", "first_name": "David", "last_name": "Brown", "department": "Sales", "email": "david.brown@company.com", "status": "active"},
+    {"emp_id": "EMP-005", "first_name": "Eve", "last_name": "Davis", "department": "Engineering", "email": "eve.davis@company.com", "status": "active"},
+    {"emp_id": "EMP-006", "first_name": "Frank", "last_name": "Miller", "department": "Marketing", "email": "frank.miller@company.com", "status": "active"},
+    {"emp_id": "EMP-007", "first_name": "Grace", "last_name": "Wilson", "department": "Sales", "email": "grace.wilson@company.com", "status": "active"},
+    {"emp_id": "EMP-008", "first_name": "Henry", "last_name": "Moore", "department": "Engineering", "email": "henry.moore@company.com", "status": "active"},
+    {"emp_id": "EMP-009", "first_name": "Irene", "last_name": "Taylor", "department": "Marketing", "email": "irene.taylor@company.com", "status": "active"},
+    {"emp_id": "EMP-010", "first_name": "Jack", "last_name": "Anderson", "department": "Sales", "email": "jack.anderson@company.com", "status": "active"},
+    {"emp_id": "EMP-011", "first_name": "Karen", "last_name": "Thomas", "department": "Engineering", "email": "karen.thomas@company.com", "status": "active"},
+    {"emp_id": "EMP-012", "first_name": "Leo", "last_name": "Jackson", "department": "Marketing", "email": "leo.jackson@company.com", "status": "active"},
+    {"emp_id": "EMP-013", "first_name": "Maria", "last_name": "White", "department": "Sales", "email": "maria.white@company.com", "status": "active"},
+    {"emp_id": "EMP-014", "first_name": "Nathan", "last_name": "Harris", "department": "Engineering", "email": "nathan.harris@company.com", "status": "active"},
+    {"emp_id": "EMP-015", "first_name": "Olivia", "last_name": "Martin", "department": "Marketing", "email": "olivia.martin@company.com", "status": "active"}
+  ]
+}

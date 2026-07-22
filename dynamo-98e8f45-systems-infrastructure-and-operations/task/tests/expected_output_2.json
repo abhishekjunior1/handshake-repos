@@ -1,0 +1,124 @@
+{
+  "scheduling_summary": {
+    "total_pods": 3,
+    "scheduled": 3,
+    "preempting": 0,
+    "unschedulable": 0,
+    "scheduling_rate": 1.0
+  },
+  "pod_decisions": [
+    {
+      "pod_name": "api-server-r4t5y",
+      "namespace": "platform",
+      "phase": "Scheduled",
+      "selected_node": "worker-pool-b",
+      "score_breakdown": {
+        "worker-pool-b": {
+          "node_affinity": 40.0,
+          "pod_affinity": 30.0,
+          "utilization": 100.0,
+          "combined": 170.0
+        },
+        "worker-pool-c": {
+          "node_affinity": 0.0,
+          "pod_affinity": 0.0,
+          "utilization": 100.0,
+          "combined": 100.0
+        }
+      },
+      "filtered_nodes": [
+        {
+          "node": "worker-pool-a",
+          "reason": "pod_capacity_exceeded",
+          "current": 5,
+          "limit": 5
+        }
+      ],
+      "preemption_attempted": false,
+      "preemption_victims": []
+    },
+    {
+      "pod_name": "worker-job-u6i7o",
+      "namespace": "jobs",
+      "phase": "Scheduled",
+      "selected_node": "worker-pool-c",
+      "score_breakdown": {
+        "worker-pool-b": {
+          "node_affinity": 0.0,
+          "pod_affinity": 0.0,
+          "utilization": 100.0,
+          "combined": 100.0
+        },
+        "worker-pool-c": {
+          "node_affinity": 70.0,
+          "pod_affinity": 0.0,
+          "utilization": 100.0,
+          "combined": 170.0
+        }
+      },
+      "filtered_nodes": [
+        {
+          "node": "worker-pool-a",
+          "reason": "pod_capacity_exceeded",
+          "current": 5,
+          "limit": 5
+        }
+      ],
+      "preemption_attempted": false,
+      "preemption_victims": []
+    },
+    {
+      "pod_name": "log-shipper-p8a9s",
+      "namespace": "observability",
+      "phase": "Scheduled",
+      "selected_node": "worker-pool-c",
+      "score_breakdown": {
+        "worker-pool-b": {
+          "node_affinity": 0.0,
+          "pod_affinity": -60.0,
+          "utilization": 100.0,
+          "combined": 40.0
+        },
+        "worker-pool-c": {
+          "node_affinity": 0.0,
+          "pod_affinity": 0.0,
+          "utilization": 100.0,
+          "combined": 100.0
+        }
+      },
+      "filtered_nodes": [
+        {
+          "node": "worker-pool-a",
+          "reason": "pod_capacity_exceeded",
+          "current": 5,
+          "limit": 5
+        }
+      ],
+      "preemption_attempted": false,
+      "preemption_victims": []
+    }
+  ],
+  "node_placements": {
+    "worker-pool-a": {
+      "scheduled_pods": [],
+      "preempted_pods": []
+    },
+    "worker-pool-b": {
+      "scheduled_pods": [
+        "api-server-r4t5y"
+      ],
+      "preempted_pods": []
+    },
+    "worker-pool-c": {
+      "scheduled_pods": [
+        "worker-job-u6i7o",
+        "log-shipper-p8a9s"
+      ],
+      "preempted_pods": []
+    }
+  },
+  "cluster_info": {
+    "total_nodes": 3,
+    "scoring_strategy": "LeastAllocated"
+  }
+}

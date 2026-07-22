@@ -1,0 +1,258 @@
+{
+  "execution_trace": [
+    {
+      "task_id": "init_a",
+      "worker_id": 3,
+      "start_time": 0,
+      "finish_time": 5,
+      "execution_cost": 5,
+      "stolen": true,
+      "critical_path_length": 65.0
+    },
+    {
+      "task_id": "init_b",
+      "worker_id": 2,
+      "start_time": 0,
+      "finish_time": 8,
+      "execution_cost": 8,
+      "stolen": true,
+      "critical_path_length": 68.0
+    },
+    {
+      "task_id": "init_d",
+      "worker_id": 1,
+      "start_time": 0,
+      "finish_time": 12,
+      "execution_cost": 12,
+      "stolen": true,
+      "critical_path_length": 69.0
+    },
+    {
+      "task_id": "init_f",
+      "worker_id": 0,
+      "start_time": 0,
+      "finish_time": 4,
+      "execution_cost": 4,
+      "stolen": false,
+      "critical_path_length": 24.0
+    },
+    {
+      "task_id": "side_task_1",
+      "worker_id": 0,
+      "start_time": 4,
+      "finish_time": 13,
+      "execution_cost": 9,
+      "stolen": false,
+      "critical_path_length": 20.0
+    },
+    {
+      "task_id": "init_c",
+      "worker_id": 3,
+      "start_time": 5,
+      "finish_time": 8,
+      "execution_cost": 3,
+      "stolen": true,
+      "critical_path_length": 58.0
+    },
+    {
+      "task_id": "proc_x",
+      "worker_id": 2,
+      "start_time": 8,
+      "finish_time": 23,
+      "execution_cost": 15,
+      "stolen": false,
+      "critical_path_length": 60.0
+    },
+    {
+      "task_id": "proc_y",
+      "worker_id": 3,
+      "start_time": 8,
+      "finish_time": 18,
+      "execution_cost": 10,
+      "stolen": false,
+      "critical_path_length": 55.0
+    },
+    {
+      "task_id": "proc_z",
+      "worker_id": 1,
+      "start_time": 12,
+      "finish_time": 30,
+      "execution_cost": 18,
+      "stolen": false,
+      "critical_path_length": 57.0
+    },
+    {
+      "task_id": "init_e",
+      "worker_id": 0,
+      "start_time": 13,
+      "finish_time": 19,
+      "execution_cost": 6,
+      "stolen": false,
+      "critical_path_length": 52.0
+    },
+    {
+      "task_id": "proc_w",
+      "worker_id": 0,
+      "start_time": 19,
+      "finish_time": 26,
+      "execution_cost": 7,
+      "stolen": false,
+      "critical_path_length": 46.0
+    },
+    {
+      "task_id": "merge_1",
+      "worker_id": 2,
+      "start_time": 23,
+      "finish_time": 43,
+      "execution_cost": 20,
+      "stolen": false,
+      "critical_path_length": 45.0
+    },
+    {
+      "task_id": "side_task_2",
+      "worker_id": 0,
+      "start_time": 26,
+      "finish_time": 37,
+      "execution_cost": 11,
+      "stolen": false,
+      "critical_path_length": 11.0
+    },
+    {
+      "task_id": "merge_2",
+      "worker_id": 1,
+      "start_time": 30,
+      "finish_time": 44,
+      "execution_cost": 14,
+      "stolen": false,
+      "critical_path_length": 39.0
+    },
+    {
+      "task_id": "final_agg",
+      "worker_id": 1,
+      "start_time": 44,
+      "finish_time": 69,
+      "execution_cost": 25,
+      "stolen": false,
+      "critical_path_length": 25.0
+    }
+  ],
+  "completion_order": [
+    "init_f",
+    "init_a",
+    "init_b",
+    "init_c",
+    "init_d",
+    "side_task_1",
+    "proc_y",
+    "init_e",
+    "proc_x",
+    "proc_w",
+    "proc_z",
+    "side_task_2",
+    "merge_1",
+    "merge_2",
+    "final_agg"
+  ],
+  "scheduling_metrics": {
+    "makespan": 69,
+    "total_tasks": 15,
+    "total_simulation_ticks": 70,
+    "critical_path_length": 69.0,
+    "speedup": 2.42029,
+    "efficiency": 0.596429
+  },
+  "worker_statistics": {
+    "num_workers": 4,
+    "total_tasks_executed": 15,
+    "total_steals": 4,
+    "total_steal_attempts": 21,
+    "per_worker": [
+      {
+        "worker_id": 0,
+        "tasks_executed": 5,
+        "tasks_stolen": 0,
+        "utilization": 0.528571,
+        "idle_ticks": 33,
+        "execution_ticks": 37
+      },
+      {
+        "worker_id": 1,
+        "tasks_executed": 4,
+        "tasks_stolen": 1,
+        "utilization": 0.985714,
+        "idle_ticks": 2,
+        "execution_ticks": 69
+      },
+      {
+        "worker_id": 2,
+        "tasks_executed": 3,
+        "tasks_stolen": 1,
+        "utilization": 0.614286,
+        "idle_ticks": 28,
+        "execution_ticks": 43
+      },
+      {
+        "worker_id": 3,
+        "tasks_executed": 3,
+        "tasks_stolen": 2,
+        "utilization": 0.257143,
+        "idle_ticks": 54,
+        "execution_ticks": 18
+      }
+    ]
+  },
+  "steal_statistics": {
+    "total_attempts": 4,
+    "total_successes": 4,
+    "total_failures": 0,
+    "success_rate": 1.0,
+    "contention_events": 0
+  },
+  "dependency_timeline": [
+    {
+      "tick": 4,
+      "task_id": "side_task_1",
+      "released_by": "init_f"
+    },
+    {
+      "tick": 8,
+      "task_id": "proc_x",
+      "released_by": "init_b"
+    },
+    {
+      "tick": 8,
+      "task_id": "proc_y",
+      "released_by": "init_c"
+    },
+    {
+      "tick": 12,
+      "task_id": "proc_z",
+      "released_by": "init_d"
+    },
+    {
+      "tick": 19,
+      "task_id": "proc_w",
+      "released_by": "init_e"
+    },
+    {
+      "tick": 23,
+      "task_id": "merge_1",
+      "released_by": "proc_x"
+    },
+    {
+      "tick": 26,
+      "task_id": "side_task_2",
+      "released_by": "proc_w"
+    },
+    {
+      "tick": 30,
+      "task_id": "merge_2",
+      "released_by": "proc_z"
+    },
+    {
+      "tick": 44,
+      "task_id": "final_agg",
+      "released_by": "merge_2"
+    }
+  ]
+}

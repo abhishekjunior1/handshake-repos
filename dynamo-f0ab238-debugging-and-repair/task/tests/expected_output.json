@@ -1,0 +1,183 @@
+{
+  "mesh_name": "staging-mesh",
+  "evaluation_summary": {
+    "total_requests_evaluated": 10,
+    "requests_allowed": 8,
+    "requests_denied": 2,
+    "allow_rate_percent": 80.0,
+    "mesh_health_score": 0.628,
+    "average_policy_score": 0.785
+  },
+  "service_health": {
+    "frontend-proxy": {
+      "aggregate_health": 0.5824,
+      "endpoint_count": 2,
+      "healthy_endpoints": 0,
+      "degraded_endpoints": 0,
+      "unhealthy_endpoints": 2
+    },
+    "auth-service": {
+      "aggregate_health": 0.9978,
+      "endpoint_count": 3,
+      "healthy_endpoints": 1,
+      "degraded_endpoints": 2,
+      "unhealthy_endpoints": 0
+    },
+    "payment-gateway": {
+      "aggregate_health": 0.958,
+      "endpoint_count": 2,
+      "healthy_endpoints": 1,
+      "degraded_endpoints": 1,
+      "unhealthy_endpoints": 0
+    },
+    "notification-service": {
+      "aggregate_health": 0.9973,
+      "endpoint_count": 2,
+      "healthy_endpoints": 2,
+      "degraded_endpoints": 0,
+      "unhealthy_endpoints": 0
+    }
+  },
+  "routing_decisions": [
+    {
+      "request_id": "req-h001",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "selected_upstream": "auth-primary",
+      "load_balancer_weight": 119.0,
+      "effective_timeout_ms": 2400,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-h002",
+      "source": "frontend-proxy",
+      "destination": "payment-gateway",
+      "selected_upstream": "payment-us",
+      "load_balancer_weight": 176.0,
+      "effective_timeout_ms": 8000,
+      "policy_decision": "deny",
+      "tls_mode": "rejected",
+      "tls_overhead_ms": 0.0
+    },
+    {
+      "request_id": "req-h003",
+      "source": "auth-service",
+      "destination": "notification-service",
+      "selected_upstream": "notif-worker-2",
+      "load_balancer_weight": 91.0,
+      "effective_timeout_ms": 5000,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 4.8
+    },
+    {
+      "request_id": "req-h004",
+      "source": "auth-service",
+      "destination": "payment-gateway",
+      "selected_upstream": "payment-eu",
+      "load_balancer_weight": 65.0,
+      "effective_timeout_ms": 6000,
+      "policy_decision": "deny",
+      "tls_mode": "rejected",
+      "tls_overhead_ms": 0.0
+    },
+    {
+      "request_id": "req-h005",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "selected_upstream": "auth-secondary",
+      "load_balancer_weight": 88.6667,
+      "effective_timeout_ms": 2400,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-h006",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "selected_upstream": "auth-secondary",
+      "load_balancer_weight": 88.6667,
+      "effective_timeout_ms": 2400,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-h007",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "selected_upstream": "auth-primary",
+      "load_balancer_weight": 119.0,
+      "effective_timeout_ms": 2400,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-h008",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "selected_upstream": "auth-primary",
+      "load_balancer_weight": 119.0,
+      "effective_timeout_ms": 2400,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-h009",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "selected_upstream": "auth-secondary",
+      "load_balancer_weight": 88.6667,
+      "effective_timeout_ms": 2400,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-h010",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "selected_upstream": "auth-secondary",
+      "load_balancer_weight": 88.6667,
+      "effective_timeout_ms": 2400,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    }
+  ],
+  "policy_enforcement": {
+    "total_evaluations": 10,
+    "allowed": 8,
+    "denied": 2,
+    "total_warnings": 4,
+    "average_policy_score": 0.785,
+    "mesh_health_score": 0.628
+  },
+  "recommendations": [
+    {
+      "severity": "high",
+      "service": "frontend-proxy",
+      "recommendation": "Service 'frontend-proxy' has unhealthy endpoints - investigate health check failures"
+    },
+    {
+      "severity": "medium",
+      "service": "auth-service",
+      "recommendation": "Service 'auth-service' has degraded endpoints - monitor for further deterioration"
+    },
+    {
+      "severity": "medium",
+      "service": "payment-gateway",
+      "recommendation": "Service 'payment-gateway' has degraded endpoints - monitor for further deterioration"
+    },
+    {
+      "severity": "medium",
+      "service": "mesh",
+      "recommendation": "Mesh health score (0.63) below threshold - review service dependencies"
+    }
+  ]
+}

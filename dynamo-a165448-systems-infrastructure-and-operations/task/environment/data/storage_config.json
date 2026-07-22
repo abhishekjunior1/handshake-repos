@@ -1,0 +1,41 @@
+{
+  "devices": [
+    {
+      "device_id": "ssd_0",
+      "capacity_blocks": 262144,
+      "used_blocks": 131072,
+      "device_type": "ssd",
+      "over_provision_ratio": 1.28
+    }
+  ],
+  "tiers": [
+    {
+      "tier_id": "tier_ssd",
+      "tier_type": "ssd",
+      "device_ids": ["ssd_0"],
+      "over_provision_ratio": 1.28,
+      "hot_threshold": 0.7,
+      "warm_threshold": 0.3
+    }
+  ],
+  "trace_events": [
+    {"timestamp_us": 1000000, "lba": 100, "size_bytes": 4096, "op_type": "write", "device_id": "ssd_0"},
+    {"timestamp_us": 1500000, "lba": 100, "size_bytes": 4096, "op_type": "read", "device_id": "ssd_0"},
+    {"timestamp_us": 2000000, "lba": 100, "size_bytes": 4096, "op_type": "write", "device_id": "ssd_0"},
+    {"timestamp_us": 2500000, "lba": 200, "size_bytes": 8192, "op_type": "read", "device_id": "ssd_0"},
+    {"timestamp_us": 3000000, "lba": 200, "size_bytes": 8192, "op_type": "write", "device_id": "ssd_0"},
+    {"timestamp_us": 3500000, "lba": 300, "size_bytes": 4096, "op_type": "read", "device_id": "ssd_0"},
+    {"timestamp_us": 4000000, "lba": 100, "size_bytes": 4096, "op_type": "read", "device_id": "ssd_0"}
+  ],
+  "config": {
+    "observation_window_us": 4000000,
+    "current_time_us": 4000000,
+    "epoch_length_us": 1000000,
+    "interval_duration_us": 4000000,
+    "global_hot_threshold": 0.7,
+    "global_warm_threshold": 0.3,
+    "max_migrations": 50,
+    "bandwidth_limit_mb": 100,
+    "iops_budget": 1000
+  }
+}

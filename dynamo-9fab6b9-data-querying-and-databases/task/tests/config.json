@@ -1,0 +1,57 @@
+{
+  "transaction": {
+    "txn_id": 100,
+    "start_timestamp": 1000,
+    "current_cid": 2,
+    "write_set": ["r1"]
+  },
+  "commit_log": [
+    {"txn_id": 10, "start_ts": 100, "commit_ts": 200, "write_set": ["r1", "r2"]},
+    {"txn_id": 20, "start_ts": 300, "commit_ts": 400, "write_set": ["r3"]},
+    {"txn_id": 30, "start_ts": 500, "commit_ts": 600, "write_set": ["r2", "r4"]},
+    {"txn_id": 40, "start_ts": 700, "commit_ts": 800, "write_set": ["r5"]},
+    {"txn_id": 50, "start_ts": 900, "commit_ts": 950, "write_set": ["r6"]},
+    {"txn_id": 60, "start_ts": 980, "commit_ts": 1050, "write_set": ["r7"], "read_set": ["r1"]},
+    {"txn_id": 70, "start_ts": 990, "commit_ts": null, "write_set": ["r8"]}
+  ],
+  "version_store": {
+    "r1": [
+      {"xmin": 10, "xmax": 100, "cid": 0, "data": {"id": 1, "name": "Alice", "balance": 1000}},
+      {"xmin": 100, "xmax": 0, "cid": 0, "data": {"id": 1, "name": "Alice", "balance": 1200}}
+    ],
+    "r2": [
+      {"xmin": 10, "xmax": 30, "cid": 0, "data": {"id": 2, "name": "Bob", "balance": 500}},
+      {"xmin": 30, "xmax": 0, "cid": 0, "data": {"id": 2, "name": "Bob", "balance": 750}}
+    ],
+    "r3": [
+      {"xmin": 20, "xmax": 0, "cid": 0, "data": {"id": 3, "name": "Carol", "balance": 2000}}
+    ],
+    "r4": [
+      {"xmin": 30, "xmax": 0, "cid": 0, "data": {"id": 4, "name": "Dave", "balance": 300}}
+    ],
+    "r5": [
+      {"xmin": 40, "xmax": 0, "cid": 0, "data": {"id": 5, "name": "Eve", "balance": 1500}}
+    ],
+    "r6": [
+      {"xmin": 50, "xmax": 0, "cid": 0, "data": {"id": 6, "name": "Frank", "balance": 800}}
+    ],
+    "r7": [
+      {"xmin": 60, "xmax": 0, "cid": 0, "data": {"id": 7, "name": "Grace", "balance": 600}}
+    ],
+    "r8": [
+      {"xmin": 70, "xmax": 0, "cid": 0, "data": {"id": 8, "name": "Henry", "balance": 900}}
+    ],
+    "r9": [
+      {"xmin": 100, "xmax": 0, "cid": 2, "data": {"id": 9, "name": "Iris", "balance": 450}}
+    ]
+  },
+  "query": {
+    "select": ["id", "name", "balance"],
+    "predicates": [
+      {"column": "balance", "operator": ">=", "value": 500}
+    ],
+    "order_by": [
+      {"column": "id", "direction": "asc"}
+    ]
+  }
+}

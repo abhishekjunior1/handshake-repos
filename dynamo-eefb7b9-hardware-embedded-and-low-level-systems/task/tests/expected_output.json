@@ -1,0 +1,173 @@
+{
+  "initialization_summary": {
+    "total_init_time_us": 1049.375,
+    "all_peripherals_initialized": false,
+    "devices_programmed": 0,
+    "devices_lost": 9,
+    "devices_enumerated": 3,
+    "power_domains_enabled": 3,
+    "bus_protocol": "spi"
+  },
+  "clock_configuration": {
+    "system_clock_mhz": 48.0,
+    "bus_clock_mhz": 12.0,
+    "peripheral_divider": 2,
+    "pll_lock_time_us": 25.0,
+    "clock_gating_mask": 7,
+    "pll_enabled": true,
+    "clock_stable_at_t0": false
+  },
+  "power_sequencing": {
+    "enable_sequence": [
+      {
+        "domain_name": "vdd_analog",
+        "enable_order": 0,
+        "ramp_time_us": 300.0,
+        "cumulative_time_us": 300.0,
+        "voltage_rail": 1.8,
+        "domain_type": "core"
+      },
+      {
+        "domain_name": "vdd_core",
+        "enable_order": 1,
+        "ramp_time_us": 500.0,
+        "cumulative_time_us": 800.0,
+        "voltage_rail": 1.2,
+        "domain_type": "core"
+      },
+      {
+        "domain_name": "vdd_io",
+        "enable_order": 2,
+        "ramp_time_us": 200.0,
+        "cumulative_time_us": 1000.0,
+        "voltage_rail": 3.3,
+        "domain_type": "io"
+      }
+    ],
+    "total_power_up_time_us": 1000.0,
+    "sequencing_valid": true,
+    "sequencing_issues": [],
+    "domain_count": 3
+  },
+  "bus_transactions": {
+    "cs_sequence": [
+      {
+        "device_id": "accel_sensor",
+        "slot": 0,
+        "cs_assert": 0,
+        "cs_deassert": 1,
+        "cs_polarity": "active_low"
+      },
+      {
+        "device_id": "pressure_sensor",
+        "slot": 1,
+        "cs_assert": 0,
+        "cs_deassert": 1,
+        "cs_polarity": "active_low"
+      },
+      {
+        "device_id": "mag_sensor",
+        "slot": 2,
+        "cs_assert": 0,
+        "cs_deassert": 1,
+        "cs_polarity": "active_low"
+      }
+    ],
+    "deassert_signals": [
+      {
+        "device_id": "accel_sensor",
+        "slot": 0,
+        "deassert_level": 1
+      },
+      {
+        "device_id": "pressure_sensor",
+        "slot": 1,
+        "deassert_level": 1
+      },
+      {
+        "device_id": "mag_sensor",
+        "slot": 2,
+        "deassert_level": 1
+      }
+    ],
+    "timing": {
+      "protocol": "spi",
+      "clock_period_ns": 166.67,
+      "setup_time_ns": 41.67,
+      "hold_time_ns": 41.67,
+      "max_freq_mhz": 6.0
+    }
+  },
+  "register_programming": {
+    "total_registers_programmed": 0,
+    "total_registers_lost": 9,
+    "per_device_results": [
+      {
+        "device_id": "accel_sensor",
+        "programmed": 0,
+        "lost": 3,
+        "success": false
+      },
+      {
+        "device_id": "pressure_sensor",
+        "programmed": 0,
+        "lost": 2,
+        "success": false
+      },
+      {
+        "device_id": "mag_sensor",
+        "programmed": 0,
+        "lost": 4,
+        "success": false
+      }
+    ],
+    "all_devices_successful": false
+  },
+  "device_enumeration": {
+    "total_devices_scanned": 3,
+    "devices_identified": 3,
+    "devices_mismatched": 0,
+    "found_device_ids": [
+      "accel_sensor",
+      "pressure_sensor",
+      "mag_sensor"
+    ],
+    "missing_device_ids": [],
+    "enumeration_complete": true
+  },
+  "diagnostics": {
+    "clock_stable_at_programming": false,
+    "peripheral_clock_mhz": 6.0,
+    "bus_contention_detected": true,
+    "bus_issues": [
+      {
+        "type": "multi_select",
+        "message": "Multiple devices active: [0, 1, 2]",
+        "severity": "error"
+      }
+    ],
+    "cs_sequence": [
+      {
+        "device_id": "accel_sensor",
+        "slot": 0,
+        "cs_assert": 0,
+        "cs_deassert": 1,
+        "cs_polarity": "active_low"
+      },
+      {
+        "device_id": "pressure_sensor",
+        "slot": 1,
+        "cs_assert": 0,
+        "cs_deassert": 1,
+        "cs_polarity": "active_low"
+      },
+      {
+        "device_id": "mag_sensor",
+        "slot": 2,
+        "cs_assert": 0,
+        "cs_deassert": 1,
+        "cs_polarity": "active_low"
+      }
+    ]
+  }
+}

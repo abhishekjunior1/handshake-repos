@@ -1,0 +1,219 @@
+{
+  "univariate_statistics": {
+    "age": {
+      "count": 50,
+      "missing": 0,
+      "mean": 49.684,
+      "median": 40.65,
+      "std": 65.195855,
+      "skewness": 6.790597,
+      "kurtosis": 44.400058,
+      "min": 31.7,
+      "max": 500.0,
+      "p25": 36.075,
+      "p50": 40.65,
+      "p75": 45.5
+    },
+    "income": {
+      "count": 50,
+      "missing": 0,
+      "mean": 154743.6994,
+      "median": 57123.11,
+      "std": 699229.715133,
+      "skewness": 6.859299,
+      "kurtosis": 45.014137,
+      "min": 45466.08,
+      "max": 5000000.0,
+      "p25": 52035.62,
+      "p50": 57123.11,
+      "p75": 60316.0375
+    },
+    "score": {
+      "count": 50,
+      "missing": 0,
+      "mean": 193.2738,
+      "median": 52.28,
+      "std": 982.295479,
+      "skewness": 6.859263,
+      "kurtosis": 45.013808,
+      "min": 40.17,
+      "max": 7000.0,
+      "p25": 47.57,
+      "p50": 52.28,
+      "p75": 61.355
+    }
+  },
+  "outlier_detection": {
+    "age": {
+      "method": "iqr",
+      "lower_bound": 21.9375,
+      "upper_bound": 59.6375,
+      "n_outliers": 1,
+      "outlier_indices": [
+        15
+      ],
+      "outlier_values": [
+        500.0
+      ]
+    },
+    "income": {
+      "method": "iqr",
+      "lower_bound": 39614.99375,
+      "upper_bound": 72736.66375,
+      "n_outliers": 1,
+      "outlier_indices": [
+        5
+      ],
+      "outlier_values": [
+        5000000.0
+      ]
+    },
+    "score": {
+      "method": "iqr",
+      "lower_bound": 26.8925,
+      "upper_bound": 82.0325,
+      "n_outliers": 1,
+      "outlier_indices": [
+        25
+      ],
+      "outlier_values": [
+        7000.0
+      ]
+    }
+  },
+  "correlations": {
+    "pearson": {
+      "age": {
+        "age": 1.0,
+        "income": -0.006482,
+        "score": 0.28082
+      },
+      "income": {
+        "age": -0.006482,
+        "income": 1.0,
+        "score": 0.145669
+      },
+      "score": {
+        "age": 0.28082,
+        "income": 0.145669,
+        "score": 1.0
+      }
+    },
+    "spearman": {
+      "age": {
+        "age": 1.0,
+        "income": -0.028242,
+        "score": 0.283177
+      },
+      "income": {
+        "age": -0.028242,
+        "income": 1.0,
+        "score": 0.137993
+      },
+      "score": {
+        "age": 0.283177,
+        "income": 0.137993,
+        "score": 1.0
+      }
+    },
+    "columns": [
+      "age",
+      "income",
+      "score"
+    ],
+    "n_pairs": 3
+  },
+  "group_analysis": {
+    "age": {
+      "east": {
+        "count": 12,
+        "valid_count": 12,
+        "mean": 40.633333,
+        "std": 5.623544
+      },
+      "north": {
+        "count": 13,
+        "valid_count": 10,
+        "mean": 41.04,
+        "std": 5.931685
+      },
+      "south": {
+        "count": 13,
+        "valid_count": 13,
+        "mean": 36.653846,
+        "std": 4.158448
+      },
+      "west": {
+        "count": 12,
+        "valid_count": 11,
+        "mean": 86.1,
+        "std": 137.313961
+      }
+    },
+    "income": {
+      "east": {
+        "count": 12,
+        "valid_count": 12,
+        "mean": 59993.639167,
+        "std": 3229.791312
+      },
+      "north": {
+        "count": 13,
+        "valid_count": 12,
+        "mean": 53167.888333,
+        "std": 5520.306322
+      },
+      "south": {
+        "count": 13,
+        "valid_count": 11,
+        "mean": 505041.420909,
+        "std": 1490820.482537
+      },
+      "west": {
+        "count": 12,
+        "valid_count": 11,
+        "mean": 54118.051818,
+        "std": 6667.464581
+      }
+    },
+    "score": {
+      "east": {
+        "count": 12,
+        "valid_count": 11,
+        "mean": 52.821818,
+        "std": 6.043145
+      },
+      "north": {
+        "count": 13,
+        "valid_count": 12,
+        "mean": 56.940833,
+        "std": 9.343653
+      },
+      "south": {
+        "count": 13,
+        "valid_count": 12,
+        "mean": 630.236667,
+        "std": 2005.971102
+      },
+      "west": {
+        "count": 12,
+        "valid_count": 12,
+        "mean": 56.64,
+        "std": 9.211909
+      }
+    }
+  },
+  "metadata": {
+    "n_rows": 50,
+    "n_columns": 4,
+    "numeric_columns": [
+      "age",
+      "income",
+      "score"
+    ],
+    "categorical_columns": [
+      "region"
+    ],
+    "group_column": "region"
+  }
+}

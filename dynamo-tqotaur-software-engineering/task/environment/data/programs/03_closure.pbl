@@ -1,0 +1,5 @@
+mut x = 10;
+let f = fn() { return x; };
+x = 20;
+print f();
+print x;

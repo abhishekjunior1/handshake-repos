@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/stream-processor"
+description = "Debug a streaming event processing pipeline implementing windowed deduplication, per-key aggregation with exponential decay, and tumbling window assignment."
+
+[metadata]
+category = "data_processing_and_etl"
+subcategory = "streaming_data_processing"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "This task requires debugging a 600+ line streaming event processing pipeline spanning 7 modules that implement windowed deduplication, per-key aggregation with exponential decay weighting, and cross-window state carry-forward normalization. The two bugs exploit data-flow interaction patterns in the pipeline orchestrator (pipeline.py): (1) the normalizer is called with raw_count (pre-deduplication event count) instead of the actual deduped count, causing population variance and standard deviation to use the wrong denominator — on visible data where all event_ids are unique, raw_count equals deduped count so the bug is invisible; (2) the carry-forward baseline accumulation applies decay_factor during summation (baseline += window_sum * decay_factor) instead of accumulating raw window sums — the aggregator already applies decay internally via the running_sum formula, so this double-decays the baseline. On visible data with a single window, carry-forward is never exercised across windows so the bug has no effect. Both bugs are in the orchestrator's data-flow logic, not in any individual module. This synthetic pipeline is representative of streaming ETL work performed by data engineers building real-time event processing systems."
+solution_explanation = "Fix two bugs in pipeline.py: (1) Change the normalize_window_results call to pass len(deduped_events) instead of raw_count — after deduplication removes duplicates, the population size for variance computation must reflect the actual number of contributing events, not the raw input count. (2) Change the carry-forward baseline update from 'carry_forward_baseline + agg_result[\"window_sum\"] * decay_factor' to 'carry_forward_baseline + agg_result[\"window_sum\"]' — the decay is already applied inside the aggregator when computing running_sum (baseline * decay_factor + window_sum), so applying it again during accumulation double-decays the historical contribution."
+verification_explanation = "The verifier copies hidden_events.json (a 16-event payment transaction stream with decay_factor=0.8, 3 tumbling windows, and one duplicate event_id within a window) into /app/events.json, runs the pipeline, then uses pytest to compare output.json against expected_output.json. Tests check deduplication counts, per-window event counts, window sums, running sums, per-key counts/sums, and population variance using approximate equality (rel_tol=1e-4). Bug 1 causes variance to be off by 775% in window 0 (population_mean 154.17 vs correct 185.0, variance 5253 vs correct 600). Bug 2 causes running_sum to diverge by 8-14% across windows 1-2 (1760 vs 1908, 2329 vs 2664). The pipeline is fully deterministic with no random components."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

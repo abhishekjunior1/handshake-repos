@@ -1,0 +1,83 @@
+{
+  "system": {
+    "platform": "x86_64-linux",
+    "arch": "x86_64",
+    "os": "linux"
+  },
+  "cache_config": {
+    "url": "https://cache.nixos.org",
+    "narinfo_entries": {
+      "f0ws4p74jsiwp56pln4mhwr5h2xfrdii": {
+        "StorePath": "/nix/store/f0ws4p74jsiwp56pln4mhwr5h2xfrdii-bootstrap-tools",
+        "NARHash": "af60284665f939baf1a33f91c952675f5b998b09c9c8a1056d1fc80cd1de979f",
+        "FileHash": "af60284665f939baf1a33f91c952675f5b998b09c9c8a1056d1fc80cd1de979f",
+        "NARSize": "45023232",
+        "FileSize": "45023232",
+        "Compression": "none"
+      },
+      "cxy3a7qw1ri3a4fvg0zn29dmrj3p1jjr": {
+        "StorePath": "/nix/store/cxy3a7qw1ri3a4fvg0zn29dmrj3p1jjr-gcc",
+        "NARHash": "12072c1a13b3771b524e950ec0eeb8e89a6af74ee497c3a12d3cd8f09ef0b15b",
+        "FileHash": "12072c1a13b3771b524e950ec0eeb8e89a6af74ee497c3a12d3cd8f09ef0b15b",
+        "NARSize": "89200640",
+        "FileSize": "89200640",
+        "Compression": "none"
+      }
+    }
+  },
+  "derivations": [
+    {
+      "name": "bootstrap-tools",
+      "builder": "/bin/bash",
+      "inputs": [],
+      "build_args": ["-e", "unpack_bootstrap.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    },
+    {
+      "name": "glibc",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "bootstrap-tools", "output": "out"}
+      ],
+      "build_args": ["-e", "configure_glibc.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    },
+    {
+      "name": "gcc",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "glibc", "output": "out"}
+      ],
+      "build_args": ["-e", "build_gcc.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    },
+    {
+      "name": "coreutils",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "gcc", "output": "out"}
+      ],
+      "build_args": ["-e", "build_coreutils.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    },
+    {
+      "name": "hello",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "coreutils", "output": "out"}
+      ],
+      "build_args": ["-e", "build_hello.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    }
+  ]
+}

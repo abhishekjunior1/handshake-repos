@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/spectral-anomaly-detection"
+description = "Spectral anomaly detection pipeline with periodogram analysis, AR envelope fitting, whitening, and per-segment scoring."
+
+[metadata]
+category = "Data Science and Reporting"
+subcategory = "Time-series analysis"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 6 modules (~900 lines) implementing spectral anomaly detection without external libraries. Two bugs are in pipeline.py's data-flow logic: (1) the scorer receives the full series length n for normalization instead of the window-adjusted effective length n_effective, and (2) segment anomaly classification uses a global threshold instead of per-segment thresholds. Both bugs are masked on visible data: the rectangular window makes n_effective=n, and the stationary series produces a single segment making global=local. The pipeline also contains intentional design patterns (temporal relevance decay, angular frequency normalization) that appear suspicious but are correct — modifying them changes the output and causes verification failure. The codebase targets a niche domain (spectral PSD estimation, AR envelope modeling, Nadaraya-Watson whitening) where correct conventions are not widely memorized. Data is synthetic, shaped like industrial sensor monitoring for anomaly detection — work a signal processing engineer would perform."
+solution_explanation = "Two fixes in pipeline.py: (1) Change score_observations(whitened, spectral_residuals, n) to score_observations(whitened, spectral_residuals, n_effective) — the scoring normalization must account for effective degrees of freedom lost to windowing. (2) Change seg_threshold = global_threshold to seg_threshold = compute_threshold(seg_data, anomaly_percentile) — each segment needs its own threshold calibrated to local variance. The modules periodogram.py, spectral_model.py, whitening.py, anomaly_scorer.py, and segment_analyzer.py are all correct."
+verification_explanation = "The verifier substitutes a 60-observation non-stationary series with 4 variance segments and a Hann window (n_effective=22 vs n=60). Tests compare output against expected values at rel_tol=1e-3. Bug 1 causes anomaly scores to be 39% too low (normalized by sqrt(60) instead of sqrt(22)). Bug 2 causes segment thresholds to differ by 5-49% from correct segment-local values. The temporal decay weighting and 2*pi normalization are verified as correct — removing either causes 42% or 528% deviations respectively. Tolerance absorbs floating-point variation while rejecting all buggy deviations which exceed 4%."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

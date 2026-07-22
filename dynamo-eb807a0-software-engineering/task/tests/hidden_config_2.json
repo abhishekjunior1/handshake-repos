@@ -1,0 +1,5 @@
+{
+  "program": "let choose = fun sel -> fun a -> fun b -> if sel then a else b in let val = choose false 10 20 in val * 2",
+  "environment": {},
+  "settings": {}
+}

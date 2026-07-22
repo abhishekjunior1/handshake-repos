@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/eva-pipeline"
+description = "Debug an extreme value analysis pipeline with temporal declustering, GPD fitting, and return level estimation."
+
+[metadata]
+category = "Data Science and Reporting"
+subcategory = "Statistical analysis and inference"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "Pipeline spans 8 modules (~1100 lines) implementing peaks-over-threshold extreme value analysis with temporal declustering. Three bugs span three different files — pipeline.py, declustering.py, and return_level.py — exploiting the agent trust bias toward domain modules. Bug 1 is a processing order issue in the orchestrator (GPD fitted before declustering results are applied); Bug 2 is an internal algorithm error in the declustering module (returns cluster initiator instead of cluster maximum); Bug 3 is a parameter misuse inside the return level module (extremal index received but not applied to point estimate). Each module appears correct in isolation and each bug is defended by an authoritative comment citing plausible methodology. Visible data has no temporal clustering (extremal index 1.0, all clusters size 1) making all three bugs produce mathematically identical output. Data is synthetic environmental extremes shaped like storm surge records. A hydrologist would perform this work for coastal flood risk assessment."
+solution_explanation = "Three patches across three files: (1) In pipeline.py, change estimate_gpd_parameters(exceedances) to estimate_gpd_parameters(cluster_maxima) so GPD is fitted to declustered independent peaks; (2) In declustering.py, change observations[cluster[-1]]-threshold to max(observations[idx] for idx in cluster)-threshold so cluster maxima reflect actual peak values; (3) In return_level.py, change p_exceed/exceedance_rate to p_exceed/(exceedance_rate*extremal_index) so return levels account for temporal dependence. Each fix is one line but locating them requires tracing data flow across modules and understanding that the authoritative comments are misleading."
+verification_explanation = "Hidden data uses 100 observations with strong temporal clustering (extremal index 0.38, clusters up to size 7). The buggy pipeline produces wrong GPD parameters (27% scale error, 26% shape error from fitting dependent data with wrong cluster maxima), wrong return levels (21% error at 10-year period from missing theta correction), and inflated AD statistics (49% error). Tests use 5-10% relative tolerances that absorb numerical variation while rejecting partially-fixed output. All three bugs must be fixed simultaneously — fixing only Bug 1 without Bug 2 still uses wrong cluster maxima values, and fixing Bugs 1+2 without Bug 3 still computes return levels with the wrong exceedance probability."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

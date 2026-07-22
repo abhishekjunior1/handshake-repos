@@ -1,0 +1,32 @@
+artifacts = ["/app/results.json", "/app/crypto.py", "/app/parser.py", "/app/verifier.py", "/app/main.py"]
+
+[task]
+name = "dynamo/sauth-debug"
+description = "Find and fix three interacting bugs in a multi-file packet authentication system that silently misverifies packets under certain conditions."
+
+[metadata]
+category = "security"
+subcategory = "reverse_engineering"
+model_tested = "GPT-5.4"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "This is the work of security engineers debugging a packet authentication system. Data is entirely synthetic (bespoke SAUTH protocol with no public prior art). The system runs on the visible test packets but rejects the legacy packet (flag 0x80), giving the agent an observable signal for bug #2 — the bugs are SILENT and only manifest on specific packet configurations. Three bugs across three files interact: (1) crypto.py computes the HMAC with the timestamp in little-endian, but the wire format (parsed in parser.py) stores timestamps in big-endian — the canonical MAC form should use BE. Visible packets have palindromic timestamps (0x01010101, 0x02020202) where LE==BE, hiding the mismatch. (2) verifier.py always compares all 16 bytes of the MAC, but legacy devices (flag bit 0x80) send only 8 meaningful bytes with the rest zero-padded. The visible set includes one legacy packet (flag 0x80) which the buggy verifier rejects — making bug #2 observable. (3) main.py sorts packets by timestamp for replay detection, but the SAUTH spec requires sequence-number ordering. Visible packets have seq==timestamp ordering, making both sorts equivalent. COMPOUND TRAP: Hidden packets 5-7 have seq order ≠ timestamp order AND non-palindromic timestamps, triggering bugs 1 and 3 simultaneously. A red herring in parser.py (XOR with 0x00) looks like dead/wrong code but is correct per the hardware alignment spec."
+solution_explanation = "Three targeted fixes: (1) crypto.py: change struct.pack('<I', timestamp) to struct.pack('>I', timestamp) — one character change. (2) verifier.py: add legacy MAC handling — when flags & 0x80, compare only first 8 bytes. (3) main.py: change sort key from timestamp to seq. Each fix is 1-3 lines. Parser.py is correct and must not be modified."
+verification_explanation = "The verifier injects hidden_packets.json (10 packets: 8 valid with non-palindromic timestamps, legacy flags, and out-of-order seq/timestamp, plus 2 invalid — one with a forged MAC and one genuine replay). Runs main.py and checks exact match on valid/reason fields. The buggy system incorrectly rejects valid packets 0-2 (endianness), 3-4 (legacy MAC), and 5-7 (replay false-positive from timestamp sorting). The 2 negative cases (packets 8-9) guard against accept-all shortcuts."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

@@ -1,0 +1,147 @@
+{
+  "preemption_events": [
+    {
+      "cycle": 100,
+      "vector": 16,
+      "preempted_priority": 256,
+      "incoming_priority": 37,
+      "tail_chained": false
+    },
+    {
+      "cycle": 450,
+      "vector": 18,
+      "preempted_priority": 256,
+      "incoming_priority": 34,
+      "tail_chained": true
+    }
+  ],
+  "handler_timeline": [
+    {
+      "vector": 16,
+      "start_cycle": 112,
+      "handler_address": 536871681,
+      "entry_type": "full_entry",
+      "priority": 37
+    },
+    {
+      "vector": 18,
+      "start_cycle": 456,
+      "handler_address": 536872193,
+      "entry_type": "tail_chain",
+      "priority": 34
+    }
+  ],
+  "latency_report": {
+    "total_interrupts_processed": 2,
+    "full_entry_count": 1,
+    "tail_chain_count": 1,
+    "average_entry_latency": 9.0,
+    "total_entry_cycles": 18,
+    "min_entry_latency": 6,
+    "max_entry_latency": 12,
+    "entries": [
+      {
+        "vector": 16,
+        "entry_latency_cycles": 12,
+        "is_tail_chain": false,
+        "arrival_cycle": 100
+      },
+      {
+        "vector": 18,
+        "entry_latency_cycles": 6,
+        "is_tail_chain": true,
+        "arrival_cycle": 450
+      }
+    ]
+  },
+  "vector_map": {
+    "2": {
+      "handler_address": "0x20000101",
+      "table_offset": 8,
+      "absolute_address": "0x20000008",
+      "entry_alignment_bytes": 4,
+      "thumb_bit_set": true
+    },
+    "3": {
+      "handler_address": "0x20000201",
+      "table_offset": 12,
+      "absolute_address": "0x2000000c",
+      "entry_alignment_bytes": 4,
+      "thumb_bit_set": true
+    },
+    "16": {
+      "handler_address": "0x20000301",
+      "table_offset": 64,
+      "absolute_address": "0x20000040",
+      "entry_alignment_bytes": 4,
+      "thumb_bit_set": true
+    },
+    "17": {
+      "handler_address": "0x20000401",
+      "table_offset": 68,
+      "absolute_address": "0x20000044",
+      "entry_alignment_bytes": 4,
+      "thumb_bit_set": true
+    },
+    "18": {
+      "handler_address": "0x20000501",
+      "table_offset": 72,
+      "absolute_address": "0x20000048",
+      "entry_alignment_bytes": 4,
+      "thumb_bit_set": true
+    },
+    "19": {
+      "handler_address": "0x20000601",
+      "table_offset": 76,
+      "absolute_address": "0x2000004c",
+      "entry_alignment_bytes": 4,
+      "thumb_bit_set": true
+    }
+  },
+  "priority_state": {
+    "2": {
+      "state": "pending",
+      "configured_priority": 128,
+      "is_active": false,
+      "nesting_depth": 0
+    },
+    "3": {
+      "state": "pending",
+      "configured_priority": 192,
+      "is_active": false,
+      "nesting_depth": 0
+    },
+    "16": {
+      "state": "inactive",
+      "configured_priority": 48,
+      "is_active": false,
+      "nesting_depth": 0
+    },
+    "17": {
+      "state": "inactive",
+      "configured_priority": 32,
+      "is_active": false,
+      "nesting_depth": 0
+    },
+    "18": {
+      "state": "active",
+      "configured_priority": 32,
+      "is_active": true,
+      "nesting_depth": 1
+    },
+    "19": {
+      "state": "inactive",
+      "configured_priority": 0,
+      "is_active": false,
+      "nesting_depth": 0
+    }
+  },
+  "summary": {
+    "total_preemptions": 2,
+    "total_handlers_executed": 2,
+    "tail_chain_optimizations": 1,
+    "unique_vectors_serviced": 2,
+    "total_latency_cycles": 18,
+    "average_entry_latency": 9.0
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "config_name": "simple-two-namespace",
+  "namespaces": [
+    {
+      "name": "frontend",
+      "labels": {
+        "tier": "web",
+        "env": "production"
+      }
+    },
+    {
+      "name": "backend",
+      "labels": {
+        "tier": "api",
+        "env": "production"
+      }
+    }
+  ],
+  "pods": [
+    {
+      "name": "web-server",
+      "namespace": "frontend",
+      "labels": {
+        "app": "nginx",
+        "role": "server"
+      },
+      "ip": "10.1.1.5"
+    },
+    {
+      "name": "api-server",
+      "namespace": "backend",
+      "labels": {
+        "app": "flask",
+        "role": "server"
+      },
+      "ip": "10.2.1.5"
+    }
+  ],
+  "policies": [
+    {
+      "metadata": {
+        "name": "allow-web-ingress",
+        "namespace": "frontend",
+        "creationTimestamp": "2024-01-10T08:00:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "app": "nginx"
+          }
+        },
+        "policyTypes": [
+          "Ingress"
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "tier": "api"
+                  }
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 80
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "allow-api-ingress",
+        "namespace": "backend",
+        "creationTimestamp": "2024-01-11T09:00:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "app": "flask"
+          }
+        },
+        "policyTypes": [
+          "Ingress"
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "tier": "web"
+                  }
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 5000
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "traffic_flows": [
+    {
+      "id": "flow-1",
+      "src_ip": "10.2.1.5",
+      "dst_ip": "10.1.1.5",
+      "dst_port": 80,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-2",
+      "src_ip": "10.1.1.5",
+      "dst_ip": "10.2.1.5",
+      "dst_port": 5000,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-3",
+      "src_ip": "10.1.1.5",
+      "dst_ip": "10.2.1.5",
+      "dst_port": 8080,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-4",
+      "src_ip": "10.2.1.5",
+      "dst_ip": "10.1.1.5",
+      "dst_port": 443,
+      "protocol": "TCP"
+    }
+  ]
+}

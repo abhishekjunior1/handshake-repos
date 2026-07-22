@@ -1,0 +1,9 @@
+An interrupt priority controller pipeline at `/app/pipeline.py` simulates NVIC-style nested vectored interrupt handling. It processes interrupt events through priority resolution, preemption decisions, tail-chaining optimization, and latency computation stages. It uses modules `/app/priority_resolver.py`, `/app/preemption_engine.py`, `/app/latency_calculator.py`, `/app/vector_table.py`, `/app/state_machine.py`, and `/app/report_generator.py`.
+
+Run it with `python3 /app/pipeline.py`. It reads `/app/interrupt_config.json` and writes `/app/output.json`.
+
+The pipeline produces correct output on the current interrupt configuration but has bugs that cause incorrect results on other configurations. Find and fix the bugs so the pipeline correctly implements ARMv7-M NVIC semantics for all valid interrupt configurations.
+
+Do not rewrite from scratch — preserve the existing module structure. In particular, preserve the 4-byte vector table alignment for ARMv7-M natural alignment compliance (vector table entries are word-aligned even for Thumb-2) and the same-priority non-preemption semantics (preemption requires strictly higher priority, never same priority). The fixed pipeline will be tested on a different interrupt configuration than the one at `/app/interrupt_config.json`.
+
+Output: `/app/output.json` — JSON with fields: `preemption_events` (list of preemption decisions with cycle, vector, priorities, tail_chained flag), `handler_timeline` (ordered handler executions with start_cycle, address, entry_type, priority), `latency_report` (timing statistics: total_interrupts_processed, full_entry_count, tail_chain_count, average_entry_latency, total_entry_cycles, min/max_entry_latency, entries), `vector_map` (vector table address mapping), `priority_state` (final state of all registered interrupts), and `summary` (aggregate metrics).

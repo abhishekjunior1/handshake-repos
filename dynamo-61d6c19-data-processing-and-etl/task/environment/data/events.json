@@ -1,0 +1,74 @@
+{
+  "events": [
+    {
+      "event_id": "evt-001",
+      "table_name": "customers",
+      "operation": "INSERT",
+      "primary_key": "cust-100",
+      "timestamp": "2024-01-15T10:00:00.000Z",
+      "payload": {
+        "name": "Alice Johnson",
+        "email": "alice@example.com",
+        "tier": "gold",
+        "region": "us-west"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-002",
+      "table_name": "customers",
+      "operation": "INSERT",
+      "primary_key": "cust-101",
+      "timestamp": "2024-01-15T10:05:00.000Z",
+      "payload": {
+        "name": "Bob Smith",
+        "email": "bob@example.com",
+        "tier": "silver",
+        "region": "us-east"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-003",
+      "table_name": "orders",
+      "operation": "INSERT",
+      "primary_key": "ord-500",
+      "timestamp": "2024-01-15T11:00:00.000Z",
+      "payload": {
+        "customer_id": "cust-100",
+        "product": "Widget Pro",
+        "amount": 149.99,
+        "status": "confirmed"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-004",
+      "table_name": "orders",
+      "operation": "INSERT",
+      "primary_key": "ord-501",
+      "timestamp": "2024-01-15T11:30:00.000Z",
+      "payload": {
+        "customer_id": "cust-101",
+        "product": "Gadget X",
+        "amount": 89.50,
+        "status": "confirmed"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-005",
+      "table_name": "orders",
+      "operation": "INSERT",
+      "primary_key": "ord-502",
+      "timestamp": "2024-01-15T12:00:00.000Z",
+      "payload": {
+        "customer_id": "cust-100",
+        "product": "Accessory Z",
+        "amount": 29.99,
+        "status": "pending"
+      },
+      "schema_version": 1
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "row_count": 3,
+    "columns": [
+      "product_id",
+      "weighted_cost",
+      "length_cost"
+    ],
+    "transformations_applied": [
+      "type_coercion",
+      "join",
+      "derived_columns",
+      "pivot",
+      "aggregate"
+    ],
+    "source_tables": [
+      "measurements",
+      "product_info"
+    ]
+  },
+  "data": [
+    {
+      "product_id": 103,
+      "weighted_cost": 111.0,
+      "length_cost": 726.0
+    },
+    {
+      "product_id": 102,
+      "weighted_cost": 416.0,
+      "length_cost": 1202.5
+    },
+    {
+      "product_id": 101,
+      "weighted_cost": 260.0,
+      "length_cost": 750.0
+    }
+  ]
+}

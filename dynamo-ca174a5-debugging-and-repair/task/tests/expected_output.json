@@ -1,0 +1,64 @@
+[
+  {
+    "stage_name": "extract",
+    "execution_order": 0,
+    "status": "completed",
+    "output_state": {
+      "raw": "extract_done"
+    },
+    "attempts": 1
+  },
+  {
+    "stage_name": "transform",
+    "execution_order": 1,
+    "status": "completed",
+    "output_state": {
+      "raw": "extract_done",
+      "transformed": "transform_done"
+    },
+    "attempts": 2
+  },
+  {
+    "stage_name": "analyze",
+    "execution_order": 2,
+    "status": "completed",
+    "output_state": {
+      "raw": "extract_done",
+      "analyzed": "computed(1)"
+    },
+    "attempts": 1
+  },
+  {
+    "stage_name": "enrich",
+    "execution_order": 3,
+    "status": "failed",
+    "output_state": {
+      "error": "enrich_failed",
+      "partial": true
+    },
+    "attempts": 3
+  },
+  {
+    "stage_name": "merge",
+    "execution_order": 4,
+    "status": "completed",
+    "output_state": {
+      "raw": "extract_done",
+      "analyzed": "computed(1)",
+      "merged": "analyzed+raw+merge"
+    },
+    "attempts": 1
+  },
+  {
+    "stage_name": "export",
+    "execution_order": 5,
+    "status": "completed",
+    "output_state": {
+      "raw": "extract_done",
+      "analyzed": "computed(1)",
+      "merged": "analyzed+raw+merge",
+      "exported": "export_done"
+    },
+    "attempts": 1
+  }
+]

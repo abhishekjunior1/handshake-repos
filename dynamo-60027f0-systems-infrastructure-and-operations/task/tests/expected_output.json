@@ -1,0 +1,149 @@
+{
+  "results": [
+    {
+      "packet": {
+        "source_ip": "10.50.20.5",
+        "hostname": "api.services.corp",
+        "destination_ip": null,
+        "port": 443,
+        "protocol": "tcp",
+        "ttl": 64,
+        "use_lb": true
+      },
+      "dns": {
+        "status": "resolved",
+        "resolved_ip": "203.0.113.50",
+        "source": "config"
+      },
+      "nat": {
+        "applied": true,
+        "original": "203.0.113.50",
+        "translated": "192.168.1.10",
+        "rule_id": 1
+      },
+      "firewall": {
+        "action": "allow",
+        "matched_rule": 1,
+        "reason": "matched rule 1"
+      },
+      "routing": {
+        "status": "routed",
+        "destination": "192.168.1.10",
+        "next_hop": "gw-services",
+        "interface": "eth2",
+        "network": "192.168.0.0/16"
+      },
+      "qos": {
+        "base_class": "expedited",
+        "final_class": "assured",
+        "final_dscp": 34,
+        "next_hop_policy": true
+      },
+      "load_balancer": {
+        "status": "assigned",
+        "backend": "192.168.1.101:9443",
+        "address": "192.168.1.101",
+        "port": 9443
+      },
+      "status": "forwarded"
+    },
+    {
+      "packet": {
+        "source_ip": "10.50.20.10",
+        "destination_ip": "203.0.113.60",
+        "port": 8080,
+        "protocol": "tcp",
+        "ttl": 60,
+        "use_lb": false
+      },
+      "nat": {
+        "applied": true,
+        "original": "203.0.113.60",
+        "translated": "192.168.1.20",
+        "rule_id": 2
+      },
+      "firewall": {
+        "action": "allow",
+        "matched_rule": 2,
+        "reason": "matched rule 2"
+      },
+      "routing": {
+        "status": "routed",
+        "destination": "192.168.1.20",
+        "next_hop": "gw-services",
+        "interface": "eth2",
+        "network": "192.168.0.0/16"
+      },
+      "qos": {
+        "base_class": "bulk",
+        "final_class": "assured",
+        "final_dscp": 34,
+        "next_hop_policy": true
+      },
+      "status": "forwarded"
+    },
+    {
+      "packet": {
+        "source_ip": "10.50.5.1",
+        "destination_ip": "203.0.113.70",
+        "port": 443,
+        "protocol": "tcp",
+        "ttl": 1,
+        "use_lb": false
+      },
+      "nat": {
+        "applied": true,
+        "original": "203.0.113.70",
+        "translated": "192.168.2.30",
+        "rule_id": 3
+      },
+      "firewall": {
+        "action": "allow",
+        "matched_rule": 3,
+        "reason": "matched rule 3"
+      },
+      "routing": {
+        "status": "ttl_expired",
+        "destination": "192.168.2.30",
+        "next_hop": null,
+        "interface": null,
+        "network": null
+      },
+      "status": "dropped"
+    },
+    {
+      "packet": {
+        "source_ip": "10.50.20.15",
+        "destination_ip": "192.168.1.50",
+        "port": 80,
+        "protocol": "tcp",
+        "ttl": 48,
+        "use_lb": false
+      },
+      "nat": {
+        "applied": false,
+        "original": "192.168.1.50",
+        "translated": "192.168.1.50"
+      },
+      "firewall": {
+        "action": "allow",
+        "matched_rule": 4,
+        "reason": "matched rule 4"
+      },
+      "routing": {
+        "status": "routed",
+        "destination": "192.168.1.50",
+        "next_hop": "gw-services",
+        "interface": "eth2",
+        "network": "192.168.0.0/16"
+      },
+      "qos": {
+        "base_class": "best_effort",
+        "final_class": "assured",
+        "final_dscp": 34,
+        "next_hop_policy": true
+      },
+      "status": "forwarded"
+    }
+  ]
+}

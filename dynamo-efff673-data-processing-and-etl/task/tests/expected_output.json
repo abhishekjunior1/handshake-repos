@@ -1,0 +1,63 @@
+{
+  "window_results": [
+    {
+      "window_key": "window_2000.0_2030.0",
+      "window_start": 2000.0,
+      "window_end": 2030.0,
+      "event_count": 6,
+      "sum_value": 149.5,
+      "avg_value": 24.916666666666668,
+      "min_value": 11.8,
+      "max_value": 85.0,
+      "partition_count": 2,
+      "combined_avg": 48.95,
+      "combined_sum": 149.5
+    }
+  ],
+  "watermark": {
+    "global_watermark": 2052.0,
+    "partition_progress": {
+      "zone-north": 2063.0,
+      "zone-south": 2052.0
+    },
+    "watermark_history": [
+      {
+        "previous": 2000.0,
+        "new": 2052.0,
+        "trigger_event_count": 13
+      }
+    ],
+    "num_partitions": 2,
+    "partition_lag": {
+      "zone-north": -37.0,
+      "zone-south": -26.0
+    },
+    "output_statistics": {
+      "total_sum": 149.5,
+      "overall_avg": 48.95,
+      "max_window_size": 6
+    }
+  },
+  "late_event_handling": {
+    "on_time_count": 13,
+    "late_allowed_count": 0,
+    "dropped_count": 0,
+    "total_processed": 13,
+    "total_dropped": 0
+  },
+  "trigger_summary": {
+    "triggered_count": 1,
+    "pending_count": 2,
+    "trigger_history": [
+      {
+        "window_key": "window_2000.0_2030.0",
+        "trigger_timestamp": 2030.0,
+        "watermark_at_trigger": 2052.0
+      }
+    ]
+  },
+  "pipeline_metadata": {
+    "total_windows_emitted": 1,
+    "total_events_processed": 6
+  }
+}

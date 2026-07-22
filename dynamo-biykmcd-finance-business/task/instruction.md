@@ -1,0 +1,9 @@
+A bond portfolio valuation pipeline at `/app/pipeline.py` computes per-bond analytics (accrued interest, yield-to-maturity, Macaulay duration, modified duration, convexity) and aggregates them into portfolio-level risk metrics. It uses modules `/app/day_count.py`, `/app/yield_calc.py`, `/app/duration.py`, `/app/convexity.py`, `/app/accrued_interest.py`, and `/app/portfolio_analytics.py`.
+
+Run it with `python3 /app/pipeline.py`. It reads `/app/portfolio.json` and writes `/app/output.json`.
+
+The pipeline produces correct output on the current portfolio but has bugs that cause incorrect results on other portfolios. Find and fix the bugs so the pipeline handles all valid bond portfolios correctly, including coupon-bearing bonds with various market conventions.
+
+Do not rewrite from scratch — preserve the existing module structure and calculation methods. Preserve the dirty-price-based duration denominator (Macaulay duration divides by full price including accrued interest) and the dirty-market-value-based portfolio weighting (risk attribution uses total economic exposure). The fixed pipeline will be tested on a different portfolio than the one at `/app/portfolio.json`.
+
+Output: `/app/output.json` — a JSON object with three top-level keys: `portfolio_summary` (containing `total_market_value`, `portfolio_yield`, `portfolio_modified_duration`, `portfolio_convexity`, `portfolio_dv01`, `number_of_positions`), `bond_analytics` (array of per-bond results with `bond_id`, `settlement_date`, `accrued_interest`, `dirty_price`, `clean_price`, `ytm`, `current_yield`, `macaulay_duration`, `modified_duration`, `convexity`, `dollar_duration`, `bpv`, `market_value`, `quantity`, `face_value`), and `risk_decomposition` (containing `duration_contributions` array and `largest_risk_contributor` string).

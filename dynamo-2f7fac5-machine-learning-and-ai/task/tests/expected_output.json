@@ -1,0 +1,60 @@
+{
+  "evaluation_metadata": {
+    "evaluation_mode": "train_test",
+    "n_classes": 3,
+    "classes": [
+      "benign",
+      "critical",
+      "moderate"
+    ],
+    "n_samples_evaluated": 80
+  },
+  "classification_report": {
+    "per_class": {
+      "benign": {
+        "precision": 0.421053,
+        "recall": 0.4,
+        "f1": 0.410256
+      },
+      "critical": {
+        "precision": 0.266667,
+        "recall": 0.333333,
+        "f1": 0.296296
+      },
+      "moderate": {
+        "precision": 0.804348,
+        "recall": 0.770833,
+        "f1": 0.787234
+      }
+    },
+    "macro_f1": 0.497929,
+    "weighted_f1": 0.619349,
+    "accuracy": 0.6125
+  },
+  "roc_auc": {
+    "macro_auc": 0.847656,
+    "per_class_auc": {
+      "benign": 0.850833,
+      "critical": 0.811275,
+      "moderate": 0.880859
+    }
+  },
+  "calibration": {
+    "ece": 0.135634,
+    "mce": 0.265633,
+    "n_bins_used": 8,
+    "positive_class": "benign"
+  },
+  "cross_validation": {
+    "mean_weighted_f1": 0.613755,
+    "std_weighted_f1": 0.137855,
+    "n_folds": 5,
+    "per_fold_scores": [
+      0.534256,
+      0.588235,
+      0.651316,
+      0.442105,
+      0.852865
+    ]
+  }
+}

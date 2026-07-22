@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/hybrid-crypto"
+description = "Debug a hybrid encryption pipeline with key derivation, cipher, and authentication bugs."
+
+[metadata]
+category = "Security"
+subcategory = "Cryptography"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules implementing RSA-KEM + AES-GCM hybrid encryption with HKDF key derivation, HMAC envelope authentication, and authenticated context binding. Three bugs are spread across three files (pipeline.py, key_deriver.py, mac_authenticator.py). Bug 1 uses the KDF salt for MAC key derivation instead of the dedicated mac_salt — masked on visible data where both salts are identical. Bug 2 swaps HKDF salt and info parameters in the extract and expand phases (info used as extraction key, salt used as expansion label) violating RFC 5869 — masked on visible data where salt equals info. Bug 3 returns empty bytes from the AAD binding function instead of including actual AAD in the envelope MAC — masked on visible data where AAD is empty. The bugs are comment-justified with plausible cryptographic rationale (session-specific extraction binding, derivation continuity, GCM layer delegation). A qualified cryptographic engineer familiar with RFC 5869 must trace the HKDF parameter flow across the derive_key_material function to detect the swap hidden behind misleading comments. The data is synthetic, shaped like configurations a security team would deploy across healthcare and financial compliance tiers. This work is performed by cryptography engineers implementing key management systems for enterprise communication platforms."
+solution_explanation = "Fix 1: In pipeline.py, change the MAC key derivation salt from kdf_params['salt'] to mac_params.get('mac_salt', kdf_params['salt']) for proper domain separation between encryption and authentication keys. Fix 2: In key_deriver.py, correct the HKDF parameter usage — change _hkdf_extract to use salt_bytes (not info_bytes) as the HMAC key per RFC 5869 Section 2.2, and change _hkdf_expand to use info_bytes + context (not salt_bytes + context) as the expansion label per RFC 5869 Section 2.3. Fix 3: In mac_authenticator.py, change _build_aad_binding to return the actual aad parameter instead of b'' so the envelope MAC independently covers all authenticated data rather than delegating AAD integrity solely to the GCM layer."
+verification_explanation = "The verifier runs the fixed pipeline on two hidden configurations: (1) AES-128-GCM with separate mac_salt, different salt/info values, and non-empty AAD containing session metadata, and (2) AES-192-GCM with different mac_salt, different salt/info, and non-empty AAD containing transaction data. Tests compare pipeline output against pre-computed expected values using exact string match on deterministic hex-encoded fields (derived_key, ciphertext, gcm_tag, hmac_tag, mac_key) and exact integer match on derived_key_length_bytes. The buggy pipeline produces different derived_key (swapped HKDF parameters), different mac_key (wrong salt), and different hmac_tag (empty AAD binding), cascading into different ciphertext and gcm_tag. All three bugs must be fixed simultaneously — fixing only bugs 1 and 3 still produces 5 wrong fields due to the HKDF parameter swap in the key derivation path."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

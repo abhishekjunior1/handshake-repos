@@ -1,0 +1,35 @@
+{
+  "max_burst_length": 16,
+  "max_cycles": 64,
+  "interrupt_status": 0,
+  "memory_map": {
+    "bus_offset": 0,
+    "bus_address_range": {
+      "start": 0,
+      "end": 4294967295
+    },
+    "iommu_mappings": [],
+    "coherency_regions": []
+  },
+  "channels": [
+    {
+      "channel_id": 0,
+      "enabled": true,
+      "priority": 2,
+      "urgency": 0,
+      "source_address": 1048576,
+      "destination_address": 2097152,
+      "transfer_size": 256,
+      "descriptor_size": 256,
+      "payload_size": 256,
+      "descriptors": [
+        {
+          "address": 1048576,
+          "size": 256,
+          "next": null,
+          "flags": 0
+        }
+      ]
+    }
+  ]
+}

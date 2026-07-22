@@ -1,0 +1,330 @@
+{
+  "mesh_name": "staging-mesh",
+  "evaluation_mode": "strict",
+  "global_policies": {
+    "mtls_mode": "strict",
+    "default_timeout_ms": 10000,
+    "retry_budget_percent": 15,
+    "circuit_breaker_threshold": 0.4
+  },
+  "services": [
+    {
+      "service_id": "frontend-proxy",
+      "namespace": "ingress",
+      "port": 443,
+      "protocol": "HTTP2",
+      "mtls_required": true,
+      "health_check_path": "/ready",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": false
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percent": 30,
+        "recovery_timeout_ms": 20000,
+        "half_open_requests": 2
+      },
+      "upstreams": [
+        {
+          "upstream_id": "frontend-proxy-east",
+          "address": "10.1.1.10",
+          "port": 443,
+          "weight": 80,
+          "priority": 90,
+          "health_score": 0.92,
+          "zone": "us-east-1a"
+        },
+        {
+          "upstream_id": "frontend-proxy-west",
+          "address": "10.2.1.10",
+          "port": 443,
+          "weight": 120,
+          "priority": 70,
+          "health_score": 0.78,
+          "zone": "us-west-2a"
+        }
+      ]
+    },
+    {
+      "service_id": "auth-service",
+      "namespace": "security",
+      "port": 8443,
+      "protocol": "gRPC",
+      "mtls_required": true,
+      "health_check_path": "/grpc.health.v1.Health/Check",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": false
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percent": 25,
+        "recovery_timeout_ms": 15000,
+        "half_open_requests": 4
+      },
+      "upstreams": [
+        {
+          "upstream_id": "auth-primary",
+          "address": "10.1.2.20",
+          "port": 8443,
+          "weight": 150,
+          "priority": 100,
+          "health_score": 0.85,
+          "zone": "us-east-1a"
+        },
+        {
+          "upstream_id": "auth-secondary",
+          "address": "10.1.2.21",
+          "port": 8443,
+          "weight": 100,
+          "priority": 60,
+          "health_score": 0.95,
+          "zone": "us-east-1b"
+        },
+        {
+          "upstream_id": "auth-dr",
+          "address": "10.2.2.20",
+          "port": 8443,
+          "weight": 50,
+          "priority": 30,
+          "health_score": 0.7,
+          "zone": "us-west-2a"
+        }
+      ]
+    },
+    {
+      "service_id": "payment-gateway",
+      "namespace": "finance",
+      "port": 9443,
+      "protocol": "HTTP",
+      "mtls_required": false,
+      "health_check_path": "/health",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": true
+      },
+      "circuit_breaker": {
+        "enabled": true,
+        "error_threshold_percent": 20,
+        "recovery_timeout_ms": 60000,
+        "half_open_requests": 1
+      },
+      "upstreams": [
+        {
+          "upstream_id": "payment-us",
+          "address": "10.1.3.30",
+          "port": 9443,
+          "weight": 200,
+          "priority": 150,
+          "health_score": 0.88,
+          "zone": "us-east-1a"
+        },
+        {
+          "upstream_id": "payment-eu",
+          "address": "10.3.3.30",
+          "port": 9443,
+          "weight": 100,
+          "priority": 80,
+          "health_score": 0.65,
+          "zone": "eu-west-1a"
+        }
+      ]
+    },
+    {
+      "service_id": "notification-service",
+      "namespace": "messaging",
+      "port": 8080,
+      "protocol": "HTTP",
+      "mtls_required": true,
+      "health_check_path": "/ping",
+      "load_balancer_config": {
+        "algorithm": "weighted_round_robin",
+        "sticky_sessions": false
+      },
+      "circuit_breaker": {
+        "enabled": false,
+        "error_threshold_percent": 50,
+        "recovery_timeout_ms": 30000,
+        "half_open_requests": 3
+      },
+      "upstreams": [
+        {
+          "upstream_id": "notif-worker-1",
+          "address": "10.1.4.40",
+          "port": 8080,
+          "weight": 100,
+          "priority": 100,
+          "health_score": 0.97,
+          "zone": "us-east-1a"
+        },
+        {
+          "upstream_id": "notif-worker-2",
+          "address": "10.1.4.41",
+          "port": 8080,
+          "weight": 100,
+          "priority": 80,
+          "health_score": 0.91,
+          "zone": "us-east-1b"
+        }
+      ]
+    }
+  ],
+  "routing_rules": [
+    {
+      "rule_id": "route-auth-001",
+      "source_service": "frontend-proxy",
+      "destination_service": "auth-service",
+      "match_criteria": {
+        "path_prefix": "/auth",
+        "headers": {}
+      },
+      "traffic_policy": {
+        "timeout_ms": 2000,
+        "retries": 1,
+        "retry_on": [
+          "5xx",
+          "reset"
+        ]
+      }
+    },
+    {
+      "rule_id": "route-payment-001",
+      "source_service": "frontend-proxy",
+      "destination_service": "payment-gateway",
+      "match_criteria": {
+        "path_prefix": "/api/payments",
+        "headers": {
+          "x-idempotency-key": "required"
+        }
+      },
+      "traffic_policy": {
+        "timeout_ms": 8000,
+        "retries": 0,
+        "retry_on": []
+      }
+    },
+    {
+      "rule_id": "route-notif-001",
+      "source_service": "auth-service",
+      "destination_service": "notification-service",
+      "match_criteria": {
+        "path_prefix": "/notify",
+        "headers": {}
+      },
+      "traffic_policy": {
+        "timeout_ms": 5000,
+        "retries": 2,
+        "retry_on": [
+          "5xx",
+          "connect-failure"
+        ]
+      }
+    },
+    {
+      "rule_id": "route-payment-002",
+      "source_service": "auth-service",
+      "destination_service": "payment-gateway",
+      "match_criteria": {
+        "path_prefix": "/internal/verify-payment",
+        "headers": {}
+      },
+      "traffic_policy": {
+        "timeout_ms": 6000,
+        "retries": 1,
+        "retry_on": [
+          "5xx"
+        ]
+      }
+    }
+  ],
+  "traffic_samples": [
+    {
+      "request_id": "req-h001",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "path": "/auth/login",
+      "headers": {},
+      "timestamp_ms": 1700100000000
+    },
+    {
+      "request_id": "req-h002",
+      "source": "frontend-proxy",
+      "destination": "payment-gateway",
+      "path": "/api/payments/charge",
+      "headers": {
+        "x-idempotency-key": "required"
+      },
+      "timestamp_ms": 1700100001000
+    },
+    {
+      "request_id": "req-h003",
+      "source": "auth-service",
+      "destination": "notification-service",
+      "path": "/notify/login-alert",
+      "headers": {},
+      "timestamp_ms": 1700100002000
+    },
+    {
+      "request_id": "req-h004",
+      "source": "auth-service",
+      "destination": "payment-gateway",
+      "path": "/internal/verify-payment/txn-789",
+      "headers": {},
+      "timestamp_ms": 1700100003000
+    },
+    {
+      "request_id": "req-h005",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "path": "/auth/refresh-token",
+      "headers": {},
+      "timestamp_ms": 1700100004000
+    },
+    {
+      "request_id": "req-h006",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "path": "/auth/verify",
+      "headers": {},
+      "timestamp_ms": 1700100005000,
+      "status_code": 500
+    },
+    {
+      "request_id": "req-h007",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "path": "/auth/check",
+      "headers": {},
+      "timestamp_ms": 1700100006000,
+      "status_code": 500
+    },
+    {
+      "request_id": "req-h008",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "path": "/auth/token",
+      "headers": {},
+      "timestamp_ms": 1700100007000,
+      "status_code": 500
+    },
+    {
+      "request_id": "req-h009",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "path": "/auth/session",
+      "headers": {},
+      "timestamp_ms": 1700100008000,
+      "status_code": 200
+    },
+    {
+      "request_id": "req-h010",
+      "source": "frontend-proxy",
+      "destination": "auth-service",
+      "path": "/auth/logout",
+      "headers": {},
+      "timestamp_ms": 1700100009000,
+      "status_code": 200
+    }
+  ]
+}

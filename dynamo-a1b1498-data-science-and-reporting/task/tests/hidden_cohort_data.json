@@ -1,0 +1,40 @@
+{
+  "study_config": {
+    "study_name": "Neoadjuvant Chemotherapy Regimen Comparison",
+    "group_field": "regimen",
+    "time_field": "weeks",
+    "event_field": "progression",
+    "covariates": ["tumor_size"],
+    "comparisons": [
+      {"group_a": "standard", "group_b": "intensive"}
+    ]
+  },
+  "patients": [
+    {"id": 1, "regimen": "standard", "weeks": 4, "progression": 1, "tumor_size": 3.2},
+    {"id": 2, "regimen": "standard", "weeks": 4, "progression": 1, "tumor_size": 2.8},
+    {"id": 3, "regimen": "standard", "weeks": 4, "progression": 0, "tumor_size": 2.1},
+    {"id": 4, "regimen": "standard", "weeks": 8, "progression": 1, "tumor_size": 4.5},
+    {"id": 5, "regimen": "standard", "weeks": 8, "progression": 1, "tumor_size": 3.7},
+    {"id": 6, "regimen": "standard", "weeks": 12, "progression": 1, "tumor_size": 3.9},
+    {"id": 7, "regimen": "standard", "weeks": 12, "progression": 0, "tumor_size": 2.4},
+    {"id": 8, "regimen": "standard", "weeks": 16, "progression": 1, "tumor_size": 5.1},
+    {"id": 9, "regimen": "standard", "weeks": 20, "progression": 0, "tumor_size": 2.6},
+    {"id": 10, "regimen": "standard", "weeks": 20, "progression": 1, "tumor_size": 4.2},
+    {"id": 11, "regimen": "intensive", "weeks": 4, "progression": 1, "tumor_size": 3.5},
+    {"id": 12, "regimen": "intensive", "weeks": 8, "progression": 0, "tumor_size": 2.3},
+    {"id": 13, "regimen": "intensive", "weeks": 8, "progression": 1, "tumor_size": 4.0},
+    {"id": 14, "regimen": "intensive", "weeks": 12, "progression": 1, "tumor_size": 3.1},
+    {"id": 15, "regimen": "intensive", "weeks": 12, "progression": 1, "tumor_size": 4.8},
+    {"id": 16, "regimen": "intensive", "weeks": 16, "progression": 0, "tumor_size": 2.0},
+    {"id": 17, "regimen": "intensive", "weeks": 16, "progression": 0, "tumor_size": 2.7},
+    {"id": 18, "regimen": "intensive", "weeks": 20, "progression": 1, "tumor_size": 3.8},
+    {"id": 19, "regimen": "intensive", "weeks": 24, "progression": 0, "tumor_size": 2.2},
+    {"id": 20, "regimen": "intensive", "weeks": 24, "progression": 0, "tumor_size": 2.9}
+  ],
+  "analysis_params": {
+    "alpha": 0.05,
+    "confidence_level": 0.95,
+    "cox_max_iter": 100,
+    "cox_tol": 1e-9
+  }
+}

@@ -1,0 +1,266 @@
+{
+  "zones": [
+    {
+      "name": "dmz",
+      "interfaces": ["eth0"],
+      "default_action": "deny",
+      "description": "Demilitarized zone for public services"
+    },
+    {
+      "name": "core",
+      "interfaces": ["eth1"],
+      "default_action": "deny",
+      "description": "Core internal network"
+    },
+    {
+      "name": "edge",
+      "interfaces": ["eth2"],
+      "default_action": "deny",
+      "description": "Edge network segment"
+    },
+    {
+      "name": "mgmt",
+      "interfaces": ["eth3"],
+      "default_action": "deny",
+      "description": "Management network"
+    }
+  ],
+  "subnet_map": [
+    {"network": "172.16.1.0/24", "zone": "dmz"},
+    {"network": "10.0.2.0/24", "zone": "core"},
+    {"network": "172.16.2.0/24", "zone": "edge"},
+    {"network": "10.0.3.0/24", "zone": "mgmt"},
+    {"network": "203.0.113.0/24", "zone": "dmz"}
+  ],
+  "nat": {
+    "dnat_rules": [
+      {
+        "original_ip": "203.0.113.50",
+        "translated_ip": "10.0.2.80",
+        "port_range": [80, 80],
+        "protocol": "tcp"
+      },
+      {
+        "original_ip": "203.0.113.51",
+        "translated_ip": "10.0.2.81",
+        "port_range": [443, 443],
+        "protocol": "tcp"
+      }
+    ],
+    "snat_rules": [
+      {
+        "original_ip": "10.0.2.80",
+        "translated_ip": "203.0.113.50",
+        "port_range": [0, 65535],
+        "protocol": "any"
+      }
+    ]
+  },
+  "zone_pair_policies": [
+    {
+      "source_zone": "dmz",
+      "dest_zone": "core",
+      "ruleset_name": "dmz-to-core",
+      "description": "DMZ to core server access",
+      "rules": [
+        {
+          "name": "allow-web-to-internal",
+          "action": "permit",
+          "src_cidr": "172.16.1.0/24",
+          "dst_cidr": "10.0.2.0/24",
+          "dst_port_range": [80, 80],
+          "protocol": "tcp"
+        },
+        {
+          "name": "allow-app-to-internal",
+          "action": "permit",
+          "src_cidr": "172.16.1.0/24",
+          "dst_cidr": "10.0.2.0/24",
+          "dst_port_range": [8080, 8080],
+          "protocol": "tcp"
+        },
+        {
+          "name": "deny-all-dmz-core",
+          "action": "deny",
+          "src_cidr": "0.0.0.0/0",
+          "dst_cidr": "0.0.0.0/0",
+          "protocol": "any"
+        }
+      ]
+    },
+    {
+      "source_zone": "edge",
+      "dest_zone": "dmz",
+      "ruleset_name": "edge-to-dmz",
+      "description": "Edge inbound to DMZ services",
+      "rules": [
+        {
+          "name": "allow-inbound-http",
+          "action": "permit",
+          "src_cidr": "172.16.2.0/24",
+          "dst_cidr": "10.0.2.0/24",
+          "dst_port_range": [80, 80],
+          "protocol": "tcp"
+        },
+        {
+          "name": "allow-inbound-https",
+          "action": "permit",
+          "src_cidr": "172.16.2.0/24",
+          "dst_cidr": "10.0.2.0/24",
+          "dst_port_range": [443, 443],
+          "protocol": "tcp"
+        },
+        {
+          "name": "deny-all-edge-dmz",
+          "action": "deny",
+          "src_cidr": "0.0.0.0/0",
+          "dst_cidr": "0.0.0.0/0",
+          "protocol": "any"
+        }
+      ]
+    },
+    {
+      "source_zone": "core",
+      "dest_zone": "dmz",
+      "ruleset_name": "core-to-dmz",
+      "description": "Core responses to DMZ",
+      "rules": [
+        {
+          "name": "allow-core-response",
+          "action": "permit",
+          "src_cidr": "10.0.2.0/24",
+          "dst_cidr": "172.16.1.0/24",
+          "protocol": "tcp"
+        },
+        {
+          "name": "deny-all-core-dmz",
+          "action": "deny",
+          "src_cidr": "0.0.0.0/0",
+          "dst_cidr": "0.0.0.0/0",
+          "protocol": "any"
+        }
+      ]
+    },
+    {
+      "source_zone": "dmz",
+      "dest_zone": "edge",
+      "ruleset_name": "dmz-to-edge",
+      "description": "DMZ outbound responses",
+      "rules": [
+        {
+          "name": "allow-dmz-outbound",
+          "action": "permit",
+          "src_cidr": "172.16.1.0/24",
+          "dst_cidr": "172.16.2.0/24",
+          "protocol": "tcp"
+        },
+        {
+          "name": "deny-all-dmz-edge",
+          "action": "deny",
+          "src_cidr": "0.0.0.0/0",
+          "dst_cidr": "0.0.0.0/0",
+          "protocol": "any"
+        }
+      ]
+    },
+    {
+      "source_zone": "mgmt",
+      "dest_zone": "core",
+      "ruleset_name": "mgmt-to-core",
+      "description": "Management access to core",
+      "rules": [
+        {
+          "name": "allow-mgmt-ssh",
+          "action": "permit",
+          "src_cidr": "10.0.3.0/24",
+          "dst_cidr": "10.0.2.0/24",
+          "dst_port_range": [22, 22],
+          "protocol": "tcp"
+        },
+        {
+          "name": "deny-all-mgmt-core",
+          "action": "deny",
+          "src_cidr": "0.0.0.0/0",
+          "dst_cidr": "0.0.0.0/0",
+          "protocol": "any"
+        }
+      ]
+    }
+  ],
+  "default_policy_action": "deny",
+  "connection_timeout": 3600,
+  "packets": [
+    {
+      "id": 1,
+      "src_ip": "172.16.1.10",
+      "dst_ip": "10.0.2.50",
+      "src_port": 49000,
+      "dst_port": 80,
+      "protocol": "tcp",
+      "timestamp": 1000.0
+    },
+    {
+      "id": 2,
+      "src_ip": "172.16.1.10",
+      "dst_ip": "10.0.2.50",
+      "src_port": 49001,
+      "dst_port": 8080,
+      "protocol": "tcp",
+      "timestamp": 1000.1
+    },
+    {
+      "id": 3,
+      "src_ip": "172.16.2.20",
+      "dst_ip": "203.0.113.50",
+      "src_port": 51000,
+      "dst_port": 80,
+      "protocol": "tcp",
+      "timestamp": 1000.2
+    },
+    {
+      "id": 4,
+      "src_ip": "172.16.2.21",
+      "dst_ip": "203.0.113.51",
+      "src_port": 51100,
+      "dst_port": 443,
+      "protocol": "tcp",
+      "timestamp": 1000.3
+    },
+    {
+      "id": 5,
+      "src_ip": "10.0.2.50",
+      "dst_ip": "172.16.1.10",
+      "src_port": 80,
+      "dst_port": 49000,
+      "protocol": "tcp",
+      "timestamp": 1000.4
+    },
+    {
+      "id": 6,
+      "src_ip": "10.0.2.80",
+      "dst_ip": "172.16.2.20",
+      "src_port": 80,
+      "dst_port": 51000,
+      "protocol": "tcp",
+      "timestamp": 1000.5
+    },
+    {
+      "id": 7,
+      "src_ip": "10.0.3.10",
+      "dst_ip": "10.0.2.90",
+      "src_port": 52000,
+      "dst_port": 22,
+      "protocol": "tcp",
+      "timestamp": 1000.6
+    },
+    {
+      "id": 8,
+      "src_ip": "172.16.1.10",
+      "dst_ip": "10.0.2.50",
+      "src_port": 49002,
+      "dst_port": 25,
+      "protocol": "tcp",
+      "timestamp": 1000.7
+    }
+  ]
+}

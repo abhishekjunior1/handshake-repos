@@ -1,0 +1,530 @@
+{
+  "summary": {
+    "overall_status": "critical",
+    "total_routers": 4,
+    "total_links": 4,
+    "total_routes_computed": 32,
+    "addressing_valid": false,
+    "total_misconfigurations": 1,
+    "flows_evaluated": 5,
+    "flows_permitted": 4,
+    "flows_denied": 1
+  },
+  "addressing_validation": {
+    "consistency_errors": [],
+    "overlap_warnings": [],
+    "interface_errors": [
+      {
+        "link": "link-R1-R4",
+        "endpoint_a": "R1:eth2 (172.16.10.1/24)",
+        "endpoint_b": "R4:eth0 (10.1.4.2/30)",
+        "error": "link endpoints in different subnets"
+      }
+    ],
+    "total_interfaces_checked": 11,
+    "is_valid": false
+  },
+  "routing_analysis": {
+    "ospf_link_costs": {
+      "link-R1-R2": 2,
+      "link-R1-R3": 10,
+      "link-R2-R3": 5,
+      "link-R1-R4": 20
+    },
+    "routing_tables": {
+      "R1": [
+        {
+          "destination": "10.1.1.0",
+          "prefix_length": 30,
+          "next_hop": "directly_connected",
+          "interface": "eth0",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "10.1.2.0",
+          "prefix_length": 30,
+          "next_hop": "directly_connected",
+          "interface": "eth1",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "10.1.3.0",
+          "prefix_length": 30,
+          "next_hop": "R2",
+          "interface": "eth0",
+          "metric": 2,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "10.1.4.0",
+          "prefix_length": 30,
+          "next_hop": "R4",
+          "interface": "eth2",
+          "metric": 20,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.10.0",
+          "prefix_length": 24,
+          "next_hop": "directly_connected",
+          "interface": "eth2",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "172.16.20.0",
+          "prefix_length": 24,
+          "next_hop": "R2",
+          "interface": "eth0",
+          "metric": 2,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.30.0",
+          "prefix_length": 24,
+          "next_hop": "R3",
+          "interface": "eth0",
+          "metric": 7,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.40.0",
+          "prefix_length": 24,
+          "next_hop": "R4",
+          "interface": "eth2",
+          "metric": 20,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        }
+      ],
+      "R2": [
+        {
+          "destination": "10.1.1.0",
+          "prefix_length": 30,
+          "next_hop": "directly_connected",
+          "interface": "eth0",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "10.1.2.0",
+          "prefix_length": 30,
+          "next_hop": "R1",
+          "interface": "eth0",
+          "metric": 2,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "10.1.3.0",
+          "prefix_length": 30,
+          "next_hop": "directly_connected",
+          "interface": "eth1",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "10.1.4.0",
+          "prefix_length": 30,
+          "next_hop": "R4",
+          "interface": "eth0",
+          "metric": 22,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.10.0",
+          "prefix_length": 24,
+          "next_hop": "R1",
+          "interface": "eth0",
+          "metric": 2,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.20.0",
+          "prefix_length": 24,
+          "next_hop": "directly_connected",
+          "interface": "eth2",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "172.16.30.0",
+          "prefix_length": 24,
+          "next_hop": "R3",
+          "interface": "eth1",
+          "metric": 5,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.40.0",
+          "prefix_length": 24,
+          "next_hop": "R4",
+          "interface": "eth0",
+          "metric": 22,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        }
+      ],
+      "R3": [
+        {
+          "destination": "10.1.1.0",
+          "prefix_length": 30,
+          "next_hop": "R2",
+          "interface": "eth1",
+          "metric": 5,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "10.1.2.0",
+          "prefix_length": 30,
+          "next_hop": "directly_connected",
+          "interface": "eth0",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "10.1.3.0",
+          "prefix_length": 30,
+          "next_hop": "directly_connected",
+          "interface": "eth1",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "10.1.4.0",
+          "prefix_length": 30,
+          "next_hop": "R4",
+          "interface": "eth1",
+          "metric": 27,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.10.0",
+          "prefix_length": 24,
+          "next_hop": "R1",
+          "interface": "eth1",
+          "metric": 7,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.20.0",
+          "prefix_length": 24,
+          "next_hop": "R2",
+          "interface": "eth1",
+          "metric": 5,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.30.0",
+          "prefix_length": 24,
+          "next_hop": "directly_connected",
+          "interface": "eth2",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "172.16.40.0",
+          "prefix_length": 24,
+          "next_hop": "R4",
+          "interface": "eth1",
+          "metric": 27,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        }
+      ],
+      "R4": [
+        {
+          "destination": "10.1.1.0",
+          "prefix_length": 30,
+          "next_hop": "R1",
+          "interface": "eth0",
+          "metric": 20,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "10.1.2.0",
+          "prefix_length": 30,
+          "next_hop": "R1",
+          "interface": "eth0",
+          "metric": 20,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "10.1.3.0",
+          "prefix_length": 30,
+          "next_hop": "R2",
+          "interface": "eth0",
+          "metric": 22,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "10.1.4.0",
+          "prefix_length": 30,
+          "next_hop": "directly_connected",
+          "interface": "eth0",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        },
+        {
+          "destination": "172.16.10.0",
+          "prefix_length": 24,
+          "next_hop": "R1",
+          "interface": "eth0",
+          "metric": 20,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.20.0",
+          "prefix_length": 24,
+          "next_hop": "R2",
+          "interface": "eth0",
+          "metric": 22,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.30.0",
+          "prefix_length": 24,
+          "next_hop": "R3",
+          "interface": "eth0",
+          "metric": 27,
+          "route_type": "ospf",
+          "administrative_distance": 110
+        },
+        {
+          "destination": "172.16.40.0",
+          "prefix_length": 24,
+          "next_hop": "directly_connected",
+          "interface": "eth1",
+          "metric": 0,
+          "route_type": "connected",
+          "administrative_distance": 0
+        }
+      ]
+    },
+    "route_statistics": {
+      "R1": {
+        "total_routes": 8,
+        "connected_routes": 3,
+        "learned_routes": 5,
+        "avg_metric": 10.2
+      },
+      "R2": {
+        "total_routes": 8,
+        "connected_routes": 3,
+        "learned_routes": 5,
+        "avg_metric": 10.6
+      },
+      "R3": {
+        "total_routes": 8,
+        "connected_routes": 3,
+        "learned_routes": 5,
+        "avg_metric": 14.2
+      },
+      "R4": {
+        "total_routes": 8,
+        "connected_routes": 2,
+        "learned_routes": 6,
+        "avg_metric": 21.833333333333332
+      }
+    }
+  },
+  "acl_evaluation": {
+    "flow_decisions": [
+      {
+        "flow_id": "flow-10",
+        "source_ip": "172.16.10.50",
+        "destination_ip": "172.16.30.100",
+        "action": "deny",
+        "matched_rule": "ACL-10",
+        "evaluation_path": [
+          {
+            "rule_id": "ACL-10",
+            "matched": true,
+            "reason": "all criteria matched"
+          }
+        ]
+      },
+      {
+        "flow_id": "flow-11",
+        "source_ip": "172.16.20.25",
+        "destination_ip": "172.16.40.80",
+        "action": "permit",
+        "matched_rule": "ACL-12",
+        "evaluation_path": [
+          {
+            "rule_id": "ACL-10",
+            "matched": false,
+            "reason": "destination IP not in rule destination network"
+          },
+          {
+            "rule_id": "ACL-11",
+            "matched": false,
+            "reason": "source IP not in rule source network"
+          },
+          {
+            "rule_id": "ACL-12",
+            "matched": true,
+            "reason": "all criteria matched"
+          }
+        ]
+      },
+      {
+        "flow_id": "flow-12",
+        "source_ip": "172.16.10.15",
+        "destination_ip": "172.16.30.50",
+        "action": "permit",
+        "matched_rule": "ACL-11",
+        "evaluation_path": [
+          {
+            "rule_id": "ACL-10",
+            "matched": false,
+            "reason": "destination IP not in rule destination network"
+          },
+          {
+            "rule_id": "ACL-11",
+            "matched": true,
+            "reason": "all criteria matched"
+          }
+        ]
+      },
+      {
+        "flow_id": "flow-13",
+        "source_ip": "172.16.10.10",
+        "destination_ip": "172.16.20.200",
+        "action": "permit",
+        "matched_rule": "ACL-13",
+        "evaluation_path": [
+          {
+            "rule_id": "ACL-10",
+            "matched": false,
+            "reason": "destination IP not in rule destination network"
+          },
+          {
+            "rule_id": "ACL-11",
+            "matched": false,
+            "reason": "destination IP not in rule destination network"
+          },
+          {
+            "rule_id": "ACL-12",
+            "matched": false,
+            "reason": "source IP not in rule source network"
+          },
+          {
+            "rule_id": "ACL-13",
+            "matched": true,
+            "reason": "all criteria matched"
+          }
+        ]
+      },
+      {
+        "flow_id": "flow-14",
+        "source_ip": "172.16.30.5",
+        "destination_ip": "172.16.10.99",
+        "action": "permit",
+        "matched_rule": "ACL-13",
+        "evaluation_path": [
+          {
+            "rule_id": "ACL-10",
+            "matched": false,
+            "reason": "destination IP not in rule destination network"
+          },
+          {
+            "rule_id": "ACL-11",
+            "matched": false,
+            "reason": "source IP not in rule source network"
+          },
+          {
+            "rule_id": "ACL-12",
+            "matched": false,
+            "reason": "source IP not in rule source network"
+          },
+          {
+            "rule_id": "ACL-13",
+            "matched": true,
+            "reason": "all criteria matched"
+          }
+        ]
+      }
+    ],
+    "rules_matched": 5,
+    "flows_permitted": 4,
+    "flows_denied": 1
+  },
+  "misconfiguration_report": {
+    "asymmetric_routes": [],
+    "black_holes": [],
+    "mtu_mismatches": [
+      {
+        "type": "mtu_mismatch",
+        "link": "link-R2-R3",
+        "router_a": "R2",
+        "interface_a": "eth1",
+        "mtu_a": 9000,
+        "router_b": "R3",
+        "interface_b": "eth1",
+        "mtu_b": 1500,
+        "difference": 7500
+      }
+    ],
+    "total_issues": 1
+  },
+  "topology_overview": {
+    "routers": [
+      {
+        "id": "R1",
+        "hostname": "core-router-1",
+        "active_interfaces": 3,
+        "ospf_area": 0
+      },
+      {
+        "id": "R2",
+        "hostname": "dist-router-2",
+        "active_interfaces": 3,
+        "ospf_area": 0
+      },
+      {
+        "id": "R3",
+        "hostname": "edge-router-3",
+        "active_interfaces": 3,
+        "ospf_area": 0
+      },
+      {
+        "id": "R4",
+        "hostname": "access-router-4",
+        "active_interfaces": 2,
+        "ospf_area": 1
+      }
+    ],
+    "total_links": 4,
+    "total_subnets": 8,
+    "reference_bandwidth": 100000
+  }
+}

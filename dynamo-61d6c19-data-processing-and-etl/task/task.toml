@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/cdc-etl-pipeline"
+description = "Debug an incremental CDC ETL pipeline that processes change event streams into a consolidated warehouse snapshot."
+
+[metadata]
+category = "Data Processing and ETL"
+subcategory = "ETL Pipelines"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 7 modules (~900 lines) implementing CDC processing without external libraries. Three bugs are distributed across pipeline.py, merge_processor.py, and scd_tracker.py — each produces silently wrong output rather than errors. Bug 1 is a processing order issue where deduplication occurs after merge instead of before, causing duplicate events to create spurious merge conflicts. Bug 2 is a merge semantics issue where UPDATE events overwrite all columns including NULLs instead of preserving existing values for NULL columns (partial update semantics). Bug 3 is a temporal boundary issue where SCD version closures omit the effective_to timestamp on superseded records. Each bug is masked by the visible data properties: no duplicate events (dedup is a no-op regardless of position), all UPDATE payloads are complete (overwrite-all equals partial-update), and single event per entity (no temporal boundaries to miscalculate). A data engineer specializing in CDC pipelines would encounter these issues when building production change data capture systems. Data is synthetic, structured to resemble multi-table CDC streams from transactional databases."
+solution_explanation = "Three patches are required: (1) In pipeline.py, reorder the processing stages so deduplicate_events runs before group_events_by_table and _merge_all_tables, passing deduplicated events to both merge and SCD stages. (2) In merge_processor.py's _apply_update function, add a conditional 'if val is not None' guard around the column assignment in the UPDATE loop, implementing partial-update semantics that preserve existing values when the event payload carries NULL. (3) In scd_tracker.py's _build_entity_history function, add 'history[-1][\"effective_to\"] = event.timestamp' before setting is_current to False, ensuring superseded SCD versions have their temporal boundary correctly closed."
+verification_explanation = "The verifier substitutes two hidden event streams that contain duplicate CDC events (within 10-second dedup windows), UPDATE events with NULL columns that should preserve prior values, and multiple events per entity requiring SCD temporal boundaries. Tests verify: warehouse row values are preserved through partial updates (5+ columns that would be NULL under overwrite-all semantics), SCD effective_to timestamps are set on superseded versions (4 boundary checks per config), merge operation counts reflect dedup-before-merge ordering (zero conflicts when duplicates are pre-eliminated), and a catch-all full-output exact match. Both hidden configurations exercise all three bugs simultaneously with different table structures (products/shipments vs accounts/transactions) ensuring the fix is general, not input-specific."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

@@ -1,0 +1,289 @@
+{
+  "optimizer_version": "1.0.0",
+  "plans": [
+    {
+      "database": "warehouse_db",
+      "query": "SELECT e.emp_id, p.project_id, d.dept_name FROM employees e JOIN projects p ON e.dept_id = p.dept_id JOIN departments d ON p.dept_id = d.dept_id WHERE e.hire_year = 2020 AND p.priority = 1",
+      "plan_summary": {
+        "total_estimated_cost": 666.9,
+        "estimated_output_rows": 625,
+        "join_strategy": "Hash Join",
+        "table_access_strategies": {
+          "employees": "Index Scan",
+          "projects": "Index Scan",
+          "departments": "Index Scan"
+        }
+      },
+      "scan_plans": [
+        {
+          "table": "departments",
+          "strategy": "Index Scan",
+          "io_cost": 0.2,
+          "cpu_cost": 1.5,
+          "total_cost": 1.7,
+          "output_rows": 100,
+          "selectivity": 1.0,
+          "index_used": "departments_pkey",
+          "correlation": 0.99
+        },
+        {
+          "table": "employees",
+          "strategy": "Index Scan",
+          "io_cost": 550.2,
+          "cpu_cost": 37.5,
+          "total_cost": 587.7,
+          "output_rows": 2500,
+          "selectivity": 0.05,
+          "index_used": "employees_dept_year_idx",
+          "correlation": 0.85
+        },
+        {
+          "table": "projects",
+          "strategy": "Index Scan",
+          "io_cost": 40.0,
+          "cpu_cost": 15.0,
+          "total_cost": 55.0,
+          "output_rows": 1000,
+          "selectivity": 0.2,
+          "index_used": "projects_dept_priority_idx",
+          "correlation": 0.9
+        }
+      ],
+      "join_plan": {
+        "strategy": "Hash Join",
+        "total_cost": 666.9,
+        "output_rows": 625,
+        "join_selectivity": 0.00025,
+        "outer_table": "derived",
+        "inner_table": "employees",
+        "build_cost": 587.7,
+        "probe_cost": 60.45
+      },
+      "statistics_status": {
+        "departments": {
+          "is_stale": false,
+          "staleness_seconds": 1000,
+          "recommendation": "Statistics current"
+        },
+        "employees": {
+          "is_stale": false,
+          "staleness_seconds": 500,
+          "recommendation": "Statistics current"
+        },
+        "projects": {
+          "is_stale": false,
+          "staleness_seconds": 2000,
+          "recommendation": "Statistics current"
+        }
+      },
+      "index_analysis": {
+        "departments": [
+          {
+            "index_name": "departments_pkey",
+            "access_type": "Index Seek",
+            "benefit_score": 0.9,
+            "columns": [
+              "dept_id"
+            ]
+          }
+        ],
+        "employees": [
+          {
+            "index_name": "employees_dept_year_idx",
+            "access_type": "Index Scan",
+            "benefit_score": 0.0,
+            "columns": [
+              "dept_id"
+            ]
+          }
+        ],
+        "projects": [
+          {
+            "index_name": "projects_dept_priority_idx",
+            "access_type": "Index Scan",
+            "benefit_score": 0.0,
+            "columns": [
+              "dept_id"
+            ]
+          }
+        ]
+      },
+      "cost_breakdown": {
+        "total_scan_cost": 644.4,
+        "join_overhead": 22.5,
+        "total_plan_cost": 666.9,
+        "per_table_costs": {
+          "departments": 1.7,
+          "employees": 587.7,
+          "projects": 55.0
+        }
+      },
+      "optimization_notes": [
+        "Plan appears optimal for current statistics."
+      ]
+    },
+    {
+      "database": "warehouse_db",
+      "query": "SELECT a.assign_id, e.emp_id, p.project_id, d.dept_name FROM assignments a JOIN employees e ON a.emp_id = e.emp_id JOIN projects p ON a.project_id = p.project_id JOIN departments d ON e.dept_id = d.dept_id WHERE p.status = 'active'",
+      "plan_summary": {
+        "total_estimated_cost": 8762.325,
+        "estimated_output_rows": 50000,
+        "join_strategy": "Hash Join",
+        "table_access_strategies": {
+          "assignments": "Sequential Scan",
+          "employees": "Index Scan",
+          "projects": "Index Scan",
+          "departments": "Index Scan"
+        }
+      },
+      "scan_plans": [
+        {
+          "table": "assignments",
+          "strategy": "Sequential Scan",
+          "io_cost": 4000.0,
+          "cpu_cost": 2500.0,
+          "total_cost": 6500.0,
+          "output_rows": 200000,
+          "selectivity": 1.0
+        },
+        {
+          "table": "departments",
+          "strategy": "Index Scan",
+          "io_cost": 0.2,
+          "cpu_cost": 1.5,
+          "total_cost": 1.7,
+          "output_rows": 100,
+          "selectivity": 1.0,
+          "index_used": "departments_pkey",
+          "correlation": 0.99
+        },
+        {
+          "table": "employees",
+          "strategy": "Index Scan",
+          "io_cost": 80.0,
+          "cpu_cost": 750.0,
+          "total_cost": 830.0,
+          "output_rows": 50000,
+          "selectivity": 1.0,
+          "index_used": "employees_pkey",
+          "correlation": 0.98
+        },
+        {
+          "table": "projects",
+          "strategy": "Index Scan",
+          "io_cost": 20.0,
+          "cpu_cost": 18.75,
+          "total_cost": 38.75,
+          "output_rows": 1250,
+          "selectivity": 0.25,
+          "index_used": "projects_pkey",
+          "correlation": 0.95
+        }
+      ],
+      "join_plan": {
+        "strategy": "Hash Join",
+        "total_cost": 8762.325,
+        "output_rows": 50000,
+        "join_selectivity": 0.01,
+        "outer_table": "departments",
+        "inner_table": "derived",
+        "build_cost": 8634.375,
+        "probe_cost": 1.7
+      },
+      "statistics_status": {
+        "assignments": {
+          "is_stale": false,
+          "staleness_seconds": 200,
+          "recommendation": "Statistics current"
+        },
+        "departments": {
+          "is_stale": false,
+          "staleness_seconds": 1000,
+          "recommendation": "Statistics current"
+        },
+        "employees": {
+          "is_stale": false,
+          "staleness_seconds": 500,
+          "recommendation": "Statistics current"
+        },
+        "projects": {
+          "is_stale": false,
+          "staleness_seconds": 2000,
+          "recommendation": "Statistics current"
+        }
+      },
+      "index_analysis": {
+        "assignments": [
+          {
+            "index_name": "assignments_emp_idx",
+            "access_type": "Index Scan",
+            "benefit_score": 0.9978,
+            "columns": [
+              "emp_id"
+            ]
+          },
+          {
+            "index_name": "assignments_project_idx",
+            "access_type": "Index Scan",
+            "benefit_score": 0.9742,
+            "columns": [
+              "project_id"
+            ]
+          }
+        ],
+        "departments": [
+          {
+            "index_name": "departments_pkey",
+            "access_type": "Index Seek",
+            "benefit_score": 0.9,
+            "columns": [
+              "dept_id"
+            ]
+          }
+        ],
+        "employees": [
+          {
+            "index_name": "employees_pkey",
+            "access_type": "Index Only Scan",
+            "benefit_score": 1.4955,
+            "columns": [
+              "emp_id"
+            ]
+          },
+          {
+            "index_name": "employees_dept_year_idx",
+            "access_type": "Index Scan",
+            "benefit_score": 0.0,
+            "columns": [
+              "dept_id"
+            ]
+          }
+        ],
+        "projects": [
+          {
+            "index_name": "projects_pkey",
+            "access_type": "Index Seek",
+            "benefit_score": 1.455,
+            "columns": [
+              "project_id"
+            ]
+          }
+        ]
+      },
+      "cost_breakdown": {
+        "total_scan_cost": 7370.45,
+        "join_overhead": 1391.875,
+        "total_plan_cost": 8762.325,
+        "per_table_costs": {
+          "assignments": 6500.0,
+          "departments": 1.7,
+          "employees": 830.0,
+          "projects": 38.75
+        }
+      },
+      "optimization_notes": [
+        "Plan appears optimal for current statistics."
+      ]
+    }
+  ]
+}

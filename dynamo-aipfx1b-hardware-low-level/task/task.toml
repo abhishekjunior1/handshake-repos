@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/dma-chain-migration"
+description = "Debug a DMA scatter-gather descriptor chain migration pipeline that incorrectly translates addresses, computes burst schedules, and links chains when source and target architectures differ."
+
+[metadata]
+category = "hardware_embedded_and_low_level_systems"
+subcategory = "low_level_runtime_and_performance"
+model_tested = "GPT-5.4"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "This task requires understanding DMA controller architecture conventions for scatter-gather descriptor chain migration — specifically how bus width determines address translation scaling and how alignment padding determines actual transfer size for burst scheduling. The pipeline spans 7 files (~1100 lines) implementing word-to-byte address conversion, AXI burst computation, chain pointer assignment, and hardware validation without external libraries. Two bugs are cross-module data-flow issues where the orchestrator passes plausible but incorrect values to correct module functions, each justified by multi-line comments framing them as intentional design choices. Two additional code patterns (metadata overhead inclusion in descriptor sizing and power-of-2 rounding for validation) appear suspicious but are correct — modifying them breaks the output by 38-500%. A hardware firmware engineer specializing in DMA controller bring-up would encounter this type of migration work when porting descriptor chains between controller IP revisions. Data is synthetic, representing a realistic ARM PL080-to-PL330 DMA controller migration scenario."
+solution_explanation = "Two string-replacement patches in pipeline.py fix the bugs: (1) change source_config[\"bus_width\"] to target_config[\"bus_width\"] for address translation — the target controller's address space determines byte-address scaling, each word represents target_bus_width bytes; (2) change [d.transfer_length for d in descriptors] to aligned_lengths for burst scheduling — the DMA engine transfers the full aligned block including padding, so burst partitioning must account for the padded size. The descriptor_size metadata overhead and power-of-2 validation rounding must NOT be modified — they are correct hardware conventions that produce drastically wrong output if changed."
+verification_explanation = "The verifier substitutes a hidden DMA configuration with source bus_width=4, target bus_width=8, non-aligned transfer lengths (1000, 3000, 500, 7500, 2000, 150 bytes with 256-byte alignment boundary), and base_address=65536. Bug 1 produces 100% address error (all addresses halved due to wrong scaling factor). Bug 2 produces incorrect burst parameters — total_beats=1770 instead of expected 1824, with per-descriptor beat count deviations of 2-40% because raw lengths differ from aligned lengths. Tests perform exact comparison on translated addresses, burst parameters (total_beats, full_bursts, burst_length), and chain pointers. Partial fixes still fail: fixing only Bug 1 leaves burst parameters wrong, fixing only Bug 2 leaves addresses wrong. The two decoy patterns (metadata overhead and po2 validation) would produce 38%+ chain link errors and pass invalid transfers respectively if incorrectly removed."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

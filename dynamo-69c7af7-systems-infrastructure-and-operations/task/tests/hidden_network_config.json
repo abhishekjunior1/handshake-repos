@@ -1,0 +1,514 @@
+{
+  "config_name": "complex-multi-namespace",
+  "namespaces": [
+    {
+      "name": "alpha",
+      "labels": {
+        "tier": "frontend",
+        "env": "production"
+      }
+    },
+    {
+      "name": "beta",
+      "labels": {
+        "tier": "backend",
+        "env": "production"
+      }
+    },
+    {
+      "name": "gamma",
+      "labels": {
+        "tier": "data",
+        "env": "production"
+      }
+    },
+    {
+      "name": "delta",
+      "labels": {
+        "tier": "monitoring",
+        "env": "production"
+      }
+    }
+  ],
+  "pods": [
+    {
+      "name": "web-app",
+      "namespace": "alpha",
+      "labels": {
+        "app": "web",
+        "version": "v2"
+      },
+      "ip": "10.1.1.10"
+    },
+    {
+      "name": "web-legacy",
+      "namespace": "alpha",
+      "labels": {
+        "app": "web",
+        "version": "v1"
+      },
+      "ip": "10.1.1.20"
+    },
+    {
+      "name": "api-main",
+      "namespace": "beta",
+      "labels": {
+        "app": "api",
+        "component": "main"
+      },
+      "ip": "10.2.1.10"
+    },
+    {
+      "name": "api-worker",
+      "namespace": "beta",
+      "labels": {
+        "app": "api",
+        "component": "worker"
+      },
+      "ip": "10.2.1.20"
+    },
+    {
+      "name": "db-primary",
+      "namespace": "gamma",
+      "labels": {
+        "app": "postgres",
+        "role": "primary"
+      },
+      "ip": "10.3.1.10"
+    },
+    {
+      "name": "db-replica",
+      "namespace": "gamma",
+      "labels": {
+        "app": "postgres",
+        "role": "replica"
+      },
+      "ip": "10.3.1.20"
+    },
+    {
+      "name": "monitor-agent",
+      "namespace": "delta",
+      "labels": {
+        "app": "prometheus",
+        "role": "agent"
+      },
+      "ip": "10.4.1.10"
+    },
+    {
+      "name": "log-collector",
+      "namespace": "delta",
+      "labels": {
+        "app": "fluentd",
+        "role": "collector"
+      },
+      "ip": "10.4.1.20"
+    }
+  ],
+  "policies": [
+    {
+      "metadata": {
+        "name": "restrict-web-ingress",
+        "namespace": "alpha",
+        "creationTimestamp": "2024-01-10T08:00:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "app": "web"
+          }
+        },
+        "policyTypes": [
+          "Ingress"
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "tier": "monitoring"
+                  }
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 8080
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "allow-web-broad",
+        "namespace": "alpha",
+        "creationTimestamp": "2024-01-15T12:00:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "app": "web"
+          }
+        },
+        "policyTypes": [
+          "Ingress"
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {}
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 80
+              },
+              {
+                "protocol": "TCP",
+                "port": 443
+              },
+              {
+                "protocol": "TCP",
+                "port": 8080
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "api-ingress-policy",
+        "namespace": "beta",
+        "creationTimestamp": "2024-01-12T09:00:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "app": "api"
+          }
+        },
+        "policyTypes": [
+          "Ingress"
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "tier": "frontend"
+                  }
+                }
+              },
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "tier": "monitoring"
+                  }
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 3000
+              },
+              {
+                "protocol": "TCP",
+                "port": 9090
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "api-egress-restricted",
+        "namespace": "beta",
+        "creationTimestamp": "2024-01-12T09:30:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "component": "main"
+          }
+        },
+        "policyTypes": [
+          "Egress"
+        ],
+        "egress": [
+          {
+            "to": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "tier": "data"
+                  }
+                },
+                "podSelector": {
+                  "matchLabels": {
+                    "app": "postgres"
+                  }
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 5432
+              }
+            ]
+          },
+          {
+            "to": [
+              {
+                "ipBlock": {
+                  "cidr": "10.0.0.0/8",
+                  "except": [
+                    "10.0.5.0/24"
+                  ]
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 443
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "db-ingress-strict",
+        "namespace": "gamma",
+        "creationTimestamp": "2024-01-11T07:00:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "app": "postgres"
+          }
+        },
+        "policyTypes": [
+          "Ingress"
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {
+                    "tier": "backend"
+                  }
+                },
+                "podSelector": {
+                  "matchLabels": {
+                    "component": "main"
+                  }
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 5432
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "db-egress-deny-all",
+        "namespace": "gamma",
+        "creationTimestamp": "2024-01-11T07:30:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "role": "primary"
+          }
+        },
+        "policyTypes": [
+          "Egress"
+        ],
+        "egress": [
+          {
+            "to": [
+              {
+                "podSelector": {
+                  "matchLabels": {
+                    "role": "replica"
+                  }
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 5432
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "monitoring-ingress",
+        "namespace": "delta",
+        "creationTimestamp": "2024-01-13T10:00:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "app": "prometheus"
+          }
+        },
+        "policyTypes": [
+          "Ingress"
+        ],
+        "ingress": [
+          {
+            "from": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {}
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 9090
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "metadata": {
+        "name": "monitoring-egress",
+        "namespace": "delta",
+        "creationTimestamp": "2024-01-13T10:30:00Z"
+      },
+      "spec": {
+        "podSelector": {
+          "matchLabels": {
+            "app": "prometheus"
+          }
+        },
+        "policyTypes": [
+          "Egress"
+        ],
+        "egress": [
+          {
+            "to": [
+              {
+                "namespaceSelector": {
+                  "matchLabels": {}
+                }
+              }
+            ],
+            "ports": [
+              {
+                "protocol": "TCP",
+                "port": 9090
+              },
+              {
+                "protocol": "TCP",
+                "port": 8080
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "traffic_flows": [
+    {
+      "id": "flow-1",
+      "src_ip": "10.4.1.10",
+      "dst_ip": "10.1.1.10",
+      "dst_port": 8080,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-2",
+      "src_ip": "10.2.1.10",
+      "dst_ip": "10.1.1.10",
+      "dst_port": 8080,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-3",
+      "src_ip": "10.2.1.20",
+      "dst_ip": "10.3.1.10",
+      "dst_port": 5432,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-4",
+      "src_ip": "10.2.1.10",
+      "dst_ip": "10.0.5.15",
+      "dst_port": 443,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-5",
+      "src_ip": "10.2.1.10",
+      "dst_ip": "10.3.1.10",
+      "dst_port": 5432,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-6",
+      "src_ip": "10.1.1.10",
+      "dst_ip": "10.2.1.10",
+      "dst_port": 3000,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-7",
+      "src_ip": "10.4.1.10",
+      "dst_ip": "10.2.1.10",
+      "dst_port": 9090,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-8",
+      "src_ip": "10.3.1.20",
+      "dst_ip": "10.2.1.10",
+      "dst_port": 3000,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-9",
+      "src_ip": "10.4.1.20",
+      "dst_ip": "10.2.1.10",
+      "dst_port": 3000,
+      "protocol": "TCP"
+    },
+    {
+      "id": "flow-10",
+      "src_ip": "10.2.1.10",
+      "dst_ip": "10.0.6.100",
+      "dst_port": 443,
+      "protocol": "TCP"
+    }
+  ]
+}

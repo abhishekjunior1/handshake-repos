@@ -1,0 +1,4 @@
+print true && false;
+print true || false;
+print !true;
+print 3 > 2 && 1 < 5;

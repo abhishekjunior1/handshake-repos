@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/stream-watermark"
+description = "Event stream watermark pipeline with windowing, late data handling, and multi-partition aggregation."
+
+[metadata]
+category = "Data Processing and ETL"
+subcategory = "Streaming data processing"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 7 modules (~860 lines) implementing streaming event-time processing without external libraries. Two bugs are cross-module data-flow issues: Bug 1 in pipeline.py passes all parsed events (including infrastructure heartbeats and control signals) to the watermark tracker instead of measurement events only, masked on visible data where all events are measurements. Bug 2 in watermark_tracker.py computes global watermark as max(all timestamps) instead of min(per-partition maximums), masked on single-partition visible data where both yield the same value. Two correct-but-suspicious patterns (partition-weighted dampening for lag diagnostics, mean-of-partition-averages for balanced cross-source representation) trap agents who over-fix by modifying working code. A streaming systems engineer working on IoT data pipelines would do this work. Data is synthetic, shaped like multi-zone sensor telemetry."
+solution_explanation = "Fix 1: Change advance_watermark(wm_state, parsed_events) to advance_watermark(wm_state, measurement_events) in pipeline.py — only measurement events should advance event-time progress. Fix 2: Replace max(all_timestamps) with min(state.partition_progress.values()) in watermark_tracker.py — the watermark must track the slowest partition to ensure completeness. The partition-weighted dampening block and mean-of-partition-averages computation must be preserved as-is."
+verification_explanation = "The verifier substitutes a hidden stream configuration with 2 partitions (zone-north max=2063, zone-south max=2052) and non-measurement events (heartbeat at 2090, control at 2085) timestamped beyond the measurement range. Bug 1 causes partition progress inflation from heartbeat/control timestamps. Bug 2 causes watermark to use max(2090)=2090 instead of min(2063,2052)=2052, triggering extra windows. Combined, the bugs produce watermark=2090 and 3 triggered windows vs correct watermark=2052 and 1 triggered window. Tests verify window count, watermark value, trigger counts, partition progress, partition lag, combined averages, and output statistics at rel_tol=1e-6."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

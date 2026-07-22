@@ -1,0 +1,53 @@
+{
+  "oscillator_mhz": 8.0,
+  "pll": null,
+  "bus_divider": 1,
+  "peripheral_divider": 2,
+  "bus_protocol": "spi",
+  "cs_polarity": "active_low",
+  "power_domains": [
+    {
+      "name": "vdd_core",
+      "type": "core",
+      "voltage_v": 1.2,
+      "ramp_time_us": 500.0
+    }
+  ],
+  "peripherals": [
+    {
+      "device_id": "temp_sensor_0",
+      "bus_address": 72,
+      "slot": 0,
+      "enabled": true,
+      "id_register": 0,
+      "expected_device_id": 165,
+      "auto_increment_configured": false,
+      "init_registers": [
+        {
+          "address": 1,
+          "value": 96,
+          "mask": 255,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": true
+        },
+        {
+          "address": 2,
+          "value": 12,
+          "mask": 255,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": false
+        },
+        {
+          "address": 3,
+          "value": 128,
+          "mask": 240,
+          "width_bits": 8,
+          "bank": 0,
+          "verify": false
+        }
+      ]
+    }
+  ]
+}

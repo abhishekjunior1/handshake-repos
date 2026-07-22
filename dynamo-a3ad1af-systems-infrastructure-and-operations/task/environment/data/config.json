@@ -1,0 +1,73 @@
+{
+  "topology_file": "/app/topology.json",
+  "acl_rules": [
+    {
+      "id": "ACL-1",
+      "action": "deny",
+      "protocol": "any",
+      "source": "any",
+      "destination": "interface_scope"
+    },
+    {
+      "id": "ACL-2",
+      "action": "permit",
+      "protocol": "tcp",
+      "source": {"network": "10.0.1.0", "prefix_length": 30},
+      "destination": {"network": "192.168.3.1", "prefix_length": 32},
+      "destination_port": 443
+    },
+    {
+      "id": "ACL-3",
+      "action": "permit",
+      "protocol": "tcp",
+      "source": {"network": "10.0.2.0", "prefix_length": 30},
+      "destination": {"network": "192.168.2.1", "prefix_length": 32},
+      "destination_port": 80
+    },
+    {
+      "id": "ACL-4",
+      "action": "deny",
+      "protocol": "udp",
+      "source": "any",
+      "destination": {"network": "192.168.1.1", "prefix_length": 32},
+      "destination_port": 53
+    },
+    {
+      "id": "ACL-5",
+      "action": "permit",
+      "protocol": "any",
+      "source": {"network": "10.0.0.0", "prefix_length": 8},
+      "destination": "any"
+    }
+  ],
+  "flows": [
+    {
+      "id": "flow-1",
+      "source_ip": "10.0.1.1",
+      "destination_ip": "192.168.3.1",
+      "protocol": "tcp",
+      "destination_port": 443
+    },
+    {
+      "id": "flow-2",
+      "source_ip": "10.0.2.2",
+      "destination_ip": "192.168.2.1",
+      "protocol": "tcp",
+      "destination_port": 80
+    },
+    {
+      "id": "flow-3",
+      "source_ip": "172.16.0.5",
+      "destination_ip": "192.168.1.1",
+      "protocol": "udp",
+      "destination_port": 53
+    },
+    {
+      "id": "flow-4",
+      "source_ip": "10.0.3.1",
+      "destination_ip": "192.168.1.1",
+      "protocol": "tcp",
+      "destination_port": 22
+    }
+  ]
+}

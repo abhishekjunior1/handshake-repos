@@ -1,0 +1,69 @@
+{
+  "version": "1.0",
+  "format": "compiled-env-profile",
+  "environment": {
+    "API_KEY": "\"sk-prod-xyz789-final\"",
+    "APP_DOMAIN": "prod.platform.io",
+    "APP_ENV": "production",
+    "APP_NAME": "platform-api",
+    "DB_HOST": "db-prod.internal",
+    "DB_NAME": "platform_db",
+    "DB_PORT": "5432",
+    "DB_URL": "postgresql://db-prod.internal:5432/platform_db",
+    "DEPLOY_NOTES": "canary release v2.8.1",
+    "HEALTH_CHECK_PATH": "/healthz",
+    "HEALTH_ENDPOINT": "https://prod.platform.io/api/v2/health",
+    "JWT_SECRET": "\"\"hs256-hmac-prod-key\"\"",
+    "LOG_LEVEL": "warn",
+    "MEMORY_LIMIT": "2048",
+    "REPLICAS": "3",
+    "SERVICE_URL": "https://prod.platform.io/api/v2",
+    "SSH_BANNER": "Welcome to production server.\nAuthorized access only.\nAll sessions are monitored and recorded.\nDisconnect immediately if unauthorized.",
+    "SSL_CERT_PATH": "/etc/ssl/certs/app.pem",
+    "internal_note": "this-should-export"
+  },
+  "metadata": {
+    "source_attribution": {
+      "API_KEY": "secrets",
+      "APP_DOMAIN": "deployment",
+      "APP_ENV": "base",
+      "APP_NAME": "base",
+      "DB_HOST": "base",
+      "DB_NAME": "base",
+      "DB_PORT": "base",
+      "DB_URL": "base",
+      "DEPLOY_NOTES": "deployment",
+      "HEALTH_CHECK_PATH": "deployment",
+      "HEALTH_ENDPOINT": "deployment",
+      "JWT_SECRET": "secrets",
+      "LOG_LEVEL": "base",
+      "MEMORY_LIMIT": "deployment",
+      "REPLICAS": "deployment",
+      "SERVICE_URL": "base",
+      "SSH_BANNER": "deployment",
+      "SSL_CERT_PATH": "base",
+      "internal_note": "base"
+    },
+    "layers": [
+      {
+        "name": "base",
+        "priority": 10,
+        "variable_count": 12
+      },
+      {
+        "name": "deployment",
+        "priority": 50,
+        "variable_count": 7
+      },
+      {
+        "name": "secrets",
+        "priority": 90,
+        "variable_count": 4
+      }
+    ],
+    "total_variables": 19,
+    "settings": {
+      "strict_mode": true
+    }
+  }
+}

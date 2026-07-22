@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/task-queue"
+description = "Distributed task queue processor with rate limiting and retry bugs."
+
+[metadata]
+category = "Systems Infrastructure and Operations"
+subcategory = "Scheduling and automation infrastructure"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 7 modules (~950 lines) implementing a distributed task queue processor with rate limiting, retry logic, dead letter routing, and round-robin consumer assignment. Two bugs in pipeline.py exploit processing-order and off-by-one semantics that look like deliberate engineering choices. Bug 1: rate limit check occurs after dequeue, causing throttled tasks to be requeued at the back of their priority bucket instead of remaining at the head. Bug 2: retry counter increments before the exhaustion threshold check, creating an off-by-one that reports final_retry_count as N+1 instead of N (the increment should only occur in the retry branch, not before the DLQ check). Both bugs are justified by plausible comments and produce identical output on the visible single-task manifest where rate limiting never triggers and retries=0. The pipeline also contains correct-but-suspicious back-of-queue retry ordering and round-robin assignment that agents mistakenly modify. A platform engineer debugging task queue processing anomalies would do this work. Data is synthetic, shaped like distributed message broker workloads."
+solution_explanation = "Fix 1: Move the rate_registry.consume_token() check before queue.dequeue() so that rate-limited consumers leave tasks at the queue head for other consumers. Fix 2: Check task.retry_count >= task.max_retries before incrementing, then increment only in the else branch when scheduling a retry. Both are 5-10 line restructurings in pipeline.py. The back-of-queue retry ordering and round-robin consumer assignment must be preserved."
+verification_explanation = "The verifier substitutes hidden_manifest.json (10 tasks across 3 consumers with rate_limit=2 per tick, intermittent failures requiring retries) and hidden_config.json (max_retries=3). It runs the pipeline and compares output.json against expected_output.json on processing_log event sequence, task_outcomes per task, dlq_contents, and consumer_stats. All comparisons use exact equality since outputs are deterministic integers and strings — no floating-point tolerance needed. Bug 1 causes task reordering when rate-limited consumers requeue tasks (2 tasks affected, changing dispatch order and consumer assignments). Bug 2 causes incorrect retry count reporting — the increment-before-check pattern reports final_retry_count as N+1 instead of N and retries_used as 4 instead of 3, caught by test_dlq_retry_counts and test_retry_counts_match. Both must be fixed simultaneously for correct output."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

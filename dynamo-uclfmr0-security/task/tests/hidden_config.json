@@ -1,0 +1,182 @@
+{
+  "metadata": {
+    "framework": "CIS",
+    "benchmark_version": "2.1",
+    "assessment_scope": "production",
+    "evaluation_date": "2025-06-15"
+  },
+  "profiles": [
+    {
+      "id": "base",
+      "name": "CIS Base Profile",
+      "parent_id": null,
+      "level": 1,
+      "description": "Foundation hardening rules"
+    },
+    {
+      "id": "level-1",
+      "name": "CIS Level 1",
+      "parent_id": "base",
+      "level": 2,
+      "description": "Standard hardening profile inheriting from base"
+    },
+    {
+      "id": "level-2",
+      "name": "CIS Level 2",
+      "parent_id": "level-1",
+      "level": 3,
+      "description": "Enhanced hardening profile inheriting from Level 1"
+    }
+  ],
+  "rules": [
+    {
+      "id": "rule-1.1",
+      "category": "access_control",
+      "severity": 8,
+      "check_type": "boolean",
+      "description": "Ensure SSH root login is disabled",
+      "remediation": "Set PermitRootLogin to no",
+      "profile_ids": ["base"]
+    },
+    {
+      "id": "rule-1.2",
+      "category": "access_control",
+      "severity": 6,
+      "check_type": "boolean",
+      "description": "Ensure password complexity requirements",
+      "remediation": "Configure PAM password complexity",
+      "profile_ids": ["base"]
+    },
+    {
+      "id": "rule-2.1",
+      "category": "network_security",
+      "severity": 9,
+      "check_type": "boolean",
+      "description": "Ensure host-based firewall is configured",
+      "remediation": "Enable nftables",
+      "profile_ids": ["level-1"]
+    },
+    {
+      "id": "rule-2.2",
+      "category": "network_security",
+      "severity": 3,
+      "check_type": "boolean",
+      "description": "Ensure ICMP redirects are not accepted",
+      "remediation": "Set net.ipv4.conf.all.accept_redirects to 0",
+      "profile_ids": ["level-1"]
+    },
+    {
+      "id": "rule-3.1",
+      "category": "audit_logging",
+      "severity": 7,
+      "check_type": "boolean",
+      "description": "Ensure audit daemon is enabled",
+      "remediation": "Enable and start auditd",
+      "profile_ids": ["base", "level-1"]
+    },
+    {
+      "id": "rule-3.2",
+      "category": "audit_logging",
+      "severity": 2,
+      "check_type": "boolean",
+      "description": "Ensure audit logs are rotated",
+      "remediation": "Configure log rotation for audit logs",
+      "profile_ids": ["level-2"]
+    },
+    {
+      "id": "rule-4.1",
+      "category": "filesystem_integrity",
+      "severity": 10,
+      "check_type": "boolean",
+      "description": "Ensure AIDE is installed and configured",
+      "remediation": "Install and initialize AIDE",
+      "profile_ids": ["level-2"]
+    }
+  ],
+  "resources": [
+    {
+      "id": "web-prod-01",
+      "type": "compute",
+      "status": "running",
+      "tags": {"environment": "production", "team": "platform"},
+      "profile_id": "level-2",
+      "region": "us-east-1"
+    },
+    {
+      "id": "web-prod-02",
+      "type": "compute",
+      "status": "running",
+      "tags": {"environment": "production", "team": "platform"},
+      "profile_id": "level-2",
+      "region": "us-east-1"
+    },
+    {
+      "id": "db-prod-01",
+      "type": "compute",
+      "status": "running",
+      "tags": {"environment": "production", "team": "data"},
+      "profile_id": "level-1",
+      "region": "us-west-2"
+    },
+    {
+      "id": "db-prod-02",
+      "type": "compute",
+      "status": "stopped",
+      "tags": {"environment": "production", "team": "data"},
+      "profile_id": "level-1",
+      "region": "us-west-2"
+    }
+  ],
+  "waivers": [
+    {
+      "id": "waiver-001",
+      "rule_id": "rule-2.2",
+      "resource_pattern": "web-prod-*",
+      "reason": "Network team manages ICMP at perimeter level",
+      "expiry": "2099-12-31",
+      "approved_by": "network-security"
+    },
+    {
+      "id": "waiver-002",
+      "rule_id": "rule-3.1",
+      "resource_pattern": "db-prod-*",
+      "reason": "Database audit handled by separate SIEM integration",
+      "expiry": "2099-12-31",
+      "approved_by": "compliance-team"
+    }
+  ],
+  "checks": {
+    "web-prod-01": {
+      "rule-1.1": true,
+      "rule-1.2": true,
+      "rule-2.1": true,
+      "rule-2.2": false,
+      "rule-3.1": true,
+      "rule-3.2": false,
+      "rule-4.1": false
+    },
+    "web-prod-02": {
+      "rule-1.1": true,
+      "rule-1.2": false,
+      "rule-2.1": false,
+      "rule-2.2": false,
+      "rule-3.1": true,
+      "rule-3.2": true,
+      "rule-4.1": true
+    },
+    "db-prod-01": {
+      "rule-1.1": false,
+      "rule-1.2": true,
+      "rule-2.1": true,
+      "rule-2.2": true,
+      "rule-3.1": false
+    },
+    "db-prod-02": {
+      "rule-1.1": false,
+      "rule-1.2": false,
+      "rule-2.1": true,
+      "rule-2.2": true,
+      "rule-3.1": false
+    }
+  }
+}

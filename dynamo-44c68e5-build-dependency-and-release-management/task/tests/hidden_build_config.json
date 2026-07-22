@@ -1,0 +1,127 @@
+{
+  "system": {
+    "platform": "x86_64-linux",
+    "arch": "x86_64",
+    "os": "linux"
+  },
+  "cache_config": {
+    "url": "https://cache.nixos.org",
+    "narinfo_entries": {
+      "gslznnszcb5zyxmg0nam9npqf19r9wqp": {
+        "StorePath": "/nix/store/gslznnszcb5zyxmg0nam9npqf19r9wqp-openssl",
+        "NARHash": "b94d38d009532e60ad9e810ed4e2e9a251b379f8cb87468c715fb7e9bfa3c33f",
+        "FileHash": "2230c4a1a7bdfc2d940c76f0056b677472582f02b541d6eb038ce3fd9577bc41",
+        "NARSize": "5242880",
+        "FileSize": "1843200",
+        "Compression": "xz"
+      },
+      "838zrhpvvmvpb01hd1l619wayg4q3jly": {
+        "StorePath": "/nix/store/838zrhpvvmvpb01hd1l619wayg4q3jly-curl",
+        "NARHash": "f32d612fb95695a5b4e55fcaa2128dd244ee336d7d7c3726355cc3a4a449ce43",
+        "FileHash": "6bee58fa2d505ed09aab88e27eed0edd886f30e639a3a50548626b1d0b946fe2",
+        "NARSize": "3145728",
+        "FileSize": "1048576",
+        "Compression": "xz"
+      },
+      "9haagi29l5g4hndq3cgnaxc2j2vbq1q3": {
+        "StorePath": "/nix/store/9haagi29l5g4hndq3cgnaxc2j2vbq1q3-standalone-tool",
+        "NARHash": "d891312b82e9aacc3813a3513f86aaa337ea306ead589d5052c5c19a613d7d30",
+        "FileHash": "b13eafe496b703647cb3fef6859886c7d3f726527a8ecfadc87e33242ee98744",
+        "NARSize": "1048576",
+        "FileSize": "524288",
+        "Compression": "xz"
+      }
+    }
+  },
+  "derivations": [
+    {
+      "name": "fetchurl-openssl",
+      "builder": "/bin/bash",
+      "inputs": [],
+      "build_args": ["-e", "fetch_url.sh"],
+      "is_fixed_output": true,
+      "has_self_reference": false,
+      "hash_algo": "sha256",
+      "output_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputs": ["out"]
+    },
+    {
+      "name": "fetchgit-zlib",
+      "builder": "/bin/bash",
+      "inputs": [],
+      "build_args": ["-e", "fetch_git.sh"],
+      "is_fixed_output": true,
+      "has_self_reference": false,
+      "hash_algo": "sha256",
+      "output_hash": "a7ffc6f8bf1ed76651c14756a061d662f580ff4de43b49fa82d80a4b80f8434a",
+      "outputs": ["out"]
+    },
+    {
+      "name": "openssl",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "fetchurl-openssl", "output": "out"}
+      ],
+      "build_args": ["-e", "build_openssl.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    },
+    {
+      "name": "zlib",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "fetchgit-zlib", "output": "out"}
+      ],
+      "build_args": ["-e", "build_zlib.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    },
+    {
+      "name": "curl",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "openssl", "output": "out"},
+        {"derivation": "zlib", "output": "out"}
+      ],
+      "build_args": ["-e", "build_curl.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    },
+    {
+      "name": "python",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "openssl", "output": "out"},
+        {"derivation": "zlib", "output": "out"}
+      ],
+      "build_args": ["-e", "build_python.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    },
+    {
+      "name": "myapp",
+      "builder": "/bin/bash",
+      "inputs": [
+        {"derivation": "curl", "output": "out"},
+        {"derivation": "python", "output": "out"}
+      ],
+      "build_args": ["-e", "build_myapp.sh", "--with-rpath"],
+      "is_fixed_output": false,
+      "has_self_reference": true,
+      "outputs": ["out"]
+    },
+    {
+      "name": "standalone-tool",
+      "builder": "/bin/bash",
+      "inputs": [],
+      "build_args": ["-e", "build_tool.sh"],
+      "is_fixed_output": false,
+      "has_self_reference": false,
+      "outputs": ["out"]
+    }
+  ]
+}

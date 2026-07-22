@@ -1,0 +1,6 @@
+let a = 5 > 3;
+let b = 2 == 2;
+let c = 10 < 1;
+print a;
+print b;
+print c;

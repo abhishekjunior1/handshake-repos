@@ -1,0 +1,151 @@
+{
+  "zones": [
+    {
+      "name": "alpha_internal",
+      "interfaces": ["eth0"],
+      "default_action": "deny",
+      "description": "Internal corporate network"
+    },
+    {
+      "name": "beta_perimeter",
+      "interfaces": ["eth1"],
+      "default_action": "deny",
+      "description": "Perimeter DMZ segment"
+    },
+    {
+      "name": "gamma_external",
+      "interfaces": ["eth2"],
+      "default_action": "deny",
+      "description": "External untrusted network"
+    }
+  ],
+  "subnet_map": [
+    {"network": "10.0.1.0/24", "zone": "alpha_internal"},
+    {"network": "10.0.2.0/24", "zone": "beta_perimeter"},
+    {"network": "10.0.3.0/24", "zone": "gamma_external"}
+  ],
+  "nat": {
+    "dnat_rules": [
+      {
+        "original_ip": "10.0.2.50",
+        "translated_ip": "10.0.2.50",
+        "port_range": [0, 65535],
+        "protocol": "any"
+      }
+    ],
+    "snat_rules": []
+  },
+  "zone_pair_policies": [
+    {
+      "source_zone": "alpha_internal",
+      "dest_zone": "beta_perimeter",
+      "ruleset_name": "alpha-to-beta",
+      "description": "Internal to perimeter traffic policy",
+      "rules": [
+        {
+          "name": "allow-http-outbound",
+          "action": "permit",
+          "src_cidr": "10.0.1.0/24",
+          "dst_cidr": "10.0.2.0/24",
+          "dst_port_range": [80, 80],
+          "protocol": "tcp"
+        },
+        {
+          "name": "allow-https-outbound",
+          "action": "permit",
+          "src_cidr": "10.0.1.0/24",
+          "dst_cidr": "10.0.2.0/24",
+          "dst_port_range": [443, 443],
+          "protocol": "tcp"
+        },
+        {
+          "name": "allow-dns-outbound",
+          "action": "permit",
+          "src_cidr": "10.0.1.0/24",
+          "dst_cidr": "10.0.2.0/24",
+          "dst_port_range": [53, 53],
+          "protocol": "udp"
+        },
+        {
+          "name": "deny-all-alpha-beta",
+          "action": "deny",
+          "src_cidr": "0.0.0.0/0",
+          "dst_cidr": "0.0.0.0/0",
+          "protocol": "any"
+        }
+      ]
+    },
+    {
+      "source_zone": "beta_perimeter",
+      "dest_zone": "gamma_external",
+      "ruleset_name": "beta-to-gamma",
+      "description": "Perimeter to external traffic policy",
+      "rules": [
+        {
+          "name": "allow-web-external",
+          "action": "permit",
+          "src_cidr": "10.0.2.0/24",
+          "dst_cidr": "10.0.3.0/24",
+          "dst_port_range": [80, 443],
+          "protocol": "tcp"
+        },
+        {
+          "name": "deny-all-beta-gamma",
+          "action": "deny",
+          "src_cidr": "0.0.0.0/0",
+          "dst_cidr": "0.0.0.0/0",
+          "protocol": "any"
+        }
+      ]
+    }
+  ],
+  "default_policy_action": "deny",
+  "connection_timeout": 3600,
+  "packets": [
+    {
+      "id": 1,
+      "src_ip": "10.0.1.50",
+      "dst_ip": "10.0.2.20",
+      "src_port": 49152,
+      "dst_port": 80,
+      "protocol": "tcp",
+      "timestamp": 1000.0
+    },
+    {
+      "id": 2,
+      "src_ip": "10.0.1.51",
+      "dst_ip": "10.0.2.21",
+      "src_port": 49200,
+      "dst_port": 443,
+      "protocol": "tcp",
+      "timestamp": 1000.1
+    },
+    {
+      "id": 3,
+      "src_ip": "10.0.1.52",
+      "dst_ip": "10.0.2.22",
+      "src_port": 50000,
+      "dst_port": 53,
+      "protocol": "udp",
+      "timestamp": 1000.2
+    },
+    {
+      "id": 4,
+      "src_ip": "10.0.2.10",
+      "dst_ip": "10.0.3.100",
+      "src_port": 55000,
+      "dst_port": 80,
+      "protocol": "tcp",
+      "timestamp": 1000.3
+    },
+    {
+      "id": 5,
+      "src_ip": "10.0.1.53",
+      "dst_ip": "10.0.2.23",
+      "src_port": 50100,
+      "dst_port": 8080,
+      "protocol": "tcp",
+      "timestamp": 1000.4
+    }
+  ]
+}

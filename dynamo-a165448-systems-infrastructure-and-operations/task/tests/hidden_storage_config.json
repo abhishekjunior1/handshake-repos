@@ -1,0 +1,204 @@
+{
+  "devices": [
+    {
+      "device_id": "ssd_nvme_0",
+      "capacity_blocks": 1024,
+      "used_blocks": 768,
+      "device_type": "ssd",
+      "over_provision_ratio": 1.28
+    },
+    {
+      "device_id": "hdd_sata_0",
+      "capacity_blocks": 8192,
+      "used_blocks": 4096,
+      "device_type": "hdd",
+      "over_provision_ratio": 1.0
+    },
+    {
+      "device_id": "archive_0",
+      "capacity_blocks": 32768,
+      "used_blocks": 8192,
+      "device_type": "archive",
+      "over_provision_ratio": 1.0
+    }
+  ],
+  "tiers": [
+    {
+      "tier_id": "tier_ssd",
+      "tier_type": "ssd",
+      "device_ids": ["ssd_nvme_0"],
+      "over_provision_ratio": 1.28,
+      "hot_threshold": 0.85,
+      "warm_threshold": 0.55
+    },
+    {
+      "tier_id": "tier_hdd",
+      "tier_type": "hdd",
+      "device_ids": ["hdd_sata_0"],
+      "over_provision_ratio": 1.0,
+      "hot_threshold": 0.6,
+      "warm_threshold": 0.25
+    },
+    {
+      "tier_id": "tier_archive",
+      "tier_type": "archive",
+      "device_ids": ["archive_0"],
+      "over_provision_ratio": 1.0,
+      "hot_threshold": 0.5,
+      "warm_threshold": 0.2
+    }
+  ],
+  "trace_events": [
+    {
+      "timestamp_us": 1000000,
+      "lba": 50,
+      "size_bytes": 131072,
+      "op_type": "write",
+      "device_id": "ssd_nvme_0"
+    },
+    {
+      "timestamp_us": 1200000,
+      "lba": 50,
+      "size_bytes": 131072,
+      "op_type": "write",
+      "device_id": "ssd_nvme_0"
+    },
+    {
+      "timestamp_us": 1500000,
+      "lba": 50,
+      "size_bytes": 131072,
+      "op_type": "read",
+      "device_id": "ssd_nvme_0"
+    },
+    {
+      "timestamp_us": 2000000,
+      "lba": 50,
+      "size_bytes": 131072,
+      "op_type": "write",
+      "device_id": "ssd_nvme_0"
+    },
+    {
+      "timestamp_us": 2500000,
+      "lba": 50,
+      "size_bytes": 131072,
+      "op_type": "read",
+      "device_id": "ssd_nvme_0"
+    },
+    {
+      "timestamp_us": 3000000,
+      "lba": 50,
+      "size_bytes": 131072,
+      "op_type": "write",
+      "device_id": "ssd_nvme_0"
+    },
+    {
+      "timestamp_us": 3500000,
+      "lba": 1000,
+      "size_bytes": 262144,
+      "op_type": "read",
+      "device_id": "hdd_sata_0"
+    },
+    {
+      "timestamp_us": 4000000,
+      "lba": 1000,
+      "size_bytes": 262144,
+      "op_type": "read",
+      "device_id": "hdd_sata_0"
+    },
+    {
+      "timestamp_us": 4500000,
+      "lba": 1000,
+      "size_bytes": 262144,
+      "op_type": "write",
+      "device_id": "hdd_sata_0"
+    },
+    {
+      "timestamp_us": 5000000,
+      "lba": 1000,
+      "size_bytes": 262144,
+      "op_type": "read",
+      "device_id": "hdd_sata_0"
+    },
+    {
+      "timestamp_us": 5500000,
+      "lba": 1000,
+      "size_bytes": 262144,
+      "op_type": "read",
+      "device_id": "hdd_sata_0"
+    },
+    {
+      "timestamp_us": 6000000,
+      "lba": 2000,
+      "size_bytes": 262144,
+      "op_type": "write",
+      "device_id": "hdd_sata_0"
+    },
+    {
+      "timestamp_us": 6500000,
+      "lba": 2000,
+      "size_bytes": 262144,
+      "op_type": "write",
+      "device_id": "hdd_sata_0"
+    },
+    {
+      "timestamp_us": 7000000,
+      "lba": 2000,
+      "size_bytes": 262144,
+      "op_type": "write",
+      "device_id": "hdd_sata_0"
+    },
+    {
+      "timestamp_us": 7500000,
+      "lba": 5000,
+      "size_bytes": 524288,
+      "op_type": "read",
+      "device_id": "archive_0"
+    },
+    {
+      "timestamp_us": 8000000,
+      "lba": 5000,
+      "size_bytes": 524288,
+      "op_type": "read",
+      "device_id": "archive_0"
+    },
+    {
+      "timestamp_us": 8500000,
+      "lba": 5000,
+      "size_bytes": 524288,
+      "op_type": "read",
+      "device_id": "archive_0"
+    },
+    {
+      "timestamp_us": 9000000,
+      "lba": 5000,
+      "size_bytes": 524288,
+      "op_type": "write",
+      "device_id": "archive_0"
+    },
+    {
+      "timestamp_us": 9500000,
+      "lba": 5000,
+      "size_bytes": 524288,
+      "op_type": "read",
+      "device_id": "archive_0"
+    },
+    {
+      "timestamp_us": 10000000,
+      "lba": 5000,
+      "size_bytes": 524288,
+      "op_type": "read",
+      "device_id": "archive_0"
+    }
+  ],
+  "config": {
+    "observation_window_us": 10000000,
+    "current_time_us": 10000000,
+    "epoch_length_us": 2000000,
+    "interval_duration_us": 3000000,
+    "global_hot_threshold": 0.7,
+    "global_warm_threshold": 0.3,
+    "max_migrations": 50,
+    "bandwidth_limit_mb": 100,
+    "iops_budget": 1000
+  }
+}

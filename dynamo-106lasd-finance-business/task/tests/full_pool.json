@@ -1,0 +1,22 @@
+[
+  {"loan_id": "L001", "original_balance": 500000, "rate_bps": 600, "term_months": 60, "scheduled_payment": 9666, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L002", "original_balance": 500000, "rate_bps": 550, "term_months": 60, "scheduled_payment": 9558, "recovery_rate": 0.40, "default_month": null, "prepay_month": 3, "lockout_months": 6, "day_count": "actual/360"},
+  {"loan_id": "L003", "original_balance": 500000, "rate_bps": 625, "term_months": 60, "scheduled_payment": 9714, "recovery_rate": 0.35, "default_month": 5, "prepay_month": null, "lockout_months": 6, "day_count": "actual/360"},
+  {"loan_id": "L004", "original_balance": 500000, "rate_bps": 575, "term_months": 60, "scheduled_payment": 9612, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L005", "original_balance": 500000, "rate_bps": 500, "term_months": 60, "scheduled_payment": 9436, "recovery_rate": 0.45, "default_month": 3, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L006", "original_balance": 500000, "rate_bps": 650, "term_months": 60, "scheduled_payment": 9762, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "actual/360"},
+  {"loan_id": "L007", "original_balance": 500000, "rate_bps": 525, "term_months": 60, "scheduled_payment": 9496, "recovery_rate": 0.40, "default_month": null, "prepay_month": 4, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L008", "original_balance": 500000, "rate_bps": 600, "term_months": 60, "scheduled_payment": 9666, "recovery_rate": 0.40, "default_month": 5, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L009", "original_balance": 500000, "rate_bps": 575, "term_months": 60, "scheduled_payment": 9612, "recovery_rate": 0.35, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "actual/360"},
+  {"loan_id": "L010", "original_balance": 500000, "rate_bps": 550, "term_months": 60, "scheduled_payment": 9558, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L011", "original_balance": 500000, "rate_bps": 600, "term_months": 60, "scheduled_payment": 9666, "recovery_rate": 0.40, "default_month": 3, "prepay_month": null, "lockout_months": 6, "day_count": "actual/360"},
+  {"loan_id": "L012", "original_balance": 500000, "rate_bps": 625, "term_months": 60, "scheduled_payment": 9714, "recovery_rate": 0.30, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L013", "original_balance": 500000, "rate_bps": 500, "term_months": 60, "scheduled_payment": 9436, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L014", "original_balance": 500000, "rate_bps": 550, "term_months": 60, "scheduled_payment": 9558, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "actual/360"},
+  {"loan_id": "L015", "original_balance": 500000, "rate_bps": 575, "term_months": 60, "scheduled_payment": 9612, "recovery_rate": 0.40, "default_month": 5, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L016", "original_balance": 500000, "rate_bps": 600, "term_months": 60, "scheduled_payment": 9666, "recovery_rate": 0.35, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L017", "original_balance": 500000, "rate_bps": 650, "term_months": 60, "scheduled_payment": 9762, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L018", "original_balance": 500000, "rate_bps": 525, "term_months": 60, "scheduled_payment": 9496, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L019", "original_balance": 500000, "rate_bps": 600, "term_months": 60, "scheduled_payment": 9666, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"},
+  {"loan_id": "L020", "original_balance": 500000, "rate_bps": 550, "term_months": 60, "scheduled_payment": 9558, "recovery_rate": 0.40, "default_month": null, "prepay_month": null, "lockout_months": 6, "day_count": "30/360"}
+]

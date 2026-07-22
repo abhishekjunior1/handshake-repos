@@ -1,0 +1,30 @@
+[
+  {
+    "id": "doc_101",
+    "title": "quarterly financial report",
+    "author": "dr. sarah mitchell",
+    "tags": ["finance", "report"],
+    "text": "the company has achieved a revenue increase of 15 percent in q3. dr. mitchell presented the results to the board on sept. 12. this is a significant improvement over the previous quarter and it demonstrates the effectiveness of our new strategy."
+  },
+  {
+    "id": "doc_102",
+    "title": "project status update",
+    "author": "engineering dept.",
+    "tags": ["engineering", "status"],
+    "text": "the u.s. deployment was completed by mr. johnson and his team. all of the critical systems are now operational in the east region. we have been working with prof. chen from the univ. of california on the optimization framework and it has shown very promising results so far."
+  },
+  {
+    "id": "doc_103",
+    "title": "market analysis summary",
+    "author": "research team",
+    "tags": ["market", "analysis"],
+    "text": "our analysis shows that the market share has grown by 8 percent vs. the previous year. the competition from inc. startups is increasing but our position remains strong. we should also consider the impact of new regulations which are being introduced in the coming months."
+  },
+  {
+    "id": "doc_104",
+    "title": "technical architecture review",
+    "author": "infrastructure team",
+    "tags": ["architecture", "review"],
+    "text": "the api gateway handles all of the incoming requests from external clients. it performs rate limiting and authentication before routing to the appropriate backend service. dr. patel reviewed the architecture and confirmed that it meets our scalability requirements for the next fiscal year."
+  }
+]

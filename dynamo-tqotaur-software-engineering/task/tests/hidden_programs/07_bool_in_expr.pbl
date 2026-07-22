@@ -1,0 +1,7 @@
+let x = 5 > 3;
+if x {
+    print true;
+} else {
+    print false;
+}
+print !x;

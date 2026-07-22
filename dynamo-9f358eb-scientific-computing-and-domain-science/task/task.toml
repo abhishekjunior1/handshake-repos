@@ -1,0 +1,35 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/pcg-solver"
+description = "Debug a preconditioned conjugate gradient solver pipeline with data-flow bugs in convergence monitoring."
+
+[metadata]
+# --- Pre-seeded — DO NOT EDIT ---
+category = "Scientific Computing and Domain Science"
+subcategory = "Numerical methods"
+# --- Fixed for this dataset — LEAVE AS-IS ---
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+# --- You fill these in ---
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline implements a preconditioned conjugate gradient solver across 6 modules (~1450 lines) with two data-flow bugs in the orchestrator (pipeline.py) and one decoy pattern. Bug 1: the convergence check receives prev_norm (the previous iteration's residual) as its first argument instead of current_residual_norm — a comment justifies this as 'smoothed convergence monitoring.' Because both the first and third arguments to check_convergence become identical (prev_norm), the stall detection logic fires immediately (zero progress ratio), causing premature termination after one iteration. On the visible 2x2 diagonal system, one PCG iteration already yields the exact solution, so the premature exit is invisible. Bug 2: estimate_condition_number receives the full residual_norms list (including the initial norm at index 0) instead of residual_norms[1:] — the function's log-linear fit then uses the initial-to-first-iteration ratio as part of its slope estimate, skewing the condition number on multi-iteration solves. With one iteration (visible data), the list has only two entries and the estimate is near 1.0 regardless. The decoy: prev_norm is passed to check_convergence for stall detection, which looks unnecessary but correctly prevents infinite loops on stalled systems — removing it breaks convergence on the hidden data. Data is synthetic. Real-world audience: applied mathematicians and computational scientists solving large sparse linear systems."
+solution_explanation = "Fix 1: In pipeline.py, change the first argument of check_convergence from prev_norm to current_residual_norm — the smoothed monitoring comment is misleading; the function needs the actual current residual norm for its relative convergence test. Fix 2: In pipeline.py, change estimate_condition_number(residual_norms, iteration + 1) to estimate_condition_number(residual_norms[1:], iteration + 1) — the function expects iteration-only norms for log-linear rate fitting, and including the initial norm corrupts the slope estimate. Both fixes are single-variable changes in pipeline.py. The prev_norm parameter (decoy) must NOT be removed — it provides essential stall detection."
+verification_explanation = "The verifier copies a hidden 6x6 pentadiagonal SPD system (diagonal entries 10-35, off-diagonals -3 and -1, requiring 6+ PCG iterations) into /app/problem_spec.json, runs the pipeline, then validates output.json with 10 pytest assertions. Key checks: solution components match expected [1.5, -0.5, 2.0, -1.0, 0.5, 3.0] within 1e-6, iteration count >= 5, final residual < 1e-8, relative residual below tolerance, monotone residual decrease, and correct residual history length. The buggy code fails on iteration_count (reports 2 vs >=5), solution_accuracy (error ~0.74), and final_residual (13.7 vs < 1e-8). Tolerances are set tight enough that partial fixes still fail — both bugs must be fixed simultaneously for the solution to converge in enough iterations to reach the true answer."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

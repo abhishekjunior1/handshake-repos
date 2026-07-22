@@ -1,0 +1,12 @@
+{
+  "integral_value": -0.155770323709,
+  "error_estimate": 1.7306e-08,
+  "subdivisions": 50,
+  "convergence_order": 3.866985,
+  "singularity_strength": 0.0,
+  "method_info": {
+    "method": "adaptive_quadrature",
+    "subdivisions_used": 50,
+    "extrapolation_estimate": -0.15635753412551137
+  }
+}

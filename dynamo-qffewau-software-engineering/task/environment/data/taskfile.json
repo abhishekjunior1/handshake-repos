@@ -1,0 +1,83 @@
+{
+  "metadata": {
+    "name": "build-pipeline",
+    "version": "1.0.0",
+    "description": "Application build and packaging pipeline"
+  },
+  "settings": {
+    "parallelism": 1,
+    "retry_policy": "preserve_state"
+  },
+  "tasks": {
+    "clean": {
+      "description": "Remove old build artifacts and prepare workspace",
+      "commands": [
+        "rm -rf /app/build",
+        "mkdir -p /app/build"
+      ],
+      "dependencies": [],
+      "priority": 10,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app",
+      "conditions": {}
+    },
+    "prepare": {
+      "description": "Set up source directory structure",
+      "commands": [
+        "mkdir -p /app/build/src",
+        "echo 'module main' > /app/build/src/main.txt"
+      ],
+      "dependencies": ["clean"],
+      "priority": 5,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "/app/build"}
+        ]
+      }
+    },
+    "compile": {
+      "description": "Compile source files into build output",
+      "commands": [
+        "echo 'Compiling sources...'",
+        "cat /app/build/src/main.txt > /app/build/app.out",
+        "echo 'build_time=1719900000' >> /app/build/app.out"
+      ],
+      "dependencies": ["prepare"],
+      "priority": 5,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "/app/build/src"}
+        ],
+        "post": [
+          {"type": "file_exists", "path": "/app/build/app.out"}
+        ]
+      }
+    },
+    "package": {
+      "description": "Package the compiled output into a release archive",
+      "commands": [
+        "tar czf /app/build/release.tar.gz -C /app/build app.out"
+      ],
+      "dependencies": ["compile"],
+      "priority": 5,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "/app/build/app.out"}
+        ],
+        "post": [
+          {"type": "file_exists", "path": "/app/build/release.tar.gz"}
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/network-pipeline"
+description = "Debug a network packet processing pipeline with DNS resolution, NAT translation, firewall policy, routing, QoS, and load balancing."
+
+[metadata]
+category = "Systems Infrastructure and Operations"
+subcategory = "Network configuration"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact", "configuration_file"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 6 modules (~700 lines) implementing a realistic network packet forwarding path with DNAT, stateless firewall, longest-prefix routing, per-hop QoS, and consistent-hash load balancing. The orchestrator (network.py) has a stage-ordering bug: firewall policy is evaluated BEFORE destination NAT translation. Firewall rules reference internal post-NAT server addresses (192.168.x.x), but when evaluated pre-NAT, packets still carry the external VIP addresses (203.0.113.x) which don't match any allow rule — causing legitimate traffic to hit default-deny. The bug is justified by a multi-line comment explaining 'pre-translation security policy' as a deliberate design choice for separating security from address management. A correct-but-suspicious TTL decrement before route lookup (standard hop accounting) acts as a decoy that breaks output if removed (a TTL=1 packet must be dropped). On visible data, no NAT rules are configured so the firewall sees the same addresses regardless of ordering — the bug is mathematically invisible. A network engineer familiar with DNAT/firewall interaction in Linux netfilter or enterprise firewalls would recognize that rules written for internal addresses require post-NAT evaluation, but the comment provides a convincing alternative justification. Data is synthetic, modeled on enterprise ingress packet processing with VIP-to-backend translation."
+solution_explanation = "Swap stages 2 and 3 in network.py: move NAT translation (currently stage 3) to before firewall evaluation (currently stage 2). The correct pipeline order is DNS → NAT → Firewall → Route → QoS → LB. After NAT translates 203.0.113.50 to 192.168.1.10, the firewall correctly matches rule 1 (destination 192.168.1.0/24, port 443) and allows the packet. The TTL decrement before routing must NOT be removed — it correctly models hop consumption and is needed for the TTL=1 test packet to be dropped."
+verification_explanation = "The verifier copies tests/hidden_config.json to /app/config.json and runs the pipeline. The hidden config has 3 NAT rules translating public VIPs (203.0.113.x) to internal servers (192.168.x.x), with firewall rules permitting traffic to the internal addresses only. With the bug (firewall before NAT), packets 1-3 see external VIPs that don't match any allow rule and hit default-deny. With the fix (NAT before firewall), destinations are translated first and match the allow rules. Packet 3 has TTL=1 and is correctly dropped after TTL decrement regardless of NAT/firewall order — testing the decoy behavior. Packet 4 has no NAT rule (already internal) and passes identically in both orderings. The expected output verifies: packets 1,2,4 forwarded with correct NAT translations, firewall rules, routes, QoS markings, and LB assignments; packet 3 dropped with ttl_expired status."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

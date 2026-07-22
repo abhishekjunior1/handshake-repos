@@ -1,0 +1,143 @@
+{
+  "routers": [
+    {
+      "id": "R1",
+      "hostname": "core-router-1",
+      "ospf_area": 0,
+      "router_priority": 2,
+      "interfaces": [
+        {
+          "name": "eth0",
+          "ip_address": "10.0.1.1",
+          "subnet_mask": "255.255.255.252",
+          "bandwidth": 10000,
+          "mtu": 1500,
+          "status": "up"
+        },
+        {
+          "name": "eth1",
+          "ip_address": "10.0.2.1",
+          "subnet_mask": "255.255.255.252",
+          "bandwidth": 10000,
+          "mtu": 1500,
+          "status": "up"
+        },
+        {
+          "name": "eth2",
+          "ip_address": "192.168.1.1",
+          "subnet_mask": "255.255.255.255",
+          "bandwidth": 1000,
+          "mtu": 1500,
+          "status": "up"
+        }
+      ]
+    },
+    {
+      "id": "R2",
+      "hostname": "dist-router-2",
+      "ospf_area": 0,
+      "router_priority": 1,
+      "interfaces": [
+        {
+          "name": "eth0",
+          "ip_address": "10.0.1.2",
+          "subnet_mask": "255.255.255.252",
+          "bandwidth": 10000,
+          "mtu": 1500,
+          "status": "up"
+        },
+        {
+          "name": "eth1",
+          "ip_address": "10.0.3.1",
+          "subnet_mask": "255.255.255.252",
+          "bandwidth": 10000,
+          "mtu": 1500,
+          "status": "up"
+        },
+        {
+          "name": "eth2",
+          "ip_address": "192.168.2.1",
+          "subnet_mask": "255.255.255.255",
+          "bandwidth": 1000,
+          "mtu": 1500,
+          "status": "up"
+        }
+      ]
+    },
+    {
+      "id": "R3",
+      "hostname": "edge-router-3",
+      "ospf_area": 0,
+      "router_priority": 1,
+      "interfaces": [
+        {
+          "name": "eth0",
+          "ip_address": "10.0.2.2",
+          "subnet_mask": "255.255.255.252",
+          "bandwidth": 10000,
+          "mtu": 1500,
+          "status": "up"
+        },
+        {
+          "name": "eth1",
+          "ip_address": "10.0.3.2",
+          "subnet_mask": "255.255.255.252",
+          "bandwidth": 10000,
+          "mtu": 1500,
+          "status": "up"
+        },
+        {
+          "name": "eth2",
+          "ip_address": "192.168.3.1",
+          "subnet_mask": "255.255.255.255",
+          "bandwidth": 1000,
+          "mtu": 1500,
+          "status": "up"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "link-R1-R2",
+      "endpoints": [
+        {"router_id": "R1", "interface": "eth0"},
+        {"router_id": "R2", "interface": "eth0"}
+      ],
+      "bandwidth": 10000,
+      "link_type": "point-to-point",
+      "latency_ms": 2
+    },
+    {
+      "id": "link-R1-R3",
+      "endpoints": [
+        {"router_id": "R1", "interface": "eth1"},
+        {"router_id": "R3", "interface": "eth0"}
+      ],
+      "bandwidth": 10000,
+      "link_type": "point-to-point",
+      "latency_ms": 5
+    },
+    {
+      "id": "link-R2-R3",
+      "endpoints": [
+        {"router_id": "R2", "interface": "eth1"},
+        {"router_id": "R3", "interface": "eth1"}
+      ],
+      "bandwidth": 10000,
+      "link_type": "point-to-point",
+      "latency_ms": 3
+    }
+  ],
+  "subnets": [
+    {"network": "10.0.1.0", "prefix_length": 30, "description": "R1-R2 transit"},
+    {"network": "10.0.2.0", "prefix_length": 30, "description": "R1-R3 transit"},
+    {"network": "10.0.3.0", "prefix_length": 30, "description": "R2-R3 transit"},
+    {"network": "192.168.1.1", "prefix_length": 32, "description": "R1 loopback"},
+    {"network": "192.168.2.1", "prefix_length": 32, "description": "R2 loopback"},
+    {"network": "192.168.3.1", "prefix_length": 32, "description": "R3 loopback"}
+  ],
+  "vlans": [],
+  "reference_bandwidth": 100000,
+  "ospf_areas": [0]
+}

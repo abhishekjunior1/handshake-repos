@@ -1,0 +1,9 @@
+A harmonic regression decomposition pipeline at `/app/pipeline.py` decomposes time series into periodic, trend, and residual components using iterative frequency estimation. It uses modules `/app/data_loader.py`, `/app/frequency_estimator.py`, `/app/harmonic_model.py`, `/app/trend_filter.py`, `/app/residual_analyzer.py`, and `/app/decomposition_scorer.py`.
+
+Run it with `python3 /app/pipeline.py`. It reads `/app/forecast_config.json` and writes `/app/output.json`.
+
+The pipeline produces correct output on the current input data but has bugs that cause incorrect results on other time series configurations. Find and fix the bugs so the pipeline handles all valid inputs correctly, including non-stationary series with multiple variance regimes and non-rectangular window functions.
+
+Do not rewrite from scratch — preserve the existing module structure, the temporal relevance weighting of harmonic amplitudes, and the angular frequency conversion. The fixed pipeline will be tested on a different time series configuration than the one at `/app/forecast_config.json`.
+
+Output: `/app/output.json` — a JSON object with: `decomposition_scores` (dict with snr_score, whiteness_score, overall_quality), `segment_results` (list of dicts with start, end, mean_residual_score, n_anomalies, anomaly_indices, threshold, residual_variance), `total_anomalies` (integer), `harmonic_components` (dict with frequencies, amplitudes, phases, n_harmonics, total_power, variance_explained), `trend_diagnostics` (dict with trend_variance_ratio, detrended_variance, trend_range, detrended_mean), `residual_diagnostics` (dict with residual_mean, residual_variance, autocorrelations, ljung_box_statistic, n_runs, expected_runs, max_lag_tested), and `parameters` (dict with window_type, max_harmonics, trend_bandwidth, anomaly_percentile, min_segment_length, n_observations, n_segments, n_effective).

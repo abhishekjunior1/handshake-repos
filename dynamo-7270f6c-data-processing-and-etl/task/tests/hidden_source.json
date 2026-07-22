@@ -1,0 +1,228 @@
+[
+  {
+    "id": "TXN-101",
+    "timestamp": "2024-03-01T10:00:00",
+    "amount": 500.00,
+    "category": "electronics",
+    "region": "north",
+    "status": "active",
+    "priority": "high",
+    "description": "Laptop procurement batch A"
+  },
+  {
+    "id": "TXN-102",
+    "timestamp": "2024-03-01T15:00:00",
+    "amount": 200.00,
+    "category": "clothing",
+    "region": "south",
+    "status": "completed",
+    "priority": "medium",
+    "description": "Protective gear order"
+  },
+  {
+    "id": "TXN-103",
+    "timestamp": "2024-03-02T09:00:00",
+    "amount": 1800.00,
+    "category": "services",
+    "region": "west",
+    "status": "active",
+    "priority": "critical",
+    "description": "Security audit engagement"
+  },
+  {
+    "id": "TXN-104",
+    "timestamp": "2024-03-03T11:00:00",
+    "amount": 75.00,
+    "category": "food",
+    "region": "east",
+    "status": "pending",
+    "priority": "low",
+    "description": "Office pantry restock"
+  },
+  {
+    "id": "TXN-105",
+    "timestamp": "2024-03-04T14:00:00",
+    "amount": 620.00,
+    "category": "utilities",
+    "region": "central",
+    "status": "active",
+    "priority": "medium",
+    "description": "Quarterly gas bill"
+  },
+  {
+    "id": "TXN-106",
+    "timestamp": "2024-03-05T10:30:00",
+    "amount": 415.00,
+    "category": "healthcare",
+    "region": "north",
+    "status": "active",
+    "priority": "high",
+    "description": "Flu vaccination program"
+  },
+  {
+    "id": "TXN-101",
+    "timestamp": "2024-03-06T08:00:00",
+    "amount": 500.00,
+    "category": "electronics",
+    "region": "north",
+    "status": "completed",
+    "priority": "high",
+    "description": null
+  },
+  {
+    "id": "TXN-107",
+    "timestamp": "2024-03-06T12:00:00",
+    "amount": 330.00,
+    "category": "transportation",
+    "region": "south",
+    "status": "active",
+    "priority": "medium",
+    "description": "Courier contract monthly"
+  },
+  {
+    "id": "TXN-108",
+    "timestamp": "2024-03-07T09:30:00",
+    "amount": 2400.00,
+    "category": "electronics",
+    "region": "west",
+    "status": "active",
+    "priority": "critical",
+    "description": "Data center expansion"
+  },
+  {
+    "id": "TXN-103",
+    "timestamp": "2024-03-08T10:00:00",
+    "amount": 1800.00,
+    "category": "services",
+    "region": "west",
+    "status": null,
+    "priority": null,
+    "description": null
+  },
+  {
+    "id": "TXN-109",
+    "timestamp": "2024-03-08T14:00:00",
+    "amount": 190.00,
+    "category": "food",
+    "region": "central",
+    "status": "active",
+    "priority": "medium",
+    "description": "Catering for team event"
+  },
+  {
+    "id": "TXN-110",
+    "timestamp": "2024-03-09T11:00:00",
+    "amount": 870.00,
+    "category": "services",
+    "region": "north",
+    "status": "pending",
+    "priority": "high",
+    "description": "Marketing campaign setup"
+  },
+  {
+    "id": "TXN-111",
+    "timestamp": "2024-03-14T10:00:00",
+    "effective_date": "2024-03-04T10:00:00",
+    "scd_type": 2,
+    "amount": 950.00,
+    "category": "healthcare",
+    "region": "east",
+    "status": "active",
+    "priority": "critical",
+    "description": "Retroactive benefit adjustment"
+  },
+  {
+    "id": "TXN-112",
+    "timestamp": "2024-03-15T09:00:00",
+    "effective_date": "2024-03-02T09:00:00",
+    "scd_type": 2,
+    "amount": 1100.00,
+    "category": "utilities",
+    "region": "south",
+    "status": "active",
+    "priority": "high",
+    "description": "Backdated rate correction"
+  },
+  {
+    "id": "TXN-113",
+    "timestamp": "2024-03-10T16:00:00",
+    "amount": 280.00,
+    "category": "clothing",
+    "region": "east",
+    "status": "completed",
+    "priority": "low",
+    "description": "End-of-season clearance"
+  },
+  {
+    "id": "TXN-106",
+    "timestamp": "2024-03-11T09:00:00",
+    "amount": 415.00,
+    "category": "healthcare",
+    "region": "north",
+    "status": null,
+    "priority": null,
+    "description": null
+  },
+  {
+    "id": "TXN-114",
+    "timestamp": "2024-03-11T13:00:00",
+    "amount": 720.00,
+    "category": "transportation",
+    "region": "west",
+    "status": "active",
+    "priority": "high",
+    "description": "Fleet insurance renewal"
+  },
+  {
+    "id": "TXN-115",
+    "timestamp": "2024-03-12T10:00:00",
+    "amount": 165.00,
+    "category": "food",
+    "region": "north",
+    "status": "active",
+    "priority": "medium",
+    "description": "Holiday meal planning"
+  },
+  {
+    "id": "TXN-116",
+    "timestamp": "2024-03-16T11:00:00",
+    "effective_date": "2024-03-06T11:00:00",
+    "scd_type": 2,
+    "amount": 1350.00,
+    "category": "electronics",
+    "region": "central",
+    "status": "active",
+    "priority": "high",
+    "description": "Retroactive hardware credit"
+  },
+  {
+    "id": "TXN-117",
+    "timestamp": "2024-03-13T14:00:00",
+    "amount": 445.00,
+    "category": "services",
+    "region": "east",
+    "status": "active",
+    "priority": "medium",
+    "description": "Training workshop series"
+  },
+  {
+    "id": "TXN-108",
+    "timestamp": "2024-03-14T08:00:00",
+    "amount": 2400.00,
+    "category": "electronics",
+    "region": "west",
+    "status": null,
+    "priority": null,
+    "description": "Data center expansion phase 2"
+  },
+  {
+    "id": "TXN-118",
+    "timestamp": "2024-03-15T15:00:00",
+    "amount": 590.00,
+    "category": "utilities",
+    "region": "north",
+    "status": "active",
+    "priority": "medium",
+    "description": "Solar panel maintenance"
+  }
+]

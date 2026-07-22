@@ -1,0 +1,49 @@
+{
+  "result_rows": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "balance": 1200
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "balance": 750
+    },
+    {
+      "id": 3,
+      "name": "Carol",
+      "balance": 2000
+    },
+    {
+      "id": 5,
+      "name": "Eve",
+      "balance": 1500
+    },
+    {
+      "id": 6,
+      "name": "Frank",
+      "balance": 800
+    }
+  ],
+  "row_count": 5,
+  "visibility_summary": {
+    "total_versions_examined": 11,
+    "visible_count": 6,
+    "filtered_count": 5,
+    "self_created_visible": 1,
+    "committed_visible": 5
+  },
+  "snapshot_info": {
+    "txn_id": 100,
+    "active_transaction_count": 2,
+    "snapshot_xmin": 60,
+    "snapshot_xmax": 101
+  },
+  "conflict_info": {
+    "has_conflicts": false,
+    "conflict_count": 0,
+    "has_anomalies": false,
+    "anomaly_types": []
+  }
+}

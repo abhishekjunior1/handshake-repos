@@ -1,0 +1,237 @@
+{
+  "pipeline_status": "completed",
+  "stages": {
+    "device_registry": {
+      "device_count": 1,
+      "devices": {
+        "virtio-blk-pci-0": {
+          "device_id": "virtio-blk-pci-0",
+          "device_type": "virtio-blk",
+          "vendor_id": 6900,
+          "current_state": "LIVE",
+          "transition_count": 6,
+          "state_history": [
+            "RESET",
+            "ACKNOWLEDGE",
+            "DRIVER",
+            "FEATURES_OK",
+            "DRIVER_OK",
+            "LIVE"
+          ],
+          "properties": {
+            "capacity_sectors": 2097152,
+            "block_size": 512,
+            "num_queues": 4
+          }
+        }
+      },
+      "total_transitions": 6
+    },
+    "capability_negotiation": {
+      "host_feature_count": 7,
+      "guest_feature_count": 5,
+      "negotiated_feature_count": 5,
+      "rejected_feature_count": 2,
+      "host_features": [
+        24,
+        27,
+        28,
+        29,
+        32,
+        33,
+        36
+      ],
+      "guest_features": [
+        24,
+        27,
+        29,
+        32,
+        33
+      ],
+      "negotiated_features": [
+        24,
+        27,
+        29,
+        32,
+        33
+      ],
+      "rejected_features": [
+        28,
+        36
+      ],
+      "feature_names": {
+        "24": "NOTIFY_ON_EMPTY",
+        "27": "ANY_LAYOUT",
+        "28": "INDIRECT_DESC",
+        "29": "EVENT_IDX",
+        "32": "VERSION_1",
+        "33": "ACCESS_PLATFORM",
+        "36": "ORDER_PLATFORM"
+      }
+    },
+    "queue_configuration": {
+      "configured": true,
+      "num_queues": 1,
+      "base_depth": 16,
+      "effective_depth": 32,
+      "queues": [
+        {
+          "queue_index": 0,
+          "ring_size": 32,
+          "descriptor_table_addr": "0x40000000",
+          "avail_ring_addr": "0x40001000",
+          "used_ring_addr": "0x40002000",
+          "interrupt_vector": 32,
+          "avail_idx": 20,
+          "used_idx": 0,
+          "descriptors_in_flight": 20,
+          "total_submitted": 20
+        }
+      ],
+      "submission_result": {
+        "queue_index": 0,
+        "submitted": 20,
+        "current_avail_idx": 20,
+        "descriptors_in_flight": 20,
+        "submissions": [
+          {
+            "avail_idx": 0,
+            "ring_position": 0
+          },
+          {
+            "avail_idx": 1,
+            "ring_position": 1
+          },
+          {
+            "avail_idx": 2,
+            "ring_position": 2
+          },
+          {
+            "avail_idx": 3,
+            "ring_position": 3
+          },
+          {
+            "avail_idx": 4,
+            "ring_position": 4
+          },
+          {
+            "avail_idx": 5,
+            "ring_position": 5
+          },
+          {
+            "avail_idx": 6,
+            "ring_position": 6
+          },
+          {
+            "avail_idx": 7,
+            "ring_position": 7
+          },
+          {
+            "avail_idx": 8,
+            "ring_position": 8
+          },
+          {
+            "avail_idx": 9,
+            "ring_position": 9
+          },
+          {
+            "avail_idx": 10,
+            "ring_position": 10
+          },
+          {
+            "avail_idx": 11,
+            "ring_position": 11
+          },
+          {
+            "avail_idx": 12,
+            "ring_position": 12
+          },
+          {
+            "avail_idx": 13,
+            "ring_position": 13
+          },
+          {
+            "avail_idx": 14,
+            "ring_position": 14
+          },
+          {
+            "avail_idx": 15,
+            "ring_position": 15
+          },
+          {
+            "avail_idx": 16,
+            "ring_position": 16
+          },
+          {
+            "avail_idx": 17,
+            "ring_position": 17
+          },
+          {
+            "avail_idx": 18,
+            "ring_position": 18
+          },
+          {
+            "avail_idx": 19,
+            "ring_position": 19
+          }
+        ]
+      }
+    },
+    "dma_mappings": {
+      "iommu_enabled": true,
+      "guest_page_size": 65536,
+      "host_page_size": 4096,
+      "total_regions": 4,
+      "total_mappings": 72,
+      "total_mapped_bytes": 294912,
+      "regions": [
+        {
+          "guest_start": "0x40000000",
+          "host_start": "0x80040000000",
+          "size": 131072,
+          "page_count": 32,
+          "mapping_page_size": 4096,
+          "iova_start": "0x100000000000",
+          "iova_end": "0x100000020000"
+        },
+        {
+          "guest_start": "0x40020000",
+          "host_start": "0x80040020000",
+          "size": 65536,
+          "page_count": 16,
+          "mapping_page_size": 4096,
+          "iova_start": "0x100000020000",
+          "iova_end": "0x100000030000"
+        },
+        {
+          "guest_start": "0xc0000000",
+          "host_start": "0x800c0000000",
+          "size": 65536,
+          "page_count": 16,
+          "mapping_page_size": 4096,
+          "iova_start": "0x100000030000",
+          "iova_end": "0x100000040000"
+        },
+        {
+          "guest_start": "0xc0010000",
+          "host_start": "0x800c0010000",
+          "size": 32768,
+          "page_count": 8,
+          "mapping_page_size": 4096,
+          "iova_start": "0x100000040000",
+          "iova_end": "0x100000048000"
+        }
+      ]
+    },
+    "migration_state": {
+      "migration_active": true,
+      "total_memory_mb": 512,
+      "total_pages": 8192,
+      "dirty_page_count": 1,
+      "iteration": 1,
+      "snapshots_created": 1,
+      "bitmap_convention": "inverted_kvm",
+      "dirty_ratio": 0.0001220703125
+    }
+  }
+}

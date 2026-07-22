@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/binvault-parser"
+description = "Fix bugs in a custom binary archive parser that fails on certain record types and silently produces incorrect checksums."
+
+[metadata]
+category = "Security"
+subcategory = "Reverse Engineering"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "Requires reverse engineering a bespoke binary format (BinVault v2) with no public documentation. The parser produces one observable error (DELTA record fails) but also has a silent checksum bug invisible on visible data because all visible BLOBs use raw encoding where decode is a no-op. The checksum module's docstring claims verification decodes first ('archiver computed checksums before encoding'), making the bug appear intentional. Additionally, the output sort order uses type-code grouping which happens to match sequential order on visible data but reorders records on archives with interleaved types. A security RE professional analyzing proprietary formats would do this work. Data is synthetic."
+solution_explanation = "Two fixes: (1) parser.py: types 0x04/0x05 store payload-only length in the record header, not total size. Fix: conditional to skip subtracting 6 for these types. (2) checksum.py: CRC32 should be computed on raw stored bytes, not decoded content. Fix: remove the decode_data call. The type-sorted output ordering in main.py is correct and must NOT be changed."
+verification_explanation = "Hidden archive has 12 records with interleaved types (triggering sort-order sensitivity), DELTA/XREF mid-stream (triggering length bug), and base64/hex BLOBs (triggering checksum bug). Tests compare exact JSON match. Any unfixed bug or incorrect 'fix' to the sort order produces completely wrong output."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

@@ -1,0 +1,43 @@
+{
+  "config": {
+    "num_workers": 1,
+    "numa_nodes": 1,
+    "adjacent_steal_only": true,
+    "idle_spin_enabled": true,
+    "initial_spin": 1,
+    "max_spin": 8,
+    "max_ticks": 10000
+  },
+  "tasks": [
+    {
+      "id": "task_alpha",
+      "execution_cost": 20,
+      "dependencies": [],
+      "priority": 1.0
+    },
+    {
+      "id": "task_beta",
+      "execution_cost": 15,
+      "dependencies": [],
+      "priority": 1.0
+    },
+    {
+      "id": "task_gamma",
+      "execution_cost": 12,
+      "dependencies": [],
+      "priority": 1.0
+    },
+    {
+      "id": "task_delta",
+      "execution_cost": 10,
+      "dependencies": [],
+      "priority": 1.0
+    },
+    {
+      "id": "task_epsilon",
+      "execution_cost": 8,
+      "dependencies": [],
+      "priority": 1.0
+    }
+  ]
+}

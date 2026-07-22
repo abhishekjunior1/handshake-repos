@@ -1,0 +1,9 @@
+[
+  {"event_id": "e001", "timestamp": "2024-01-15T10:05:00Z", "category": "auth", "priority": 3, "impact": 2.0, "severity": "high"},
+  {"event_id": "e002", "timestamp": "2024-01-15T10:15:00Z", "category": "auth", "priority": 2, "impact": 3.0, "severity": "medium"},
+  {"event_id": "e003", "timestamp": "2024-01-15T10:30:00Z", "category": "network", "priority": 4, "impact": 2.0, "severity": "critical"},
+  {"event_id": "e004", "timestamp": "2024-01-15T11:05:00Z", "category": "network", "priority": 2, "impact": 2.0, "severity": "low"},
+  {"event_id": "e005", "timestamp": "2024-01-15T11:20:00Z", "category": "auth", "priority": 5, "impact": 1.0, "severity": "high"},
+  {"event_id": "e006", "timestamp": "2024-01-15T12:10:00Z", "category": "system", "priority": 3, "impact": 3.0, "severity": "medium"},
+  {"event_id": "e007", "timestamp": "2024-01-15T12:45:00Z", "category": "system", "priority": 1, "impact": 4.0, "severity": "low"}
+]

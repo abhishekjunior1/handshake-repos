@@ -1,0 +1,294 @@
+{
+  "report_metadata": {
+    "generated_at": "2026-07-16T18:00:00.689786+00:00",
+    "pipeline_version": "2.3.0",
+    "config": {
+      "decay_half_life": 3600,
+      "correlation_window": 300,
+      "score_normalization_max": 100
+    }
+  },
+  "validation_summary": {
+    "total_sources": 4,
+    "total_events": 8,
+    "total_incidents": 7,
+    "max_threat_score": 0.15746236533046853,
+    "mean_threat_score": 0.09113399819760457,
+    "validated_events": 13,
+    "validation_errors": 0,
+    "dedup_stats": {
+      "original_count": 13,
+      "deduplicated_count": 8,
+      "removed_count": 5,
+      "dedup_rate": 0.38461538461538464,
+      "retention_rate": 0.6153846153846154
+    }
+  },
+  "threat_entries": [
+    {
+      "ip": "10.0.2.100",
+      "threat_score": 0.15746236533046853,
+      "event_count": 3,
+      "incident_count": 2,
+      "severity_stats": {
+        "min": 5,
+        "max": 9,
+        "mean": 6.666666666666667
+      },
+      "time_range": {
+        "first_seen": 1700000200.0,
+        "last_seen": 1700003100.0
+      },
+      "event_types": [
+        "brute_force",
+        "data_exfiltration",
+        "lateral_movement"
+      ],
+      "target_ips": [
+        "172.16.0.30",
+        "172.16.0.40",
+        "172.16.0.45"
+      ],
+      "incidents": [
+        {
+          "incident_id": "c71bb4f3-be8e-4d2b-a3c4-74c17296c94a",
+          "start_time": 1700000200.0,
+          "end_time": 1700000200.0,
+          "duration_sec": 0.0,
+          "severity": 6.0,
+          "event_count": 1,
+          "source_ips": [
+            "10.0.2.100"
+          ],
+          "destination_ips": [
+            "172.16.0.30"
+          ],
+          "rule_ids": [
+            "RULE-2001"
+          ],
+          "event_types": [
+            "brute_force"
+          ],
+          "event_ids": [
+            "hevt-005"
+          ]
+        },
+        {
+          "incident_id": "14e24437-df00-4813-8396-bc7dae4cd1ad",
+          "start_time": 1700003000.0,
+          "end_time": 1700003100.0,
+          "duration_sec": 100.0,
+          "severity": 6.7082039324993685,
+          "event_count": 2,
+          "source_ips": [
+            "10.0.2.100"
+          ],
+          "destination_ips": [
+            "172.16.0.40",
+            "172.16.0.45"
+          ],
+          "rule_ids": [
+            "RULE-2002",
+            "RULE-2003"
+          ],
+          "event_types": [
+            "data_exfiltration",
+            "lateral_movement"
+          ],
+          "event_ids": [
+            "hevt-007",
+            "hevt-007b"
+          ]
+        }
+      ]
+    },
+    {
+      "ip": "10.0.3.200",
+      "threat_score": 0.09980710104739383,
+      "event_count": 2,
+      "incident_count": 2,
+      "severity_stats": {
+        "min": 6,
+        "max": 7,
+        "mean": 6.5
+      },
+      "time_range": {
+        "first_seen": 1700000800.0,
+        "last_seen": 1700003200.0
+      },
+      "event_types": [
+        "command_control",
+        "privilege_escalation"
+      ],
+      "target_ips": [
+        "172.16.0.80",
+        "172.16.0.90"
+      ],
+      "incidents": [
+        {
+          "incident_id": "36156ee3-8bf1-493d-bbce-70be3223c562",
+          "start_time": 1700000800.0,
+          "end_time": 1700000800.0,
+          "duration_sec": 0.0,
+          "severity": 6.0,
+          "event_count": 1,
+          "source_ips": [
+            "10.0.3.200"
+          ],
+          "destination_ips": [
+            "172.16.0.80"
+          ],
+          "rule_ids": [
+            "RULE-4001"
+          ],
+          "event_types": [
+            "command_control"
+          ],
+          "event_ids": [
+            "hevt-011"
+          ]
+        },
+        {
+          "incident_id": "d59d1ef9-98c6-49b3-987b-3fdb57759f8a",
+          "start_time": 1700003200.0,
+          "end_time": 1700003200.0,
+          "duration_sec": 0.0,
+          "severity": 6.999999999999999,
+          "event_count": 1,
+          "source_ips": [
+            "10.0.3.200"
+          ],
+          "destination_ips": [
+            "172.16.0.90"
+          ],
+          "rule_ids": [
+            "RULE-4002"
+          ],
+          "event_types": [
+            "privilege_escalation"
+          ],
+          "event_ids": [
+            "hevt-012"
+          ]
+        }
+      ]
+    },
+    {
+      "ip": "10.0.1.50",
+      "threat_score": 0.08607726452537,
+      "event_count": 2,
+      "incident_count": 2,
+      "severity_stats": {
+        "min": 7,
+        "max": 8,
+        "mean": 7.5
+      },
+      "time_range": {
+        "first_seen": 1700000100.0,
+        "last_seen": 1700001200.0
+      },
+      "event_types": [
+        "intrusion_attempt",
+        "malware_detected"
+      ],
+      "target_ips": [
+        "172.16.0.10",
+        "172.16.0.20"
+      ],
+      "incidents": [
+        {
+          "incident_id": "978dd6c6-d661-4c03-aca9-bb709102fec4",
+          "start_time": 1700000100.0,
+          "end_time": 1700000100.0,
+          "duration_sec": 0.0,
+          "severity": 6.999999999999999,
+          "event_count": 1,
+          "source_ips": [
+            "10.0.1.50"
+          ],
+          "destination_ips": [
+            "172.16.0.10"
+          ],
+          "rule_ids": [
+            "RULE-1001"
+          ],
+          "event_types": [
+            "intrusion_attempt"
+          ],
+          "event_ids": [
+            "hevt-001"
+          ]
+        },
+        {
+          "incident_id": "396f31dd-c19e-4f2c-a9cd-d93dfc3c79a0",
+          "start_time": 1700001200.0,
+          "end_time": 1700001200.0,
+          "duration_sec": 0.0,
+          "severity": 7.999999999999998,
+          "event_count": 1,
+          "source_ips": [
+            "10.0.1.50"
+          ],
+          "destination_ips": [
+            "172.16.0.20"
+          ],
+          "rule_ids": [
+            "RULE-1002"
+          ],
+          "event_types": [
+            "malware_detected"
+          ],
+          "event_ids": [
+            "hevt-003"
+          ]
+        }
+      ]
+    },
+    {
+      "ip": "192.168.1.10",
+      "threat_score": 0.021189261887185906,
+      "event_count": 1,
+      "incident_count": 1,
+      "severity_stats": {
+        "min": 4,
+        "max": 4,
+        "mean": 4.0
+      },
+      "time_range": {
+        "first_seen": 1700000300.0,
+        "last_seen": 1700000300.0
+      },
+      "event_types": [
+        "policy_violation"
+      ],
+      "target_ips": [
+        "172.16.0.50"
+      ],
+      "incidents": [
+        {
+          "incident_id": "16ad72eb-f1be-4ca2-9d34-3f9665cf7f21",
+          "start_time": 1700000300.0,
+          "end_time": 1700000300.0,
+          "duration_sec": 0.0,
+          "severity": 4.0,
+          "event_count": 1,
+          "source_ips": [
+            "192.168.1.10"
+          ],
+          "destination_ips": [
+            "172.16.0.50"
+          ],
+          "rule_ids": [
+            "RULE-3001"
+          ],
+          "event_types": [
+            "policy_violation"
+          ],
+          "event_ids": [
+            "hevt-009"
+          ]
+        }
+      ]
+    }
+  ]
+}

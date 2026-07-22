@@ -1,0 +1,17 @@
+{
+  "consumers": [
+    {
+      "consumer_id": "worker-alpha",
+      "rate_limit": 100
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "task-001",
+      "priority": 1,
+      "payload": {"action": "process_document", "doc_id": "doc-001"},
+      "arrival_tick": 0,
+      "failure_schedule": []
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "config": {
+    "num_workers": 4,
+    "numa_nodes": 2,
+    "adjacent_steal_only": true,
+    "idle_spin_enabled": true,
+    "initial_spin": 1,
+    "max_spin": 8,
+    "max_ticks": 10000
+  },
+  "tasks": [
+    {
+      "id": "init_a",
+      "execution_cost": 5,
+      "dependencies": [],
+      "priority": 1.0
+    },
+    {
+      "id": "init_b",
+      "execution_cost": 8,
+      "dependencies": [],
+      "priority": 2.0
+    },
+    {
+      "id": "init_c",
+      "execution_cost": 3,
+      "dependencies": [],
+      "priority": 1.5
+    },
+    {
+      "id": "init_d",
+      "execution_cost": 12,
+      "dependencies": [],
+      "priority": 3.0
+    },
+    {
+      "id": "init_e",
+      "execution_cost": 6,
+      "dependencies": [],
+      "priority": 1.0
+    },
+    {
+      "id": "init_f",
+      "execution_cost": 4,
+      "dependencies": [],
+      "priority": 2.5
+    },
+    {
+      "id": "proc_x",
+      "execution_cost": 15,
+      "dependencies": ["init_a", "init_b"],
+      "priority": 5.0
+    },
+    {
+      "id": "proc_y",
+      "execution_cost": 10,
+      "dependencies": ["init_b", "init_c"],
+      "priority": 4.0
+    },
+    {
+      "id": "proc_z",
+      "execution_cost": 18,
+      "dependencies": ["init_d"],
+      "priority": 6.0
+    },
+    {
+      "id": "proc_w",
+      "execution_cost": 7,
+      "dependencies": ["init_c", "init_e"],
+      "priority": 3.0
+    },
+    {
+      "id": "merge_1",
+      "execution_cost": 20,
+      "dependencies": ["proc_x", "proc_y"],
+      "priority": 8.0
+    },
+    {
+      "id": "merge_2",
+      "execution_cost": 14,
+      "dependencies": ["proc_z", "proc_w"],
+      "priority": 7.0
+    },
+    {
+      "id": "final_agg",
+      "execution_cost": 25,
+      "dependencies": ["merge_1", "merge_2"],
+      "priority": 10.0
+    },
+    {
+      "id": "side_task_1",
+      "execution_cost": 9,
+      "dependencies": ["init_f"],
+      "priority": 2.0
+    },
+    {
+      "id": "side_task_2",
+      "execution_cost": 11,
+      "dependencies": ["side_task_1", "proc_w"],
+      "priority": 4.0
+    }
+  ]
+}

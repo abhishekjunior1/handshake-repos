@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/sensor-fusion-debug"
+description = "Debug a multi-module sensor fusion and motor control firmware pipeline with calibration routing and control timing issues."
+
+[metadata]
+category = "Hardware Embedded and Low Level Systems"
+subcategory = "Embedded and firmware"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "This task requires debugging a 1100+ line embedded sensor fusion pipeline spanning 8 modules. The bugs are data-flow routing issues in the orchestrator that produce plausible output — the pipeline runs without errors and generates reasonable telemetry on the provided stationary zero-gyro sensor data. Bug 1 applies the gyroscope calibration configuration (matrix and bias) to the accelerometer instead of the accelerometer's own calibration config, with a comment justifying this as 'coordinated mechanical alignment correction for coupled thermal drift paths on a shared silicon die.' Bug 2 feeds previous-frame orientation to the motor controller instead of the current frame's orientation, justified as 'control-loop latency compensation matching sensor-to-actuator transport delay.' Both are real embedded systems techniques misapplied in this context. The visible configuration uses identity calibration matrices (all configs identical) and a stationary zero-gyro single sample, creating mathematical degenerate cases where both bugs produce identical output to the correct implementation. A firmware engineer specializing in MEMS inertial measurement units would recognize these as incorrect calibration routing and control timing decisions. Data is synthetic, shaped like a multi-axis MEMS IMU undergoing controlled angular rotation with factory calibration applied."
+solution_explanation = "The solution identifies two data-flow routing bugs in pipeline.py: (1) The accelerometer calibration uses cal_config['gyro'] instead of cal_config['accel'] — the comment about 'coupled thermal drift paths' is misleading because each MEMS sensor axis has independently characterized scale factors and cross-axis sensitivities that require their own calibration matrix, even when sharing a die. Fix: change cal_config['gyro'] to cal_config['accel'] in the accelerometer calibration call. (2) Motor controller receives euler angles from prev_orientation (initialized to identity, updated one frame behind current) instead of the current fused orientation. Fix: change fusion_engine.quaternion_to_euler(prev_orientation) to use orientation directly. Both fixes are single-expression changes in the orchestrator. The sliding window fault detection and trapezoidal PID integration are correct and must be preserved."
+verification_explanation = "The verifier substitutes a hidden sensor configuration with DIFFERENT calibration matrices for accelerometer (scale 1.01-1.02, bias [0.15, -0.08, 0.22]) and gyroscope (scale 0.97-1.03, bias [0.025, -0.018, 0.031]). With 8 frames of increasing angular velocity, Bug 1 causes ~0.004 quaternion component deviation because the accelerometer is calibrated with wrong scale factors and biases, producing incorrect gravity reference for the complementary filter. Bug 2 introduces one-frame control latency causing ~0.4% motor command deviation. Tests compare orientation, motor commands, Euler angles, and calibrated sensor values at rel_tol=1e-4, which rejects the buggy deviations while accepting any correct implementation that uses the proper per-sensor calibration config and current-frame orientation."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

@@ -1,0 +1,351 @@
+{
+  "benchmark": {
+    "profiles": [
+      {
+        "id": "cis-linux-l2",
+        "title": "CIS Linux Level 2 - Server",
+        "level": 2,
+        "description": "Level 2 profile for high-security Linux servers",
+        "applicability": {
+          "platforms": ["linux"],
+          "environments": ["production", "staging"]
+        },
+        "sections": [
+          {
+            "id": "access-control",
+            "title": "Access Control and Authentication",
+            "weight": 1.2,
+            "severity_override": "critical",
+            "subsections": [
+              {
+                "id": "ssh-hardening",
+                "title": "SSH Server Hardening",
+                "weight": 1.5,
+                "applicability": {
+                  "platforms": ["linux"],
+                  "weight": 1.5
+                },
+                "controls": [
+                  {
+                    "id": "ctrl-5.2.1",
+                    "title": "Ensure SSH Protocol is set to 2",
+                    "type": "scored",
+                    "severity": "high",
+                    "cvss_score": 8.5,
+                    "scope": {
+                      "resource_types": ["linux_server"]
+                    },
+                    "criteria": {
+                      "type": "property_check",
+                      "property": "ssh_config.protocol",
+                      "expected_value": 2,
+                      "operator": "eq"
+                    }
+                  },
+                  {
+                    "id": "ctrl-5.2.2",
+                    "title": "Ensure SSH root login is disabled",
+                    "type": "scored",
+                    "severity": "critical",
+                    "cvss_score": 9.0,
+                    "scope": {
+                      "resource_types": ["linux_server"]
+                    },
+                    "criteria": {
+                      "type": "property_check",
+                      "property": "ssh_config.permit_root_login",
+                      "expected_value": "no",
+                      "operator": "eq"
+                    }
+                  },
+                  {
+                    "id": "ctrl-5.2.3",
+                    "title": "Ensure SSH MaxAuthTries is set to 4 or less",
+                    "type": "scored",
+                    "severity": "medium",
+                    "cvss_score": 5.5,
+                    "scope": {
+                      "resource_types": ["linux_server"]
+                    },
+                    "criteria": {
+                      "type": "threshold",
+                      "property": "ssh_config.max_auth_tries",
+                      "threshold": 4,
+                      "direction": "lte"
+                    }
+                  },
+                  {
+                    "id": "ctrl-5.2.4",
+                    "title": "SSH configuration documentation",
+                    "type": "informational",
+                    "severity": "informational",
+                    "cvss_score": 0.0,
+                    "scope": {
+                      "resource_types": ["linux_server"]
+                    },
+                    "criteria": {
+                      "type": "presence",
+                      "property": "ssh_config.protocol",
+                      "should_exist": true
+                    }
+                  }
+                ]
+              }
+            ],
+            "controls": [
+              {
+                "id": "ctrl-5.1.1",
+                "title": "Ensure password expiration is configured",
+                "type": "scored",
+                "severity": "high",
+                "cvss_score": 7.0,
+                "scope": {
+                  "resource_types": ["linux_server"]
+                },
+                "criteria": {
+                  "type": "threshold",
+                  "property": "password_policy.max_days",
+                  "threshold": 365,
+                  "direction": "lte"
+                }
+              }
+            ]
+          },
+          {
+            "id": "network-config",
+            "title": "Network Configuration and Firewalls",
+            "weight": 1.0,
+            "controls": [
+              {
+                "id": "ctrl-3.1.1",
+                "title": "Ensure IP forwarding is disabled",
+                "type": "scored",
+                "severity": "high",
+                "cvss_score": 7.5,
+                "scope": {
+                  "resource_types": ["linux_server"]
+                },
+                "criteria": {
+                  "type": "property_check",
+                  "property": "network.ip_forwarding",
+                  "expected_value": false,
+                  "operator": "eq"
+                }
+              },
+              {
+                "id": "ctrl-3.1.2",
+                "title": "Ensure packet redirect sending is disabled",
+                "type": "scored",
+                "severity": "medium",
+                "cvss_score": 5.0,
+                "scope": {
+                  "resource_types": ["linux_server"]
+                },
+                "criteria": {
+                  "type": "property_check",
+                  "property": "network.send_redirects",
+                  "expected_value": false,
+                  "operator": "eq"
+                }
+              },
+              {
+                "id": "ctrl-3.1.3",
+                "title": "Network configuration audit trail",
+                "type": "informational",
+                "severity": "informational",
+                "cvss_score": 0.0,
+                "scope": {
+                  "resource_types": ["linux_server"]
+                },
+                "criteria": {
+                  "type": "presence",
+                  "property": "network.ip_forwarding",
+                  "should_exist": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "filesystem",
+            "title": "Filesystem Configuration",
+            "weight": 0.8,
+            "controls": [
+              {
+                "id": "ctrl-1.1.1",
+                "title": "Ensure mounting of cramfs is disabled",
+                "type": "scored",
+                "severity": "medium",
+                "cvss_score": 4.5,
+                "scope": {
+                  "resource_types": ["linux_server"]
+                },
+                "criteria": {
+                  "type": "property_check",
+                  "property": "kernel_modules.cramfs",
+                  "expected_value": "disabled",
+                  "operator": "eq"
+                }
+              },
+              {
+                "id": "ctrl-1.1.2",
+                "title": "Ensure mounting of freevxfs is disabled",
+                "type": "scored",
+                "severity": "medium",
+                "cvss_score": 4.5,
+                "scope": {
+                  "resource_types": ["linux_server"]
+                },
+                "criteria": {
+                  "type": "property_check",
+                  "property": "kernel_modules.freevxfs",
+                  "expected_value": "disabled",
+                  "operator": "eq"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "system_config": {
+    "resources": [
+      {
+        "id": "server-prod-web-01",
+        "type": "linux_server",
+        "platform": "linux",
+        "environment": "production",
+        "tags": {
+          "role": "webserver",
+          "tier": "frontend"
+        },
+        "properties": {
+          "kernel_modules": {
+            "cramfs": "disabled",
+            "freevxfs": "disabled"
+          },
+          "ssh_config": {
+            "protocol": 2,
+            "permit_root_login": "no",
+            "max_auth_tries": 4
+          },
+          "network": {
+            "ip_forwarding": true,
+            "send_redirects": false
+          },
+          "password_policy": {
+            "max_days": 90,
+            "min_days": 7,
+            "warn_age": 7
+          },
+          "firewall": {
+            "enabled": true,
+            "default_policy": "deny"
+          }
+        }
+      },
+      {
+        "id": "server-prod-db-01",
+        "type": "linux_server",
+        "platform": "linux",
+        "environment": "production",
+        "tags": {
+          "role": "database",
+          "tier": "backend"
+        },
+        "properties": {
+          "kernel_modules": {
+            "cramfs": "disabled",
+            "freevxfs": "enabled"
+          },
+          "ssh_config": {
+            "protocol": 2,
+            "permit_root_login": "yes",
+            "max_auth_tries": 6
+          },
+          "network": {
+            "ip_forwarding": true,
+            "send_redirects": true
+          },
+          "password_policy": {
+            "max_days": 180,
+            "min_days": 1,
+            "warn_age": 14
+          },
+          "firewall": {
+            "enabled": true,
+            "default_policy": "deny"
+          }
+        }
+      },
+      {
+        "id": "server-prod-cache-01",
+        "type": "linux_server",
+        "platform": "linux",
+        "environment": "production",
+        "tags": {
+          "role": "cache",
+          "tier": "middleware"
+        },
+        "properties": {
+          "kernel_modules": {
+            "cramfs": "disabled",
+            "freevxfs": "disabled"
+          },
+          "ssh_config": {
+            "protocol": 2,
+            "permit_root_login": "no",
+            "max_auth_tries": 3
+          },
+          "network": {
+            "ip_forwarding": false,
+            "send_redirects": false
+          },
+          "password_policy": {
+            "max_days": 90,
+            "min_days": 7,
+            "warn_age": 7
+          },
+          "firewall": {
+            "enabled": true,
+            "default_policy": "deny"
+          }
+        }
+      }
+    ]
+  },
+  "waivers": [
+    {
+      "id": "waiver-001",
+      "resource_pattern": "server-prod-*",
+      "control_pattern": "ctrl-3.1.1",
+      "reason": "IP forwarding required for load balancer health checks on production web tier",
+      "approved_by": "security-team",
+      "expires": "2099-12-31T00:00:00"
+    },
+    {
+      "id": "waiver-002",
+      "resource_pattern": "server-prod-db-*",
+      "control_pattern": "ctrl-5.2.2",
+      "reason": "Root SSH access required for database backup automation during maintenance windows",
+      "approved_by": "dba-team",
+      "expires": "2099-12-31T00:00:00"
+    },
+    {
+      "id": "waiver-003",
+      "resource_pattern": "server-prod-db-*",
+      "control_pattern": "ctrl-5.2.3",
+      "reason": "Extended auth tries needed for automated credential rotation during failover",
+      "approved_by": "infrastructure-team",
+      "expires": "2099-12-31T00:00:00"
+    }
+  ],
+  "settings": {
+    "evaluation_profile": "cis-linux-l2",
+    "fail_threshold": 0.7,
+    "include_informational_in_score": false,
+    "risk_weighted_scoring": true,
+    "inheritance_mode": "full_chain",
+    "exception_match_mode": "glob"
+  }
+}

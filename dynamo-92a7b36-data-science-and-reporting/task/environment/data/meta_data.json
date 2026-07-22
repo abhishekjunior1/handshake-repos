@@ -1,0 +1,21 @@
+{
+  "analysis_name": "Cognitive Behavioral Therapy Efficacy",
+  "effect_measure": "standardized_mean_difference",
+  "studies": [
+    {"label": "Smith_2018", "effect_size": 0.45, "std_error": 0.12, "subgroup": "adult"},
+    {"label": "Johnson_2019", "effect_size": 0.38, "std_error": 0.11, "subgroup": "adult"},
+    {"label": "Williams_2017", "effect_size": 0.52, "std_error": 0.13, "subgroup": "adult"},
+    {"label": "Brown_2020", "effect_size": 0.41, "std_error": 0.12, "subgroup": "adult"},
+    {"label": "Davis_2018", "effect_size": 0.49, "std_error": 0.11, "subgroup": "adult"},
+    {"label": "Miller_2019", "effect_size": 0.36, "std_error": 0.12, "subgroup": "adult"},
+    {"label": "Wilson_2020", "effect_size": 0.44, "std_error": 0.13, "subgroup": "adult"},
+    {"label": "Moore_2017", "effect_size": 0.47, "std_error": 0.12, "subgroup": "adult"},
+    {"label": "Taylor_2021", "effect_size": 0.39, "std_error": 0.11, "subgroup": "adolescent"},
+    {"label": "Anderson_2019", "effect_size": 0.55, "std_error": 0.12, "subgroup": "adolescent"},
+    {"label": "Thomas_2020", "effect_size": 0.42, "std_error": 0.13, "subgroup": "adolescent"},
+    {"label": "Jackson_2018", "effect_size": 0.48, "std_error": 0.12, "subgroup": "adolescent"},
+    {"label": "White_2019", "effect_size": 0.37, "std_error": 0.11, "subgroup": "adolescent"},
+    {"label": "Harris_2020", "effect_size": 0.51, "std_error": 0.12, "subgroup": "adolescent"},
+    {"label": "Martin_2021", "effect_size": 0.43, "std_error": 0.13, "subgroup": "adolescent"}
+  ]
+}

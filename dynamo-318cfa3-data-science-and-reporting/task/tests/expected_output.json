@@ -1,0 +1,195 @@
+{
+  "experiment": {
+    "id": "EXP-2024-0293",
+    "name": "Multi-Metric Conversion Funnel Test"
+  },
+  "analysis_config": {
+    "confidence_level": 0.95,
+    "correction_method": "bonferroni",
+    "power_target": 0.8,
+    "mde_requested": 3.0
+  },
+  "metrics": [
+    {
+      "name": "revenue_per_user",
+      "primary": true,
+      "control": {
+        "n": 25,
+        "mean": 50.85121448,
+        "std_dev": 3.90140619,
+        "se": 0.78028124
+      },
+      "treatment": {
+        "n": 25,
+        "mean": 48.92772812,
+        "std_dev": 14.49215071,
+        "se": 2.89843014
+      },
+      "hypothesis_test": {
+        "test_type": "welch_t_test",
+        "statistic": -0.6408156,
+        "p_value_raw": 0.7365227035,
+        "p_value_adjusted": 1.0,
+        "reject_null_corrected": false,
+        "degrees_of_freedom": 27.4605
+      },
+      "effect_size": {
+        "hedges_g": -0.17930193,
+        "cohens_d": -0.18216313,
+        "mean_difference": -1.92348636
+      },
+      "confidence_interval": {
+        "ci_lower": -8.07747717,
+        "ci_upper": 4.23050445,
+        "se_difference": 3.00162224,
+        "margin_of_error": 6.15399081
+      }
+    },
+    {
+      "name": "pages_viewed",
+      "primary": false,
+      "control": {
+        "n": 25,
+        "mean": 200.80031712,
+        "std_dev": 4.55587165,
+        "se": 0.91117433
+      },
+      "treatment": {
+        "n": 25,
+        "mean": 206.42256684,
+        "std_dev": 18.71495674,
+        "se": 3.74299135
+      },
+      "hypothesis_test": {
+        "test_type": "welch_t_test",
+        "statistic": 1.45945235,
+        "p_value_raw": 0.0780244283,
+        "p_value_adjusted": 0.3120977132,
+        "reject_null_corrected": false,
+        "degrees_of_freedom": 26.8345
+      },
+      "effect_size": {
+        "hedges_g": 0.40835869,
+        "cohens_d": 0.41487505,
+        "mean_difference": 5.62224972
+      },
+      "confidence_interval": {
+        "ci_lower": -2.28429996,
+        "ci_upper": 13.5287994,
+        "se_difference": 3.85230099,
+        "margin_of_error": 7.90654968
+      }
+    },
+    {
+      "name": "bounce_rate_pct",
+      "primary": false,
+      "control": {
+        "n": 25,
+        "mean": 29.2686034,
+        "std_dev": 4.95896072,
+        "se": 0.99179214
+      },
+      "treatment": {
+        "n": 25,
+        "mean": 29.45486736,
+        "std_dev": 17.64246899,
+        "se": 3.5284938
+      },
+      "hypothesis_test": {
+        "test_type": "welch_t_test",
+        "statistic": 0.05081916,
+        "p_value_raw": 0.5200832881,
+        "p_value_adjusted": 1.0,
+        "reject_null_corrected": false,
+        "degrees_of_freedom": 27.7688
+      },
+      "effect_size": {
+        "hedges_g": 0.01421934,
+        "cohens_d": 0.01444624,
+        "mean_difference": 0.18626396
+      },
+      "confidence_interval": {
+        "ci_lower": -7.32443927,
+        "ci_upper": 7.69696719,
+        "se_difference": 3.66523125,
+        "margin_of_error": 7.51070323
+      }
+    },
+    {
+      "name": "time_to_convert_sec",
+      "primary": false,
+      "control": {
+        "n": 25,
+        "mean": 73.95926308,
+        "std_dev": 3.74476314,
+        "se": 0.74895263
+      },
+      "treatment": {
+        "n": 25,
+        "mean": 76.3403264,
+        "std_dev": 15.33013414,
+        "se": 3.06602683
+      },
+      "hypothesis_test": {
+        "test_type": "welch_t_test",
+        "statistic": 0.75441385,
+        "p_value_raw": 0.7714170531,
+        "p_value_adjusted": 1.0,
+        "reject_null_corrected": false,
+        "degrees_of_freedom": 26.854
+      },
+      "effect_size": {
+        "hedges_g": 0.21108702,
+        "cohens_d": 0.21445543,
+        "mean_difference": 2.38106332
+      },
+      "confidence_interval": {
+        "ci_lower": -4.09652388,
+        "ci_upper": 8.85865052,
+        "se_difference": 3.15617657,
+        "margin_of_error": 6.4775872
+      }
+    }
+  ],
+  "multiple_testing": {
+    "method": "bonferroni",
+    "num_comparisons": 4,
+    "adjusted_p_values": [
+      1.0,
+      0.3120977132,
+      1.0,
+      1.0
+    ],
+    "rejections": [
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "power_analysis": {
+    "achieved_power": 0.00038439,
+    "noncentrality_parameter": -1.74310259,
+    "mde": {
+      "absolute": 2.78784057,
+      "relative": 0.71457327,
+      "standard_error": 1.10348431
+    },
+    "sample_size_recommendation": {
+      "n_per_group": 21,
+      "total_n": 42,
+      "assumed_variance": 15.22097,
+      "target_effect": 3.0,
+      "z_alpha": 1.644854,
+      "z_beta": 0.841621
+    }
+  },
+  "summary": {
+    "total_metrics_tested": 4,
+    "significant_after_correction": 0,
+    "primary_metric_significant": false,
+    "adequately_powered": false,
+    "achieved_power": 0.00038439,
+    "recommendation": "INCONCLUSIVE: Underpowered study with no significant primary effect. Consider larger sample."
+  }
+}

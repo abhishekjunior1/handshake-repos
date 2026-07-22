@@ -1,0 +1,32 @@
+artifacts = ["/app/execution_log.json", "/app/dependencies.py", "/app/executor.py", "/app/state.py", "/app/scheduler.py", "/app/pipeline.py"]
+
+[task]
+name = "dynamo/pipeline-debug"
+description = "Find and fix three interacting bugs in a multi-file DAG pipeline orchestrator that produces incorrect execution on complex DAG topologies with retries."
+
+[metadata]
+category = "debugging_and_repair"
+subcategory = "pipeline_and_orchestration_debugging"
+model_tested = "GPT-5.4"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 6.0
+difficulty_explanation = "This is the work of data platform engineers debugging DAG orchestration systems (Airflow, Prefect, Dagster). Data is entirely synthetic (bespoke orchestrator, no public prior art). The orchestrator runs correctly on the visible DAG (a simple fork-join with alphabetically-ordered parallel branches and no failures) but contains 3 interacting bugs that only manifest on complex DAGs: (1) dependencies.py uses sorted() for topological tie-breaking instead of preserving the DAG definition's stage registration order — invisible when parallel stages happen to be in alphabetical order. (2) state.py's get_latest_state returns the most recent snapshot regardless of success flag — invisible when no stages fail. (3) executor.py marks a stage 'completed' and records a success snapshot BEFORE running validation — when validation fails, the stage appears done and its corrupt output propagates. Bugs 2+3 interact: fixing 3 exposes the retry path where 2 causes corrupt state propagation. The visible DAG has parallel branches (branch_alpha, branch_beta) in alphabetical == registration order and no validation failures, masking all 3 bugs."
+solution_explanation = "Three fixes: (1) dependencies.py: replace sorted() queue seeding and queue.sort() with insertion-order list comprehension from the stages dict. (2) state.py: modify get_latest_state to iterate reversed snapshots and return only those where success=True. (3) executor.py: move the record_snapshot(name, output, True) call from before validation to after validation passes. Each fix is 1-3 lines."
+verification_explanation = "The verifier injects hidden_dag.json (6-stage DAG: extract, transform, analyze, enrich, merge, export. Transform is registered before analyze but comes after alphabetically. Transform fails validation on first attempt then succeeds on retry. Enrich fails ALL retries permanently. Merge depends on both enrich and analyze). Checks exact match on execution_log.json: stage order (bug 1 produces analyze-before-transform), output_state (bugs 2+3 cause enrich's corrupt failed-state to propagate to merge/export instead of being filtered), status, and attempt counts."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

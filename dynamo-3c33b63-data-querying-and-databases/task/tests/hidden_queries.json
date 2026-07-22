@@ -1,0 +1,101 @@
+{
+  "tables": {
+    "orders": {
+      "columns": ["order_id", "customer_id", "order_date", "freight", "status"],
+      "rows": [
+        [2001, 10, "2024-03-01", 45.00, "shipped"],
+        [2002, 10, "2024-03-01", 30.00, "shipped"],
+        [2003, 20, "2024-03-02", 55.00, "shipped"],
+        [2004, 20, "2024-03-02", 25.00, "cancelled"],
+        [2005, 30, "2024-03-03", 60.00, "shipped"],
+        [2006, 30, "2024-03-03", 35.00, "shipped"],
+        [2007, 40, "2024-03-04", 40.00, "pending"],
+        [2008, 10, "2024-03-05", 20.00, "shipped"],
+        [2009, 20, "2024-03-06", 50.00, "shipped"],
+        [2010, 50, "2024-03-07", 28.00, "shipped"]
+      ]
+    },
+    "order_lines": {
+      "columns": ["line_id", "order_id", "product", "quantity", "unit_price"],
+      "rows": [
+        [101, 2001, "Alpha", 2, 50.00],
+        [102, 2001, "Beta", 1, 30.00],
+        [103, 2001, "Gamma", 3, 20.00],
+        [104, 2002, "Alpha", 1, 50.00],
+        [105, 2002, "Delta", 2, 40.00],
+        [106, 2003, "Beta", 4, 30.00],
+        [107, 2003, "Gamma", 2, 20.00],
+        [108, 2004, "Alpha", 1, 50.00],
+        [109, 2005, "Delta", 3, 40.00],
+        [110, 2005, "Beta", 1, 30.00],
+        [111, 2006, "Gamma", 2, 20.00],
+        [112, 2007, "Alpha", 1, 50.00],
+        [113, 2008, "Beta", 2, 30.00],
+        [114, 2009, "Delta", 1, 40.00],
+        [115, 2009, "Gamma", 3, 20.00],
+        [116, 2010, "Alpha", 2, 50.00]
+      ]
+    },
+    "customers": {
+      "columns": ["customer_id", "name", "region", "tier"],
+      "rows": [
+        [10, "Northwind Co", "East", "Gold"],
+        [20, "Southgate Ltd", "West", "Silver"],
+        [30, "Eastview Corp", "East", "Gold"],
+        [40, "Westfield Inc", "West", "Bronze"],
+        [50, "Central Hub", "North", "Silver"],
+        [60, "Pacific Traders", "South", "Gold"]
+      ]
+    }
+  },
+  "queries": [
+    {
+      "type": "join_aggregate",
+      "source_table": "orders",
+      "select": ["l_customer_id", "order_count", "total_freight"],
+      "join": {
+        "table": "order_lines",
+        "type": "inner",
+        "on": [{"left": "order_id", "right": "order_id"}]
+      },
+      "group_by": ["l_customer_id"],
+      "aggregations": [
+        {"function": "COUNT", "column": "l_order_id", "alias": "order_count"},
+        {"function": "SUM", "column": "l_freight", "alias": "total_freight"}
+      ],
+      "order_by": [{"column": "l_customer_id", "direction": "asc"}]
+    },
+    {
+      "type": "window",
+      "source_table": "orders",
+      "select": ["*"],
+      "window_functions": [
+        {
+          "function": "RUNNING_TOTAL",
+          "partition_by": ["customer_id"],
+          "order_by": [{"column": "order_date", "direction": "asc"}],
+          "column": "freight",
+          "alias": "cumulative_freight"
+        }
+      ],
+      "order_by": [{"column": "customer_id", "direction": "asc"}, {"column": "order_date", "direction": "asc"}]
+    },
+    {
+      "type": "join_aggregate",
+      "source_table": "customers",
+      "select": ["l_customer_id", "l_name", "l_region", "order_count", "total_value"],
+      "join": {
+        "table": "orders",
+        "type": "left",
+        "on": [{"left": "customer_id", "right": "customer_id"}],
+        "filter": {"column": "r_status", "op": "=", "value": "shipped"}
+      },
+      "group_by": ["l_customer_id", "l_name", "l_region"],
+      "aggregations": [
+        {"function": "COUNT", "column": "r_order_id", "alias": "order_count"},
+        {"function": "SUM", "column": "r_freight", "alias": "total_value"}
+      ],
+      "order_by": [{"column": "l_customer_id", "direction": "asc"}]
+    }
+  ]
+}

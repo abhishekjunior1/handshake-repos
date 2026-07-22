@@ -1,0 +1,30 @@
+{
+  "tags": [
+    {
+      "type": "analog",
+      "calibration": {
+        "type": "linear",
+        "gain": 1.0,
+        "offset": 0.0
+      }
+    },
+    {
+      "type": "analog",
+      "calibration": {
+        "type": "linear",
+        "gain": 1.0,
+        "offset": 0.0
+      }
+    },
+    {
+      "type": "analog",
+      "calibration": {
+        "type": "linear",
+        "gain": 1.0,
+        "offset": 0.0
+      },
+      "scan_rate_us": 1000000
+    }
+  ],
+  "archive_data": "4849535400020001000000010000000000060a24181e400009c4c0004849535400020002000000030000000000060a24182d82400c80c00000060a24183cc4800ce4c00000060a24184c06c00d48c0004849535400020003000000020000000000060a24181e400003e8c00000060a2418b6d68007d0c000"
+}

@@ -1,0 +1,680 @@
+{
+  "tier_utilization": {
+    "tier_ssd": {
+      "tier_id": "tier_ssd",
+      "total_capacity_blocks": 1024,
+      "used_capacity_blocks": 768,
+      "effective_capacity_blocks": 800,
+      "available_blocks": 32,
+      "utilization_pct": 96.0
+    },
+    "tier_hdd": {
+      "tier_id": "tier_hdd",
+      "total_capacity_blocks": 8192,
+      "used_capacity_blocks": 4096,
+      "effective_capacity_blocks": 8192,
+      "available_blocks": 4096,
+      "utilization_pct": 50.0
+    },
+    "tier_archive": {
+      "tier_id": "tier_archive",
+      "total_capacity_blocks": 32768,
+      "used_capacity_blocks": 8192,
+      "effective_capacity_blocks": 32768,
+      "available_blocks": 24576,
+      "utilization_pct": 25.0
+    }
+  },
+  "heat_distribution": {
+    "hot": 128,
+    "warm": 128,
+    "cold": 32
+  },
+  "wear_metrics": [
+    {
+      "device_id": "ssd_nvme_0",
+      "write_amplification_factor": 1.064,
+      "endurance_consumed_fraction": 7.389e-05,
+      "wear_rate_per_second": 0.0,
+      "remaining_life_hours": Infinity
+    },
+    {
+      "device_id": "hdd_sata_0",
+      "write_amplification_factor": 1.0024,
+      "endurance_consumed_fraction": 1.74e-05,
+      "wear_rate_per_second": 1.45e-06,
+      "remaining_life_hours": 191.57
+    },
+    {
+      "device_id": "archive_0",
+      "write_amplification_factor": 1.0,
+      "endurance_consumed_fraction": 2.17e-06,
+      "wear_rate_per_second": 7.23333e-07,
+      "remaining_life_hours": 384.02
+    }
+  ],
+  "migration_plan": {
+    "summary": {
+      "total_migrations": 50,
+      "promotions": 50,
+      "demotions": 0,
+      "total_iops_cost": 200.0,
+      "total_bandwidth_mb": 0.195312,
+      "avg_priority_score": 640.0
+    },
+    "operations": [
+      {
+        "block_key": "archive_0:5000",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5001",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5002",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5003",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5004",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5005",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5006",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5007",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5008",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5009",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5010",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5011",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5012",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5013",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5014",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5015",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5016",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5017",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5018",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5019",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5020",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5021",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5022",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5023",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5024",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5025",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5026",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5027",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5028",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5029",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5030",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5031",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5032",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5033",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5034",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5035",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5036",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5037",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5038",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5039",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5040",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5041",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5042",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5043",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5044",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5045",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5046",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5047",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5048",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      },
+      {
+        "block_key": "archive_0:5049",
+        "source_tier": "tier_archive",
+        "target_tier": "tier_ssd",
+        "action": "promote",
+        "priority_score": 640,
+        "iops_cost": 4.0,
+        "bandwidth_mb": 0.00390625,
+        "block_count": 1
+      }
+    ]
+  },
+  "tier_balance_score": 0.4444,
+  "top_promotion_candidates": [
+    {
+      "block_key": "archive_0:5000",
+      "raw_score": 0.64094,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.07594,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5001",
+      "raw_score": 0.640933,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.075933,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5002",
+      "raw_score": 0.640925,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.075925,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5003",
+      "raw_score": 0.640918,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.075918,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5004",
+      "raw_score": 0.64091,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.07591,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5005",
+      "raw_score": 0.640903,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.075903,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5006",
+      "raw_score": 0.640895,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.075895,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5007",
+      "raw_score": 0.640888,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.075888,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5008",
+      "raw_score": 0.640881,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.075881,
+      "heat_label": "hot"
+    },
+    {
+      "block_key": "archive_0:5009",
+      "raw_score": 0.640873,
+      "decayed_score": 640,
+      "frequency_component": 0.24,
+      "recency_component": 0.3,
+      "write_intensity_component": 0.025,
+      "positional_component": 0.075873,
+      "heat_label": "hot"
+    }
+  ],
+  "health_indicators": {
+    "overall": "critical",
+    "capacity": "critical",
+    "endurance": "healthy",
+    "balance": "warning",
+    "max_utilization_pct": 96.0,
+    "max_endurance_consumed": 7.389e-05,
+    "tier_balance_score": 0.4444
+  }
+}

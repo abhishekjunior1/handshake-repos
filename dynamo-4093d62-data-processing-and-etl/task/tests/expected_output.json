@@ -1,0 +1,128 @@
+{
+  "dataset": "sales_platform",
+  "tables": {
+    "products": {
+      "total_records": 12,
+      "valid_records": 10,
+      "invalid_records": 2,
+      "column_scores": {
+        "product_name": 1.0,
+        "product_id": 1.0,
+        "price": 0.95,
+        "stock_quantity": 0.95,
+        "category": 1.0,
+        "min_order": 0.95
+      },
+      "overall_score": 0.975,
+      "violations": [
+        {
+          "column": "min_order",
+          "rule": "range_min",
+          "value": "0",
+          "message": "Value 0 is below minimum 1",
+          "record_index": 4
+        },
+        {
+          "column": "stock_quantity",
+          "rule": "range_min",
+          "value": "-5",
+          "message": "Value -5 is below minimum 0",
+          "record_index": 8
+        }
+      ],
+      "conditional_violations": [
+        {
+          "record_index": 2,
+          "column": "category",
+          "rule": "conditional",
+          "value": "",
+          "message": "Conditional rule violated: when price > 100, category must satisfy 'non_empty'"
+        },
+        {
+          "record_index": 9,
+          "column": "category",
+          "rule": "conditional",
+          "value": "  ",
+          "message": "Conditional rule violated: when price > 100, category must satisfy 'non_empty'"
+        },
+        {
+          "record_index": 4,
+          "column": "min_order",
+          "rule": "conditional",
+          "value": "0",
+          "message": "Conditional rule violated: when stock_quantity > 500, min_order must satisfy 'positive'"
+        }
+      ],
+      "integrity_violations": []
+    },
+    "orders": {
+      "total_records": 10,
+      "valid_records": 9,
+      "invalid_records": 1,
+      "column_scores": {
+        "order_id": 1.0,
+        "product_ref": 1.0,
+        "quantity": 0.9444,
+        "total_amount": 1.0,
+        "customer_tier": 1.0,
+        "discount_pct": 1.0
+      },
+      "overall_score": 0.9907,
+      "violations": [
+        {
+          "column": "quantity",
+          "rule": "range_min",
+          "value": "0",
+          "message": "Value 0 is below minimum 1",
+          "record_index": 7
+        },
+        {
+          "column": "total_amount",
+          "rule": "range_min",
+          "value": "0.0",
+          "message": "Value 0.0 is below minimum 0.01",
+          "record_index": 7
+        }
+      ],
+      "conditional_violations": [
+        {
+          "record_index": 3,
+          "column": "discount_pct",
+          "rule": "conditional",
+          "value": "0.0",
+          "message": "Conditional rule violated: when total_amount > 200, discount_pct must satisfy 'positive'"
+        },
+        {
+          "record_index": 5,
+          "column": "discount_pct",
+          "rule": "conditional",
+          "value": "0.0",
+          "message": "Conditional rule violated: when total_amount > 200, discount_pct must satisfy 'positive'"
+        },
+        {
+          "record_index": 8,
+          "column": "discount_pct",
+          "rule": "conditional",
+          "value": "0.0",
+          "message": "Conditional rule violated: when total_amount > 200, discount_pct must satisfy 'positive'"
+        }
+      ],
+      "integrity_violations": [
+        {
+          "record_index": 5,
+          "column": "product_ref",
+          "rule": "referential_integrity",
+          "value": "PRD-099",
+          "message": "Foreign key value 'PRD-099' in column 'product_ref' has no matching entry in products.product_id"
+        },
+        {
+          "record_index": 8,
+          "column": "product_ref",
+          "rule": "referential_integrity",
+          "value": "PRD-050",
+          "message": "Foreign key value 'PRD-050' in column 'product_ref' has no matching entry in products.product_id"
+        }
+      ]
+    }
+  }
+}

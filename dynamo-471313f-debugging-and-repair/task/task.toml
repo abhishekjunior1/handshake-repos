@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/work-stealing-scheduler"
+description = "Debug a deterministic work-stealing scheduler simulator with synchronization logic bugs."
+
+[metadata]
+category = "Debugging and Repair"
+subcategory = "Concurrency and synchronization debuggins"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The simulator spans 8 modules (~1100 lines) implementing a work-stealing scheduler without external libraries. Three bugs in the orchestrator pass wrong values to correct module functions: submission-order priority instead of critical-path-length, LIFO steal instead of FIFO from victim deque, and start-time instead of finish-time for dependency resolution. Each bug is justified by plausible engineering comments and produces silently wrong scheduling decisions. Two correct optimizations (NUMA-adjacent steal restriction and idle-spin backoff) look suspicious but break output if modified. Visible data uses a single worker with no dependencies, making all bugs mathematically invisible. A systems engineer specializing in parallel runtime design would perform this work. Data is synthetic, representing a task DAG for a parallel build system."
+solution_explanation = "Fix three data-flow bugs in pipeline.py: (1) replace submission_order sort key with engine.get_scheduling_priority(t) which returns negative critical-path-length for longest-path-first scheduling, (2) replace victim.deque.pop_bottom() with victim.deque.steal_top() to correctly steal from the top of the victim's deque per FIFO steal convention, (3) replace completed_task.start_time with completed_task.finish_time in both engine.record_completion and barrier.signal_completion calls so downstream tasks wait for actual completion rather than launch time."
+verification_explanation = "The verifier substitutes a hidden 15-task DAG schedule with 4 workers, 2 NUMA nodes, multi-level dependencies, and varied execution costs. It runs the pipeline and compares the output JSON against expected values computed from the correctly-fixed pipeline. The hidden schedule triggers all three bugs simultaneously: multiple workers force work-stealing (exposing pop_bottom vs steal_top), dependencies with varied critical paths expose submission-order vs CPL scheduling, and chained dependencies expose start_time vs finish_time propagation. Buggy output produces makespan 78 vs correct 69 (13% deviation), completely different completion orders, and wrong task-to-worker assignments — all well outside exact-match verification."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

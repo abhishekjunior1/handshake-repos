@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/text-analysis-pipeline"
+description = "Debug a text processing pipeline that normalizes, tokenizes, extracts entities, and computes statistics from document collections."
+
+[metadata]
+category = "Data Processing and ETL"
+subcategory = "Text processing"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~630 lines) implementing a document analysis engine without external NLP libraries. Three bugs produce silently incorrect statistical values that require understanding text analytics methodology to detect. Bug 1 computes word frequency using total token count (including stopwords) as denominator instead of content token count, deflating frequencies. Bug 2 computes content bigrams from the full token list including stopwords, producing meaningless function-word pairs instead of topical collocations. Bug 3 computes corpus-level bigrams from all tokens instead of filtered tokens, polluting corpus analysis with stopword noise. Each bug runs without error and produces plausible-looking output — detection requires independently knowing that NLP content analysis operates on filtered vocabulary, not raw token streams. The visible data contains only technical vocabulary with no common stopwords, making all_tokens identical to filtered_tokens and masking all three bugs mathematically. A computational linguist, NLP engineer, or text analytics specialist would perform this work. Data is synthetic, shaped like a corporate document analysis system."
+solution_explanation = "Fix Bug 1 in statistics.py compute_word_frequencies: change the total denominator from len(all_tokens) to len(filtered_tokens) so frequencies reflect content vocabulary proportions. Fix Bug 2 in statistics.py compute_statistics: change the bigrams call from compute_ngram_frequencies(all_tokens) to compute_ngram_frequencies(filtered_tokens) for content-only collocations. Fix Bug 3 in pipeline.py _compute_corpus_statistics: change corpus bigrams from compute_ngram_frequencies(all_corpus_tokens) to compute_ngram_frequencies(all_corpus_filtered)."
+verification_explanation = "The verifier substitutes hidden_documents.json containing natural language with common stopwords (the, is, of, to — comprising 40-50% of tokens). Tests verify: per-document frequencies are correct proportions of content vocabulary (Bug 1 deflates by ~2x), per-document bigrams contain content collocations not stopword pairs (Bug 2 produces 'to the' instead of 'company achieved'), and corpus bigrams are content-focused (Bug 3 makes 'to the' the top corpus bigram). All comparisons use exact JSON equality on frequency values and bigram dictionaries."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

@@ -1,0 +1,11 @@
+{
+  "analysis_name": "Pharmacological Intervention for Treatment-Resistant Depression",
+  "effect_measure": "standardized_mean_difference",
+  "studies": [
+    {"label": "Nakamura_2019", "effect_size": 0.25, "std_error": 0.15, "subgroup": "SSRI_augmentation"},
+    {"label": "Fischer_2020", "effect_size": 1.85, "std_error": 0.20, "subgroup": "SSRI_augmentation"},
+    {"label": "Okonkwo_2021", "effect_size": 0.52, "std_error": 0.18, "subgroup": "ketamine_based"},
+    {"label": "Bergstrom_2022", "effect_size": 0.48, "std_error": 2.5, "subgroup": "ketamine_based"},
+    {"label": "Chen_2023", "effect_size": 1.45, "std_error": 0.12, "subgroup": "neuromodulation"}
+  ]
+}

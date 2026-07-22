@@ -1,0 +1,260 @@
+{
+  "flags": [
+    {
+      "name": "predictive_caching",
+      "enabled": true,
+      "description": "ML-based predictive content caching",
+      "rollout_percentage": 50,
+      "targeting_rules": [
+        {
+          "attribute": "device_type",
+          "operator": "in_list",
+          "value": ["smart_tv", "streaming_box", "mobile", "tablet"]
+        }
+      ],
+      "dependencies": [],
+      "tags": ["ml", "caching"],
+      "priority": 3
+    },
+    {
+      "name": "neural_audio",
+      "enabled": true,
+      "description": "Neural network audio enhancement",
+      "rollout_percentage": 75,
+      "targeting_rules": [
+        {
+          "attribute": "firmware_version",
+          "operator": "version_gte",
+          "value": "2.0.0"
+        }
+      ],
+      "dependencies": [
+        {"type": "requires", "flag": "predictive_caching"}
+      ],
+      "tags": ["audio", "ml"],
+      "priority": 2
+    },
+    {
+      "name": "haptic_feedback",
+      "enabled": true,
+      "description": "Advanced haptic feedback patterns",
+      "rollout_percentage": 30,
+      "targeting_rules": [
+        {
+          "attribute": "device_type",
+          "operator": "in_list",
+          "value": ["mobile", "wearable", "tablet"]
+        }
+      ],
+      "dependencies": [],
+      "tags": ["hardware", "feedback"],
+      "priority": 1
+    },
+    {
+      "name": "gesture_control",
+      "enabled": true,
+      "description": "Gesture-based device control",
+      "rollout_percentage": 50,
+      "targeting_rules": [],
+      "dependencies": [
+        {"type": "requires", "flag": "haptic_feedback"}
+      ],
+      "tags": ["input", "gesture"],
+      "priority": 2
+    },
+    {
+      "name": "voice_assistant",
+      "enabled": true,
+      "description": "AI voice assistant integration",
+      "rollout_percentage": 100,
+      "targeting_rules": [
+        {
+          "attribute": "memory_gb",
+          "operator": "greater_than",
+          "value": 2
+        }
+      ],
+      "dependencies": [],
+      "tags": ["ai", "voice"],
+      "priority": 4
+    },
+    {
+      "name": "spatial_audio",
+      "enabled": true,
+      "description": "3D spatial audio processing",
+      "rollout_percentage": 75,
+      "targeting_rules": [
+        {
+          "attribute": "device_type",
+          "operator": "in_list",
+          "value": ["smart_tv", "streaming_box", "wearable"]
+        }
+      ],
+      "dependencies": [
+        {"type": "requires", "flag": "voice_assistant"}
+      ],
+      "tags": ["audio", "spatial"],
+      "priority": 3
+    },
+    {
+      "name": "auto_update",
+      "enabled": true,
+      "description": "Automatic firmware update scheduling",
+      "rollout_percentage": 100,
+      "targeting_rules": [],
+      "dependencies": [],
+      "tags": ["system", "update"],
+      "priority": 5
+    },
+    {
+      "name": "remote_diagnostics",
+      "enabled": true,
+      "description": "Remote device health diagnostics",
+      "rollout_percentage": 30,
+      "targeting_rules": [
+        {
+          "attribute": "region",
+          "operator": "in_list",
+          "value": ["us-west-2", "us-east-1", "eu-west-1"]
+        }
+      ],
+      "dependencies": [],
+      "tags": ["diagnostics", "remote"],
+      "priority": 1
+    }
+  ],
+  "devices": [
+    {
+      "device_id": "hdev-001",
+      "device_type": "smart_tv",
+      "region": "us-west-2",
+      "firmware_version": "3.1.0",
+      "last_seen": "2026-07-16T08:00:00Z",
+      "attributes": {"model": "XR-900", "memory_gb": 8}
+    },
+    {
+      "device_id": "hdev-002",
+      "device_type": "mobile",
+      "region": "us-east-1",
+      "firmware_version": "2.5.0",
+      "last_seen": "2026-07-16T07:30:00Z",
+      "attributes": {"model": "Phone-Max", "memory_gb": 12}
+    },
+    {
+      "device_id": "hdev-003",
+      "device_type": "streaming_box",
+      "region": "eu-west-1",
+      "firmware_version": "2.0.0",
+      "last_seen": "2026-07-16T09:15:00Z",
+      "attributes": {"model": "StreamZ", "memory_gb": 4}
+    },
+    {
+      "device_id": "hdev-004",
+      "device_type": "tablet",
+      "region": "us-west-2",
+      "firmware_version": "3.0.0",
+      "last_seen": "2026-07-16T06:45:00Z",
+      "attributes": {"model": "Tab-Pro", "memory_gb": 6}
+    },
+    {
+      "device_id": "hdev-005",
+      "device_type": "wearable",
+      "region": "ap-southeast-1",
+      "firmware_version": "2.2.0",
+      "last_seen": "2026-07-16T10:00:00Z",
+      "attributes": {"model": "Watch-5", "memory_gb": 2}
+    },
+    {
+      "device_id": "hdev-006",
+      "device_type": "smart_tv",
+      "region": "eu-west-1",
+      "firmware_version": "2.8.0",
+      "last_seen": "2026-07-16T05:00:00Z",
+      "attributes": {"model": "XR-800", "memory_gb": 4}
+    },
+    {
+      "device_id": "hdev-007",
+      "device_type": "mobile",
+      "region": "us-west-2",
+      "firmware_version": "3.2.1",
+      "last_seen": "2026-07-16T08:30:00Z",
+      "attributes": {"model": "Phone-SE", "memory_gb": 4}
+    },
+    {
+      "device_id": "hdev-008",
+      "device_type": "smart_tv",
+      "region": "us-east-1",
+      "firmware_version": "1.9.0",
+      "last_seen": "2026-07-16T07:00:00Z",
+      "attributes": {"model": "XR-400", "memory_gb": 4}
+    },
+    {
+      "device_id": "hdev-009",
+      "device_type": "streaming_box",
+      "region": "ap-southeast-1",
+      "firmware_version": "2.1.0",
+      "last_seen": "2026-07-12T10:00:00Z",
+      "attributes": {"model": "StreamW", "memory_gb": 2}
+    },
+    {
+      "device_id": "hdev-010",
+      "device_type": "tablet",
+      "region": "eu-west-1",
+      "firmware_version": "2.3.0",
+      "last_seen": "2026-07-11T15:00:00Z",
+      "attributes": {"model": "Tab-Air", "memory_gb": 3}
+    },
+    {
+      "device_id": "hdev-011",
+      "device_type": "wearable",
+      "region": "us-west-2",
+      "firmware_version": "2.5.0",
+      "last_seen": "2026-07-10T12:00:00Z",
+      "attributes": {"model": "Watch-7", "memory_gb": 1}
+    },
+    {
+      "device_id": "hdev-012",
+      "device_type": "mobile",
+      "region": "eu-west-1",
+      "firmware_version": "2.9.0",
+      "last_seen": "2026-07-13T09:00:00Z",
+      "attributes": {"model": "Phone-Neo", "memory_gb": 6}
+    },
+    {
+      "device_id": "hdev-013",
+      "device_type": "smart_tv",
+      "region": "us-west-2",
+      "firmware_version": "3.5.0",
+      "last_seen": "2026-07-11T14:00:00Z",
+      "attributes": {"model": "XR-1000", "memory_gb": 16}
+    },
+    {
+      "device_id": "hdev-014",
+      "device_type": "streaming_box",
+      "region": "us-east-1",
+      "firmware_version": "2.4.0",
+      "last_seen": "2026-07-16T11:00:00Z",
+      "attributes": {"model": "StreamV", "memory_gb": 4}
+    },
+    {
+      "device_id": "hdev-015",
+      "device_type": "tablet",
+      "region": "ap-southeast-1",
+      "firmware_version": "1.8.0",
+      "last_seen": "2026-07-09T08:00:00Z",
+      "attributes": {"model": "Tab-Lite", "memory_gb": 2}
+    }
+  ],
+  "mutex_groups": [
+    {
+      "name": "audio_processing",
+      "flags": ["neural_audio", "spatial_audio"],
+      "priority_order": []
+    },
+    {
+      "name": "input_methods",
+      "flags": ["gesture_control", "haptic_feedback", "voice_assistant"],
+      "priority_order": []
+    }
+  ]
+}

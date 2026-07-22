@@ -1,0 +1,69 @@
+{
+  "pipeline_output": {
+    "encryption_results": {
+      "shared_secret": "6b2d5e470f05c1c7582e15ae3085f3df3ad0230eb60ad58dd3e99d10d4aa1a61",
+      "derived_key": "b2993dc7a7266a3879c901ecc0ccd9498ae0c596717f6f12",
+      "derived_key_length_bytes": 24,
+      "ciphertext": "ed2df2870014cbee35f27e257002c926ee7f41e5fce69a0a4d0779f6a212014ffca9065ddc010ab6e3c4b39253ed16b1f40e1f7d09e65fd79120fbe5f8c852488d92adf52ca43d5f36ff253f98ac45314b80e9",
+      "nonce": "9250722efd73878ce2bbbd2a",
+      "gcm_tag": "e5c0e3636c4a24d9a9f57c64dbca5e47",
+      "hmac_tag": "1f1d7696594ef38d89e23c1250f7c66c639929d5b5b70809b79a43326d3cbdfd",
+      "mac_key": "942197364e0f58a226faaf7efc08157cf7148b5695339a2220a385fc77b396de",
+      "key_check_value": "dfc95d2a94160034"
+    },
+    "verification_results": {
+      "decryption_success": true,
+      "mac_verification": true,
+      "key_agreement_valid": true,
+      "round_trip_text": "Wire transfer authorization: Route payment through SWIFT intermediary BIC-DEUTDEFF."
+    },
+    "envelope": {
+      "header": {
+        "version": 2,
+        "format": "hybrid-kem-dem",
+        "cipher_suite": "AES-192-GCM",
+        "kdf": "HKDF-SHA-256",
+        "created_at": 1720200000,
+        "sender_id": "payment-processor-eu",
+        "recipient_id": "settlement-engine-us"
+      },
+      "kem": {
+        "encapsulated_key_hex": "992fe3ec23505008c9664c9afba2a6f4bf7606475bd8a69c45484eead5a9153cef66d8d50877580c0565020e0dd2db1f7b976cbbfcf816b654f62a215459f5719fc774310a5ca3cd01b98789b4ebce8b19d21afdde2188e3cb79e23ff77b1337e198e3b3933922c5b8b3302f137d1c67d982988ce9417864dd4cd611a4ce83799a004af2650e96eb8311e2db21eb20346912ea4a5cb2c13013898978cd620f14158861d3849a0f6e0d5e3ddc5ab992ee918993d6ef87f21d4992862f33e2efaa28f16d8689470a01ec4a06fb12f812c78b99adee180b3116e3c4aef379841bfe3bd50a93045fd409731a81fb5f82b8758a0c665623b521d01c26cd6e441ada386913cda17c220cb93f8c49112cfc5998644018b0358c97a9e986492b46d2a88459b196135f4acb25196ef6bcc0740e0d7efb8ddce0164c28a15d5863f960ca47bdf614f0a9627645567286c1b447b2378c6677aa375d7a8248982393dcf9e90d2f152f9d8cc5bdf91e3f71f33815440f5b1beaafa035aa61f6c8a29f5c9fecf9",
+        "encapsulated_key_length": 384
+      },
+      "payload": {
+        "ciphertext_hex": "ed2df2870014cbee35f27e257002c926ee7f41e5fce69a0a4d0779f6a212014ffca9065ddc010ab6e3c4b39253ed16b1f40e1f7d09e65fd79120fbe5f8c852488d92adf52ca43d5f36ff253f98ac45314b80e9",
+        "ciphertext_length": 83,
+        "nonce_hex": "9250722efd73878ce2bbbd2a",
+        "nonce_length": 12,
+        "gcm_tag_hex": "e5c0e3636c4a24d9a9f57c64dbca5e47"
+      },
+      "authentication": {
+        "hmac_tag_hex": "1f1d7696594ef38d89e23c1250f7c66c639929d5b5b70809b79a43326d3cbdfd",
+        "aad_hex": "74786e3a5041592d323032342d38383339313b616d6f756e743a34353030302e30303b63757272656e63793a4555523b6d65726368616e743a41434d2d436f7270",
+        "aad_length": 65
+      },
+      "integrity": {
+        "envelope_digest": "e522e5bdfc4b7fa0ab4bbfc4c63e2a02b63c8a701ba84fd1c82946f4b318491b",
+        "digest_algorithm": "SHA-256"
+      }
+    },
+    "security_assessment": {
+      "cipher_suite": "AES-192-GCM",
+      "effective_security_bits": 128,
+      "key_length_bytes": 24,
+      "nonce_bits": 96,
+      "kdf_algorithm": "HKDF-SHA-256",
+      "mac_algorithm": "HMAC-SHA-256",
+      "rsa_key_bits": 3072,
+      "compliance": {
+        "nist_approved_algorithms": true,
+        "minimum_112_bit_security": true,
+        "authenticated_encryption": true,
+        "key_derivation_standard": "RFC 5869",
+        "nonce_generation": "deterministic-synthetic-iv",
+        "gcm_nonce_96_bit": true
+      }
+    }
+  }
+}

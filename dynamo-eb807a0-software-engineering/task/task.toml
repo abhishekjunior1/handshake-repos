@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/type-inference"
+description = "Debug a Hindley-Milner type inference pipeline for a small functional language."
+
+[metadata]
+category = "Software Engineering"
+subcategory = "Compilers Interpreters and programming languages"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 7 modules (~960 lines) implementing tokenization, parsing, constraint generation, Robinson's unification, and let-polymorphism generalization without external libraries. Three bugs are spread across three different files: (1) pipeline.py skips applying the final unified substitution to let-binding types before reporting, (2) unifier.py's compose_substitutions eagerly re-applies the existing substitution to newly introduced bindings during composition, corrupting transitive type variable chains in multi-step unification, and (3) constraint_generator.py swaps param/result positions in the arrow type constraint for function application. On the visible input (arithmetic-only program with no function applications), all three bugs are invisible because: bindings are concrete Int (no substitution needed), the substitution builds trivially without multi-step composition, and the function-application code path is never executed. Two decoys (local-scope generalization and two-token negative numbers) attract over-fixing — modifying either changes 45-50% of outputs on programs that exercise those paths. Data is synthetic; a compiler engineer would perform this work."
+solution_explanation = "Three one-line patches: (1) In pipeline.py, change 'final_bindings[name] = binding_type' to 'final_bindings[name] = apply_substitution(substitution, binding_type)' so binding types reflect the resolved substitution. (2) In unifier.py compose_substitutions, change 'composed[var_name] = apply_substitution(existing, var_type)' to 'composed[var_name] = var_type' so that newly introduced bindings are not eagerly re-applied through the existing substitution, which corrupts transitive type variable chains during multi-step composition. (3) In constraint_generator.py, change 'TypeArrow(result_type, arg_type)' to 'TypeArrow(arg_type, result_type)' to generate the correct function-type constraint for application nodes."
+verification_explanation = "The verifier substitutes two hidden programs into /app/config.json and re-runs the pipeline. Hidden program 1 is a Bool-to-Int function application (to_int true) that exercises Bug 3 (arrow swap causes unification failure) and Bug 1 (binding shows unresolved t1 instead of Bool). Hidden program 2 is a higher-order choose function with curried application that additionally exercises Bug 2 (compose_substitutions eagerly re-applies existing substitution to new bindings, corrupting arrow-type entries t4 and t5 in the substitution map). All output fields (status, inferred_type, substitution, constraints_generated, bindings, generalized_types, error) are compared via exact JSON equality — this is valid because the pipeline is fully deterministic with no randomness."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

@@ -1,0 +1,205 @@
+{
+  "document_count": 4,
+  "documents": [
+    {
+      "id": "doc_101",
+      "title": "quarterly financial report",
+      "entities": [],
+      "statistics": {
+        "word_count": 41,
+        "sentence_count": 4,
+        "unique_words": 35,
+        "top_frequencies": {
+          "company": 0.045455,
+          "achieved": 0.045455,
+          "revenue": 0.045455,
+          "increase": 0.045455,
+          "15": 0.045455,
+          "percent": 0.045455,
+          "q3": 0.045455,
+          "dr": 0.045455,
+          "mitchell": 0.045455,
+          "presented": 0.045455
+        },
+        "top_bigrams": {
+          "company achieved": 1,
+          "achieved revenue": 1,
+          "revenue increase": 1,
+          "increase 15": 1,
+          "15 percent": 1,
+          "percent q3": 1,
+          "q3 dr": 1,
+          "dr mitchell": 1,
+          "mitchell presented": 1,
+          "presented results": 1
+        },
+        "readability": {
+          "avg_words_per_sentence": 10.25,
+          "readability_score": 69.25
+        }
+      }
+    },
+    {
+      "id": "doc_102",
+      "title": "project status update",
+      "entities": [],
+      "statistics": {
+        "word_count": 47,
+        "sentence_count": 4,
+        "unique_words": 41,
+        "top_frequencies": {
+          "deployment": 0.045455,
+          "completed": 0.045455,
+          "mr": 0.045455,
+          "johnson": 0.045455,
+          "team": 0.045455,
+          "critical": 0.045455,
+          "systems": 0.045455,
+          "now": 0.045455,
+          "operational": 0.045455,
+          "east": 0.045455
+        },
+        "top_bigrams": {
+          "deployment completed": 1,
+          "completed mr": 1,
+          "mr johnson": 1,
+          "johnson team": 1,
+          "team critical": 1,
+          "critical systems": 1,
+          "systems now": 1,
+          "now operational": 1,
+          "operational east": 1,
+          "east region": 1
+        },
+        "readability": {
+          "avg_words_per_sentence": 11.75,
+          "readability_score": 64.75
+        }
+      }
+    },
+    {
+      "id": "doc_103",
+      "title": "market analysis summary",
+      "entities": [],
+      "statistics": {
+        "word_count": 44,
+        "sentence_count": 3,
+        "unique_words": 39,
+        "top_frequencies": {
+          "analysis": 0.043478,
+          "shows": 0.043478,
+          "market": 0.043478,
+          "share": 0.043478,
+          "grown": 0.043478,
+          "percent": 0.043478,
+          "vs": 0.043478,
+          "previous": 0.043478,
+          "year": 0.043478,
+          "competition": 0.043478
+        },
+        "top_bigrams": {
+          "analysis shows": 1,
+          "shows market": 1,
+          "market share": 1,
+          "share grown": 1,
+          "grown percent": 1,
+          "percent vs": 1,
+          "vs previous": 1,
+          "previous year": 1,
+          "year competition": 1,
+          "competition inc": 1
+        },
+        "readability": {
+          "avg_words_per_sentence": 14.67,
+          "readability_score": 55.99
+        }
+      }
+    },
+    {
+      "id": "doc_104",
+      "title": "technical architecture review",
+      "entities": [],
+      "statistics": {
+        "word_count": 43,
+        "sentence_count": 3,
+        "unique_words": 37,
+        "top_frequencies": {
+          "api": 0.038462,
+          "gateway": 0.038462,
+          "handles": 0.038462,
+          "incoming": 0.038462,
+          "requests": 0.038462,
+          "external": 0.038462,
+          "clients": 0.038462,
+          "performs": 0.038462,
+          "rate": 0.038462,
+          "limiting": 0.038462
+        },
+        "top_bigrams": {
+          "api gateway": 1,
+          "gateway handles": 1,
+          "handles incoming": 1,
+          "incoming requests": 1,
+          "requests external": 1,
+          "external clients": 1,
+          "clients performs": 1,
+          "performs rate": 1,
+          "rate limiting": 1,
+          "limiting authentication": 1
+        },
+        "readability": {
+          "avg_words_per_sentence": 14.33,
+          "readability_score": 57.01
+        }
+      }
+    }
+  ],
+  "corpus_statistics": {
+    "total_documents": 4,
+    "total_tokens": 175,
+    "total_unique_tokens": 120,
+    "corpus_frequencies": {
+      "percent": 0.021505,
+      "dr": 0.021505,
+      "results": 0.021505,
+      "previous": 0.021505,
+      "new": 0.021505,
+      "year": 0.021505,
+      "company": 0.010753,
+      "achieved": 0.010753,
+      "revenue": 0.010753,
+      "increase": 0.010753,
+      "15": 0.010753,
+      "q3": 0.010753,
+      "mitchell": 0.010753,
+      "presented": 0.010753,
+      "board": 0.010753,
+      "sept": 0.010753,
+      "12": 0.010753,
+      "significant": 0.010753,
+      "improvement": 0.010753,
+      "quarter": 0.010753
+    },
+    "corpus_bigrams": {
+      "company achieved": 1,
+      "achieved revenue": 1,
+      "revenue increase": 1,
+      "increase 15": 1,
+      "15 percent": 1,
+      "percent q3": 1,
+      "q3 dr": 1,
+      "dr mitchell": 1,
+      "mitchell presented": 1,
+      "presented results": 1,
+      "results board": 1,
+      "board sept": 1,
+      "sept 12": 1,
+      "12 significant": 1,
+      "significant improvement": 1
+    },
+    "corpus_readability": {
+      "avg_words_per_sentence": 12.5,
+      "readability_score": 62.5
+    }
+  }
+}
