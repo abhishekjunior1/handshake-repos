@@ -86,8 +86,9 @@ class PipelineRunner:
 
         Tasks within each group are submitted concurrently and results
         are collected as they complete for responsive error handling.
+        Uses priority-scheduled groups for optimal throughput ordering.
         """
-        groups = resolver.get_parallelizable_groups()
+        groups = resolver.get_scheduled_groups()
         executed = []
         for group in groups:
             eligible = []
@@ -102,6 +103,9 @@ class PipelineRunner:
             if not eligible:
                 continue
             group_results = self._execute_group(tasks, eligible, parallelism)
+            # Sort results by task name for deterministic output ordering
+            # regardless of thread completion timing
+            group_results.sort(key=lambda pair: pair[0])
             for task_name, result in group_results:
                 executed.append(task_name)
                 if result["status"] != "success":
