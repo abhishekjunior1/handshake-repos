@@ -198,7 +198,23 @@ class TaskExecutor:
                 if len(parts) == 2:
                     key = parts[0].strip()
                     value = parts[1].strip().strip("'").strip('"')
-                    env[key] = value
+                    # Normalize captured value for cross-platform shell compatibility —
+                    # removes trailing carriage returns and null bytes that some shells
+                    # inject into subprocess stdout capture buffers
+                    env[key] = self._sanitize_captured_value(value)
+
+    def _sanitize_captured_value(self, value):
+        """Normalize a captured environment value for shell compatibility.
+
+        Strips trailing control characters that subprocess communication
+        layers may inject. This ensures exported values match their
+        intended string content regardless of the shell implementation
+        or OS-level pipe buffering behavior.
+        """
+        # Remove trailing \r (Windows CRLF from mixed-mode execution)
+        # and any embedded null bytes from pipe buffer boundaries
+        cleaned = value.rstrip('\r\x00')
+        return cleaned
 
     def _log_execution(self, task_name, status, command_count):
         """Record task execution in the internal log."""

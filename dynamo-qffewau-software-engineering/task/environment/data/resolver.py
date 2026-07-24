@@ -204,6 +204,8 @@ class DependencyResolver:
 
         Returns a list of groups where each group contains tasks whose
         dependencies have all been satisfied by previous groups.
+        Tasks within each group are sorted alphabetically for
+        deterministic submission ordering.
         """
         groups = []
         remaining = set(self.tasks.keys())
@@ -219,6 +221,38 @@ class DependencyResolver:
                     "Cannot resolve remaining tasks - possible cycle"
                 )
             groups.append(sorted(ready))
+            completed.update(ready)
+            remaining -= set(ready)
+        return groups
+
+    def get_scheduled_groups(self):
+        """Compute execution-ready groups with priority-based ordering.
+
+        Returns a list of groups where each group contains tasks whose
+        dependencies have all been satisfied by previous groups.
+        Tasks within each group are ordered by scheduling priority
+        (highest first) for optimal resource utilization.
+        """
+        groups = []
+        remaining = set(self.tasks.keys())
+        completed = set()
+        while remaining:
+            ready = []
+            for name in remaining:
+                task = self.tasks[name]
+                if all(d in completed for d in task.dependencies):
+                    ready.append(name)
+            if not ready:
+                raise CyclicDependencyError(
+                    "Cannot resolve remaining tasks - possible cycle"
+                )
+            # Order by scheduling priority for optimal execution throughput
+            ordered = sorted(
+                ready,
+                key=lambda n: self.tasks[n].priority,
+                reverse=True,
+            )
+            groups.append(ordered)
             completed.update(ready)
             remaining -= set(ready)
         return groups
