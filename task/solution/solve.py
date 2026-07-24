@@ -32,20 +32,53 @@ def fix_executor_expansion():
         f.write(content)
 
 
-def fix_runner_group_ordering():
-    """Fix Bug 2: Use alphabetical group ordering, not priority-based.
+def fix_runner_ordering():
+    """Fix Bug 2: Collect parallel results in submission order, not completion order.
 
-    The runner uses get_scheduled_groups() which orders tasks by priority
-    within each level. The correct function is get_parallelizable_groups()
-    which uses alphabetical ordering for deterministic output that matches
-    the expected task execution sequence.
+    Using as_completed returns results in non-deterministic order based on
+    execution time. The output must reflect the submission order for
+    deterministic tasks_executed ordering.
     """
     path = "/app/runner.py"
     with open(path, "r") as f:
         content = f.read()
 
-    old = "        groups = resolver.get_scheduled_groups()"
-    new = "        groups = resolver.get_parallelizable_groups()"
+    old = """    def _execute_group(self, tasks, group_names, parallelism):
+        \"\"\"Execute a group of tasks concurrently.
+
+        Submits all group tasks to a thread pool and collects results
+        as they complete for efficient resource utilization.
+        \"\"\"
+        results = []
+        with ThreadPoolExecutor(max_workers=parallelism) as pool:
+            future_map = {}
+            for task_name in group_names:
+                task = tasks[task_name]
+                future = pool.submit(self._execute_single, task)
+                future_map[future] = task_name
+            for future in as_completed(future_map):
+                task_name = future_map[future]
+                result = future.result()
+                results.append((task_name, result))
+        return results"""
+
+    new = """    def _execute_group(self, tasks, group_names, parallelism):
+        \"\"\"Execute a group of tasks concurrently.
+
+        Submits all group tasks to a thread pool and collects results
+        in submission order for deterministic execution ordering.
+        \"\"\"
+        results = []
+        with ThreadPoolExecutor(max_workers=parallelism) as pool:
+            futures = []
+            for task_name in group_names:
+                task = tasks[task_name]
+                future = pool.submit(self._execute_single, task)
+                futures.append((task_name, future))
+            for task_name, future in futures:
+                result = future.result()
+                results.append((task_name, result))
+        return results"""
 
     content = content.replace(old, new)
     with open(path, "w") as f:
@@ -92,7 +125,7 @@ def run_pipeline():
 
 def main():
     fix_executor_expansion()
-    fix_runner_group_ordering()
+    fix_runner_ordering()
     fix_executor_retry()
     run_pipeline()
 
