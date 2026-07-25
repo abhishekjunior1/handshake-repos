@@ -126,23 +126,23 @@
       ],
       "exit_code": 0
     },
-    "build-api": {
+    "build-worker": {
       "status": "success",
       "commands": [
         {
-          "command": "mkdir -p /app/workspace/dist/api",
+          "command": "mkdir -p /app/workspace/dist/worker",
           "exit_code": 0,
           "stdout": "",
           "stderr": ""
         },
         {
-          "command": "sleep 0.3",
+          "command": "sleep 0.05",
           "exit_code": 0,
           "stdout": "",
           "stderr": ""
         },
         {
-          "command": "echo 'api-service built' > /app/workspace/dist/api/api.out",
+          "command": "echo 'worker-service built' > /app/workspace/dist/worker/worker.out",
           "exit_code": 0,
           "stdout": "",
           "stderr": ""
@@ -174,23 +174,23 @@
       ],
       "exit_code": 0
     },
-    "build-worker": {
+    "build-api": {
       "status": "success",
       "commands": [
         {
-          "command": "mkdir -p /app/workspace/dist/worker",
+          "command": "mkdir -p /app/workspace/dist/api",
           "exit_code": 0,
           "stdout": "",
           "stderr": ""
         },
         {
-          "command": "sleep 0.05",
+          "command": "sleep 0.3",
           "exit_code": 0,
           "stdout": "",
           "stderr": ""
         },
         {
-          "command": "echo 'worker-service built' > /app/workspace/dist/worker/worker.out",
+          "command": "echo 'api-service built' > /app/workspace/dist/api/api.out",
           "exit_code": 0,
           "stdout": "",
           "stderr": ""
@@ -234,5 +234,17 @@
       ],
       "exit_code": 0
     }
+  },
+  "duration_ms": 428.03,
+  "timings": {
+    "init": 4.1,
+    "fetch-config": 1.01,
+    "fetch-schemas": 1.33,
+    "validate": 1.02,
+    "setup-env": 106.86,
+    "build-worker": 53.9,
+    "build-gateway": 158.46,
+    "build-api": 308.55,
+    "package": 4.19
   }
 }
