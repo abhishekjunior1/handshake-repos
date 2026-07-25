@@ -29,7 +29,9 @@
         "echo 'app_version=3.2.1' > /app/workspace/cache/config.env",
         "echo 'ready' > /app/workspace/cache/.fetched"
       ],
-      "dependencies": ["init"],
+      "dependencies": [
+        "init"
+      ],
       "priority": 8,
       "retries": 0,
       "env": {},
@@ -42,7 +44,9 @@
         "mkdir -p /app/workspace/schemas",
         "echo '{\"type\": \"record\", \"version\": 2}' > /app/workspace/schemas/main.json"
       ],
-      "dependencies": ["init"],
+      "dependencies": [
+        "init"
+      ],
       "priority": 12,
       "retries": 0,
       "env": {},
@@ -55,26 +59,34 @@
         "cat /app/workspace/cache/config.env",
         "echo 'validation_passed' > /app/workspace/out/validated.txt"
       ],
-      "dependencies": ["fetch-config"],
+      "dependencies": [
+        "fetch-config"
+      ],
       "priority": 10,
       "retries": 0,
       "env": {},
       "workdir": "/app/workspace",
       "conditions": {
         "pre": [
-          {"type": "file_exists", "path": "cache/config.env"}
+          {
+            "type": "file_exists",
+            "path": "cache/config.env"
+          }
         ]
       }
     },
     "setup-env": {
       "description": "Set up build environment variables and deployment configuration",
       "commands": [
+        "rm -f /app/workspace/cache/.attempt",
         "echo 'export ARTIFACT_TAG=release-3.2.1'",
         "test -f /app/workspace/cache/.attempt || (touch /app/workspace/cache/.attempt && exit 1)",
         "echo \"${DEPLOY_TEMPLATE}\" > /app/workspace/cache/build_vars.sh",
         "echo 'configured' > /app/workspace/cache/.configured"
       ],
-      "dependencies": ["validate"],
+      "dependencies": [
+        "validate"
+      ],
       "priority": 15,
       "retries": 2,
       "env": {
@@ -86,7 +98,10 @@
       "workdir": "/app/workspace",
       "conditions": {
         "pre": [
-          {"type": "file_exists", "path": "out/validated.txt"}
+          {
+            "type": "file_exists",
+            "path": "out/validated.txt"
+          }
         ]
       }
     },
@@ -97,7 +112,9 @@
         "sleep 0.3",
         "echo 'api-service built' > ${BUILD_DIR}/api.out"
       ],
-      "dependencies": ["setup-env"],
+      "dependencies": [
+        "setup-env"
+      ],
       "priority": 10,
       "retries": 0,
       "env": {
@@ -106,7 +123,10 @@
       "workdir": "/app/workspace",
       "conditions": {
         "pre": [
-          {"type": "file_exists", "path": "cache/.configured"}
+          {
+            "type": "file_exists",
+            "path": "cache/.configured"
+          }
         ]
       }
     },
@@ -117,7 +137,9 @@
         "sleep 0.05",
         "echo 'worker-service built' > ${BUILD_DIR}/worker.out"
       ],
-      "dependencies": ["setup-env"],
+      "dependencies": [
+        "setup-env"
+      ],
       "priority": 5,
       "retries": 0,
       "env": {
@@ -126,7 +148,10 @@
       "workdir": "/app/workspace",
       "conditions": {
         "pre": [
-          {"type": "file_exists", "path": "cache/.configured"}
+          {
+            "type": "file_exists",
+            "path": "cache/.configured"
+          }
         ]
       }
     },
@@ -137,7 +162,9 @@
         "sleep 0.15",
         "echo 'gateway-service built' > ${BUILD_DIR}/gateway.out"
       ],
-      "dependencies": ["setup-env"],
+      "dependencies": [
+        "setup-env"
+      ],
       "priority": 8,
       "retries": 0,
       "env": {
@@ -146,7 +173,10 @@
       "workdir": "/app/workspace",
       "conditions": {
         "pre": [
-          {"type": "file_exists", "path": "cache/.configured"}
+          {
+            "type": "file_exists",
+            "path": "cache/.configured"
+          }
         ]
       }
     },
@@ -159,20 +189,40 @@
         "cat /app/workspace/schemas/main.json >> /app/workspace/out/manifest.txt",
         "tar czf /app/workspace/out/release.tar.gz -C /app/workspace/dist ."
       ],
-      "dependencies": ["build-api", "build-worker", "build-gateway", "fetch-schemas"],
+      "dependencies": [
+        "build-api",
+        "build-worker",
+        "build-gateway",
+        "fetch-schemas"
+      ],
       "priority": 20,
       "retries": 0,
       "env": {},
       "workdir": "/app/workspace",
       "conditions": {
         "pre": [
-          {"type": "file_exists", "path": "dist/api/api.out"},
-          {"type": "file_exists", "path": "dist/worker/worker.out"},
-          {"type": "file_exists", "path": "dist/gateway/gateway.out"},
-          {"type": "file_exists", "path": "schemas/main.json"}
+          {
+            "type": "file_exists",
+            "path": "dist/api/api.out"
+          },
+          {
+            "type": "file_exists",
+            "path": "dist/worker/worker.out"
+          },
+          {
+            "type": "file_exists",
+            "path": "dist/gateway/gateway.out"
+          },
+          {
+            "type": "file_exists",
+            "path": "schemas/main.json"
+          }
         ],
         "post": [
-          {"type": "file_exists", "path": "out/release.tar.gz"}
+          {
+            "type": "file_exists",
+            "path": "out/release.tar.gz"
+          }
         ]
       }
     }

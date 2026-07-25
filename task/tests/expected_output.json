@@ -94,6 +94,12 @@
       "status": "success",
       "commands": [
         {
+          "command": "rm -f /app/workspace/cache/.attempt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
           "command": "echo 'export ARTIFACT_TAG=release-3.2.1'",
           "exit_code": 0,
           "stdout": "export ARTIFACT_TAG=release-3.2.1",
@@ -235,16 +241,16 @@
       "exit_code": 0
     }
   },
-  "duration_ms": 427.94,
+  "duration_ms": 431.18,
   "timings": {
-    "init": 3.92,
-    "fetch-config": 1.18,
-    "fetch-schemas": 1.47,
-    "validate": 1.02,
-    "setup-env": 104.33,
-    "build-worker": 57.73,
-    "build-gateway": 158.19,
-    "build-api": 307.6,
-    "package": 7.6
+    "init": 5.29,
+    "fetch-config": 1.16,
+    "fetch-schemas": 1.69,
+    "validate": 2.0,
+    "setup-env": 106.6,
+    "build-worker": 55.34,
+    "build-gateway": 155.79,
+    "build-api": 305.75,
+    "package": 7.24
   }
 }
