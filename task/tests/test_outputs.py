@@ -12,7 +12,8 @@ from pathlib import Path
 
 
 EXPECTED_PATH = Path("/tests/expected_output.json")
-OUTPUT_PATH = Path("/app/output.json")
+OUTPUT_PATH = "/app/output_eval.json"
+TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def _load_output(path):
@@ -25,18 +26,22 @@ def _load_output(path):
         return json.load(f)
 
 
+def _load_expected(filename):
+    """Load expected output from sealed test fixtures."""
+    with open(os.path.join(TESTS_DIR, filename), "r") as f:
+        return json.load(f)
+
+
 @pytest.fixture
 def output():
     """Load the pipeline output for verification."""
-    return _load_output(str(OUTPUT_PATH))
+    return _load_output(OUTPUT_PATH)
 
 
 @pytest.fixture
 def expected():
     """Load the expected output for comparison."""
-    assert EXPECTED_PATH.exists(), f"Expected output not found: {EXPECTED_PATH}"
-    with open(EXPECTED_PATH) as f:
-        return json.load(f)
+    return _load_expected("expected_output.json")
 
 
 def test_pipeline_success(output):

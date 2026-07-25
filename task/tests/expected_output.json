@@ -235,16 +235,16 @@
       "exit_code": 0
     }
   },
-  "duration_ms": 428.03,
+  "duration_ms": 427.94,
   "timings": {
-    "init": 4.1,
-    "fetch-config": 1.01,
-    "fetch-schemas": 1.33,
+    "init": 3.92,
+    "fetch-config": 1.18,
+    "fetch-schemas": 1.47,
     "validate": 1.02,
-    "setup-env": 106.86,
-    "build-worker": 53.9,
-    "build-gateway": 158.46,
-    "build-api": 308.55,
-    "package": 4.19
+    "setup-env": 104.33,
+    "build-worker": 57.73,
+    "build-gateway": 158.19,
+    "build-api": 307.6,
+    "package": 7.6
   }
 }

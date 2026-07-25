@@ -1,4 +1,4 @@
-artifacts = ["/app/output.json"]
+artifacts = ["/app/output_eval.json"]
 
 [task]
 name = "dynamo/task-runner"

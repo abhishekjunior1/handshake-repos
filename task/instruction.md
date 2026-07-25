@@ -4,6 +4,10 @@ Run it with `python3 /app/runner.py /app/taskfile.json /app/output.json`. It rea
 
 The pipeline produces correct output on the current taskfile but has bugs that cause incorrect behavior on other taskfiles. Find and fix the bugs so the pipeline handles all valid taskfiles correctly.
 
-Do not rewrite from scratch — preserve the existing module structure. The fixed pipeline will be tested on a different taskfile than the one at `/app/taskfile.json`.
+Do not rewrite from scratch — preserve the existing module structure and output-ordering guarantees. The pipeline's deterministic result ordering and cross-platform value normalization are intentional design choices that must be retained.
 
-Output: `/app/output.json` — JSON with "success" boolean, "tasks_executed" list, and "results" object containing per-task execution details.
+After fixing, run the pipeline on the evaluation taskfile and save the output:
+
+    python3 /app/runner.py /app/eval_taskfile.json /app/output_eval.json
+
+Output: `/app/output_eval.json` — JSON with "success" boolean, "tasks_executed" list, and "results" object containing per-task execution details.
