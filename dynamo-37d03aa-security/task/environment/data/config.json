@@ -1,0 +1,75 @@
+{
+  "benchmark": {
+    "profiles": [
+      {
+        "id": "cis-linux-l1",
+        "title": "CIS Linux Level 1",
+        "level": 1,
+        "description": "Level 1 benchmark for general-purpose Linux servers",
+        "sections": [
+          {
+            "id": "filesystem",
+            "title": "Filesystem Configuration",
+            "controls": [
+              {
+                "id": "ctrl-1.1.1",
+                "title": "Ensure mounting of cramfs filesystems is disabled",
+                "type": "scored",
+                "severity": "high",
+                "cvss_score": 7.5,
+                "scope": {
+                  "resource_types": ["linux_server"]
+                },
+                "criteria": {
+                  "type": "property_check",
+                  "property": "kernel_modules.cramfs",
+                  "expected_value": "disabled",
+                  "operator": "eq"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "system_config": {
+    "resources": [
+      {
+        "id": "server-prod-web-01",
+        "type": "linux_server",
+        "platform": "linux",
+        "environment": "production",
+        "tags": {
+          "role": "webserver",
+          "tier": "frontend"
+        },
+        "properties": {
+          "kernel_modules": {
+            "cramfs": "disabled",
+            "freevxfs": "disabled",
+            "jffs2": "disabled"
+          },
+          "ssh_config": {
+            "protocol": 2,
+            "permit_root_login": "no",
+            "max_auth_tries": 4
+          },
+          "firewall": {
+            "enabled": true,
+            "default_policy": "deny"
+          }
+        }
+      }
+    ]
+  },
+  "waivers": [],
+  "settings": {
+    "evaluation_profile": "cis-linux-l1",
+    "fail_threshold": 0.7,
+    "include_informational_in_score": false,
+    "risk_weighted_scoring": true,
+    "inheritance_mode": "full_chain",
+    "exception_match_mode": "glob"
+  }
+}

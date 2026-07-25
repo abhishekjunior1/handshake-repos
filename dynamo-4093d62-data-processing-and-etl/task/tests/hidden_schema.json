@@ -1,0 +1,57 @@
+{
+  "tables": {
+    "products": {
+      "columns": [
+        {"name": "product_name", "type": "string", "required": true, "constraints": {}},
+        {"name": "product_id", "type": "string", "required": true, "constraints": {"unique": true, "pattern": "^PRD-\\d{3}$"}},
+        {"name": "price", "type": "float", "required": true, "constraints": {"min": 0.01, "max": 10000.00}},
+        {"name": "stock_quantity", "type": "integer", "required": true, "constraints": {"min": 0, "max": 100000}},
+        {"name": "category", "type": "string", "required": true, "constraints": {}},
+        {"name": "min_order", "type": "integer", "required": true, "constraints": {"min": 1, "max": 100}}
+      ],
+      "conditional_rules": [
+        {
+          "if_column": "price",
+          "operator": ">",
+          "value": 100,
+          "then_column": "category",
+          "then_check": "non_empty"
+        },
+        {
+          "if_column": "stock_quantity",
+          "operator": ">",
+          "value": 500,
+          "then_column": "min_order",
+          "then_check": "positive"
+        }
+      ],
+      "foreign_keys": []
+    },
+    "orders": {
+      "columns": [
+        {"name": "order_id", "type": "string", "required": true, "constraints": {"unique": true, "pattern": "^ORD-\\d{3}$"}},
+        {"name": "product_ref", "type": "string", "required": true, "constraints": {}},
+        {"name": "quantity", "type": "integer", "required": true, "constraints": {"min": 1, "max": 10000}},
+        {"name": "total_amount", "type": "float", "required": true, "constraints": {"min": 0.01, "max": 1000000.00}},
+        {"name": "customer_tier", "type": "string", "required": true, "constraints": {}},
+        {"name": "discount_pct", "type": "float", "required": true, "constraints": {"min": 0, "max": 50}}
+      ],
+      "conditional_rules": [
+        {
+          "if_column": "total_amount",
+          "operator": ">",
+          "value": 200,
+          "then_column": "discount_pct",
+          "then_check": "positive"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "column": "product_ref",
+          "references_table": "products",
+          "references_column": "product_id"
+        }
+      ]
+    }
+  }
+}

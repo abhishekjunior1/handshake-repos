@@ -1,0 +1,101 @@
+{
+  "tables": {
+    "orders": {
+      "columns": ["order_id", "customer_id", "order_date", "amount", "status"],
+      "rows": [
+        [101, 1, "2024-03-01", 100.00, "completed"],
+        [102, 1, "2024-03-01", 250.00, "completed"],
+        [103, 2, "2024-03-02", 175.00, "completed"],
+        [104, 2, "2024-03-03", 80.00, "pending"],
+        [105, 3, "2024-03-03", 320.00, "completed"],
+        [106, 3, "2024-03-03", 95.00, "completed"],
+        [107, 4, "2024-03-04", 200.00, "completed"],
+        [108, 4, "2024-03-05", 150.00, "cancelled"],
+        [109, 1, "2024-03-06", 60.00, "pending"],
+        [110, 5, "2024-03-07", 400.00, "completed"]
+      ]
+    },
+    "order_lines": {
+      "columns": ["line_id", "order_id", "product", "quantity", "unit_price"],
+      "rows": [
+        [1, 101, "Widget A", 2, 50.00],
+        [2, 101, "Widget B", 1, 50.00],
+        [3, 102, "Widget A", 3, 83.33],
+        [4, 103, "Widget C", 2, 87.50],
+        [5, 103, "Widget A", 1, 87.50],
+        [6, 104, "Widget B", 4, 20.00],
+        [7, 105, "Widget A", 5, 64.00],
+        [8, 105, "Widget C", 2, 64.00],
+        [9, 106, "Widget B", 1, 95.00],
+        [10, 107, "Widget A", 3, 66.67],
+        [11, 107, "Widget C", 2, 33.33],
+        [12, 108, "Widget B", 2, 75.00],
+        [13, 109, "Widget C", 1, 60.00],
+        [14, 110, "Widget A", 4, 100.00],
+        [15, 110, "Widget B", 3, 66.67],
+        [16, 110, "Widget C", 1, 100.00]
+      ]
+    },
+    "customers": {
+      "columns": ["customer_id", "customer_name", "region"],
+      "rows": [
+        [1, "Alpha Corp", "North"],
+        [2, "Beta Industries", "South"],
+        [3, "Gamma LLC", "East"],
+        [4, "Delta Holdings", "West"],
+        [5, "Epsilon Group", "North"],
+        [6, "Zeta Partners", "South"]
+      ]
+    }
+  },
+  "queries": [
+    {
+      "id": "product_summary",
+      "type": "join_aggregate",
+      "join": {
+        "left_table": "orders",
+        "right_table": "order_lines",
+        "type": "inner",
+        "left_on": "order_id",
+        "right_on": "order_id",
+        "left_prefix": "l_",
+        "right_prefix": "r_"
+      },
+      "group_by": ["l_customer_id"],
+      "aggregations": [
+        {"function": "COUNT", "column": "*", "alias": "order_count"},
+        {"function": "SUM", "column": "l_amount", "alias": "total_revenue"}
+      ]
+    },
+    {
+      "id": "customer_running_total",
+      "type": "window",
+      "source_table": "orders",
+      "window": {
+        "function": "RUNNING_TOTAL",
+        "partition_by": "customer_id",
+        "order_by": "order_date",
+        "value_column": "amount",
+        "alias": "cumulative_amount"
+      }
+    },
+    {
+      "id": "customer_order_count",
+      "type": "join_aggregate",
+      "join": {
+        "left_table": "customers",
+        "right_table": "orders",
+        "type": "left",
+        "left_on": "customer_id",
+        "right_on": "customer_id",
+        "left_prefix": "l_",
+        "right_prefix": "r_"
+      },
+      "filter": {"column": "r_status", "op": "=", "value": "completed"},
+      "group_by": ["l_customer_name"],
+      "aggregations": [
+        {"function": "COUNT", "column": "r_order_id", "alias": "completed_orders"}
+      ]
+    }
+  ]
+}

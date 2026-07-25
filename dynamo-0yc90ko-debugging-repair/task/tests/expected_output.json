@@ -1,0 +1,38 @@
+{
+  "auth": [
+    {
+      "window": "2024-01-15T10:00",
+      "count": 3,
+      "total_score": 31,
+      "max_score": 12
+    },
+    {
+      "window": "2024-01-15T12:00",
+      "count": 1,
+      "total_score": 16,
+      "max_score": 16
+    }
+  ],
+  "network": [
+    {
+      "window": "2024-01-15T10:00",
+      "count": 1,
+      "total_score": 13,
+      "max_score": 13
+    },
+    {
+      "window": "2024-01-15T11:00",
+      "count": 3,
+      "total_score": 31,
+      "max_score": 13
+    }
+  ],
+  "system": [
+    {
+      "window": "2024-01-15T12:00",
+      "count": 2,
+      "total_score": 23,
+      "max_score": 13
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/harmonic-decomposition"
+description = "Fix bugs in a harmonic regression decomposition pipeline that mishandles windowed observations and multi-regime thresholds."
+
+[metadata]
+category = "Data Science and Reporting"
+subcategory = "Time-series analysis"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1200 lines) implementing iterative harmonic decomposition without external libraries. Two bugs in the orchestrator pass wrong parameters to correct module functions: (1) passes full series length n instead of windowed effective length n_effective to the quality scorer, and (2) uses a global anomaly threshold for all segments instead of computing per-segment thresholds. Both bugs are comment-justified as intentional design choices. On visible data (rectangular window, stationary series) the bugs are mathematically invisible: rectangular window gives n_effective=n, single segment makes global=local threshold. Temporal decay weighting and angular frequency conversion are correct but look suspicious. A signal processing researcher doing production harmonic analysis would perform this work. Data is synthetic, shaped like industrial vibration monitoring scenarios."
+solution_explanation = "In pipeline.py, change score_decomposition(residuals, total_harmonic_power, n) to score_decomposition(residuals, total_harmonic_power, n_effective). This fixes the SNR normalization for tapered windows. Then change seg_threshold = global_threshold to seg_threshold = compute_segment_threshold(seg_residuals, anomaly_percentile) and add compute_segment_threshold to the import. This gives per-segment thresholds adapted to local noise. The solver must NOT remove the temporal decay weighting of amplitudes or the 2*pi angular frequency conversion — both are correct and produce expected output values."
+verification_explanation = "The verifier substitutes a hidden non-stationary series (60 obs, 3 regimes with variance shifts, Hann window) and runs the fixed pipeline. Bug 1 causes 52% deviation in snr_score (n=60 vs n_effective=39.33 for Hann). Bug 2 causes wrong anomaly counts (4 expected vs 19 buggy) because the global threshold (4.98) is much lower than per-segment thresholds (7.3-7.6). Tests compare quality scores (rel_tol=1e-3), per-segment thresholds (rel_tol=1e-3), anomaly counts (exact), harmonic frequencies and amplitudes (rel_tol=1e-3), and residual diagnostics. The tolerance absorbs floating-point variation while rejecting the structural differences from both bugs."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

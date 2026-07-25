@@ -1,0 +1,146 @@
+{
+  "study_name": "Pharmacological Intervention Dose-Response Trial",
+  "analysis_parameters": {
+    "alpha": 0.05,
+    "test_type": "welch_t",
+    "correction_method": "holm",
+    "winsorize": true,
+    "winsorize_percentile": 12.5,
+    "outlier_method": "iqr",
+    "outlier_threshold": 1.5
+  },
+  "summary_statistics": {
+    "placebo": {
+      "n": 8,
+      "mean": 4.8125,
+      "median": 4.9,
+      "std": 0.4543441113,
+      "min": 4.175,
+      "max": 5.325,
+      "se": 0.160634901,
+      "skewness": -0.442004,
+      "kurtosis": -4.455984
+    },
+    "low_dose": {
+      "n": 8,
+      "mean": 6.1609375,
+      "median": 6.2,
+      "std": 0.5492461351,
+      "min": 5.4375,
+      "max": 6.85,
+      "se": 0.1941878333,
+      "skewness": -0.097434,
+      "kurtosis": -4.48203
+    },
+    "high_dose": {
+      "n": 8,
+      "mean": 8.028125,
+      "median": 7.95,
+      "std": 0.5766571617,
+      "min": 7.4375,
+      "max": 8.8875,
+      "se": 0.2038790947,
+      "skewness": 0.583559,
+      "kurtosis": -4.442173
+    }
+  },
+  "outlier_report": {
+    "placebo": {
+      "method": "iqr",
+      "threshold": 1.5,
+      "q1": 4.6,
+      "q3": 5.3,
+      "iqr": 0.7000000000000002,
+      "lower_bound": 3.5499999999999994,
+      "upper_bound": 6.35,
+      "outlier_count": 0,
+      "outlier_indices": []
+    },
+    "low_dose": {
+      "method": "iqr",
+      "threshold": 1.5,
+      "q1": 5.8,
+      "q3": 6.8,
+      "iqr": 1.0,
+      "lower_bound": 4.3,
+      "upper_bound": 8.3,
+      "outlier_count": 0,
+      "outlier_indices": []
+    },
+    "high_dose": {
+      "method": "iqr",
+      "threshold": 1.5,
+      "q1": 7.5,
+      "q3": 8.8,
+      "iqr": 1.3000000000000007,
+      "lower_bound": 5.549999999999999,
+      "upper_bound": 10.750000000000002,
+      "outlier_count": 0,
+      "outlier_indices": []
+    }
+  },
+  "test_results": [
+    {
+      "comparison": "placebo_vs_low_dose",
+      "test_type": "welch_t",
+      "test_statistic": -5.350585,
+      "p_value": 0.000115,
+      "adjusted_p_value": 0.000115,
+      "significant": true,
+      "correction_method": "holm",
+      "cohens_d": -2.675292,
+      "ci_lower": -1.890872,
+      "ci_upper": -0.806003,
+      "common_language_effect": 0.0
+    },
+    {
+      "comparison": "placebo_vs_high_dose",
+      "test_type": "welch_t",
+      "test_statistic": -12.388859,
+      "p_value": 0.0,
+      "adjusted_p_value": 0.0,
+      "significant": true,
+      "correction_method": "holm",
+      "cohens_d": -6.194429,
+      "ci_lower": -3.775322,
+      "ci_upper": -2.655928,
+      "common_language_effect": 0.0
+    },
+    {
+      "comparison": "low_dose_vs_high_dose",
+      "test_type": "welch_t",
+      "test_statistic": -6.631598,
+      "p_value": 1.1e-05,
+      "adjusted_p_value": 2.3e-05,
+      "significant": true,
+      "correction_method": "holm",
+      "cohens_d": -3.315799,
+      "ci_lower": -2.471346,
+      "ci_upper": -1.263029,
+      "common_language_effect": 0.0
+    }
+  ],
+  "findings": {
+    "total_comparisons": 3,
+    "significant_results": 3,
+    "non_significant_results": 0,
+    "max_effect_size": 6.194429,
+    "min_effect_size": 2.675292,
+    "mean_effect_size": 4.06184,
+    "effect_classifications": [
+      {
+        "comparison": "placebo_vs_low_dose",
+        "magnitude": "large"
+      },
+      {
+        "comparison": "placebo_vs_high_dose",
+        "magnitude": "large"
+      },
+      {
+        "comparison": "low_dose_vs_high_dose",
+        "magnitude": "large"
+      }
+    ],
+    "total_outliers_detected": 0
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "rsa_key_bits": 2048,
+  "cipher_suite": {
+    "algorithm": "AES-128-GCM",
+    "key_length_bytes": 16,
+    "nonce_bits": 96
+  },
+  "kdf_params": {
+    "hash_algorithm": "SHA-256",
+    "salt": "production-kdf-extraction-salt",
+    "info": "aes128-bulk-encryption-key-v1"
+  },
+  "mac_params": {
+    "algorithm": "HMAC-SHA-256",
+    "mac_key_length": 32,
+    "mac_salt": "production-mac-extraction-salt",
+    "mac_info": "hmac-envelope-auth-key-v1"
+  },
+  "envelope_params": {
+    "format": "hybrid-kem-dem",
+    "sender_id": "secure-gateway-01",
+    "recipient_id": "backend-service-03",
+    "timestamp": 1720100000
+  },
+  "aad": "session-id:7f3a2b91;channel:tls-1.3;seq:00042",
+  "plaintext": "Patient record transfer: ID-78432 lab results pending review by Dr. Chen."
+}

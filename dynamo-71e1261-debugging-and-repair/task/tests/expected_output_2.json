@@ -1,0 +1,71 @@
+{
+  "suite": "smoke_tests",
+  "analysis_summary": {
+    "total_tests": 3,
+    "total_runs": 4,
+    "tests_with_failures": 1
+  },
+  "classifications": [
+    {
+      "test_id": "test_boot_sequence",
+      "category": "healthy",
+      "metrics": {
+        "failure_rate": 0.0,
+        "recent_failure_rate": 0.0,
+        "flip_rate": 0.0,
+        "timing_cv": 0.0564,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [],
+      "windowed_rates": [],
+      "trend": "stable",
+      "confidence": 0.9828
+    },
+    {
+      "test_id": "test_config_load",
+      "category": "environment_dependent",
+      "metrics": {
+        "failure_rate": 0.5,
+        "recent_failure_rate": 0.5,
+        "flip_rate": 1.0,
+        "timing_cv": 0.0735,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [],
+      "windowed_rates": [
+        0.5,
+        0.5
+      ],
+      "trend": "stable",
+      "confidence": 0.766
+    },
+    {
+      "test_id": "test_health_check",
+      "category": "healthy",
+      "metrics": {
+        "failure_rate": 0.0,
+        "recent_failure_rate": 0.0,
+        "flip_rate": 0.0,
+        "timing_cv": 0.0502,
+        "timing_anomaly": false
+      },
+      "correlated_tests": [],
+      "windowed_rates": [],
+      "trend": "stable",
+      "confidence": 0.9828
+    }
+  ],
+  "correlation_matrix": {},
+  "timing_baselines": {
+    "default": {
+      "mean_ms": 91.417,
+      "stddev_ms": 74.004
+    }
+  },
+  "overall_health": {
+    "healthy_pct": 0.6667,
+    "flaky_pct": 0.0,
+    "deterministic_pct": 0.0,
+    "env_dependent_pct": 0.3333
+  }
+}

@@ -1,0 +1,159 @@
+{
+  "mesh_name": "canary-mesh",
+  "evaluation_summary": {
+    "total_requests_evaluated": 8,
+    "requests_allowed": 6,
+    "requests_denied": 2,
+    "allow_rate_percent": 75.0,
+    "mesh_health_score": 0.5484,
+    "average_policy_score": 0.7312
+  },
+  "service_health": {
+    "edge-router": {
+      "aggregate_health": 0.6192,
+      "endpoint_count": 2,
+      "healthy_endpoints": 0,
+      "degraded_endpoints": 0,
+      "unhealthy_endpoints": 2
+    },
+    "catalog-api": {
+      "aggregate_health": 0.9747,
+      "endpoint_count": 2,
+      "healthy_endpoints": 1,
+      "degraded_endpoints": 1,
+      "unhealthy_endpoints": 0
+    },
+    "inventory-service": {
+      "aggregate_health": 0.9757,
+      "endpoint_count": 2,
+      "healthy_endpoints": 1,
+      "degraded_endpoints": 1,
+      "unhealthy_endpoints": 0
+    }
+  },
+  "routing_decisions": [
+    {
+      "request_id": "req-c001",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "selected_upstream": "catalog-node-2",
+      "load_balancer_weight": 128.16,
+      "effective_timeout_ms": 3600,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-c002",
+      "source": "edge-router",
+      "destination": "inventory-service",
+      "selected_upstream": "inventory-west",
+      "load_balancer_weight": 65.7,
+      "effective_timeout_ms": 4000,
+      "policy_decision": "deny",
+      "tls_mode": "rejected",
+      "tls_overhead_ms": 0.0
+    },
+    {
+      "request_id": "req-c003",
+      "source": "catalog-api",
+      "destination": "inventory-service",
+      "selected_upstream": "inventory-west",
+      "load_balancer_weight": 65.7,
+      "effective_timeout_ms": 2500,
+      "policy_decision": "deny",
+      "tls_mode": "rejected",
+      "tls_overhead_ms": 0.0
+    },
+    {
+      "request_id": "req-c004",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "selected_upstream": "catalog-node-1",
+      "load_balancer_weight": 92.4,
+      "effective_timeout_ms": 3600,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-c005",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "selected_upstream": "catalog-node-1",
+      "load_balancer_weight": 92.4,
+      "effective_timeout_ms": 3600,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-c006",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "selected_upstream": "catalog-node-2",
+      "load_balancer_weight": 128.16,
+      "effective_timeout_ms": 3600,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-c007",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "selected_upstream": "catalog-node-1",
+      "load_balancer_weight": 92.4,
+      "effective_timeout_ms": 3600,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    },
+    {
+      "request_id": "req-c008",
+      "source": "edge-router",
+      "destination": "catalog-api",
+      "selected_upstream": "catalog-node-2",
+      "load_balancer_weight": 128.16,
+      "effective_timeout_ms": 3600,
+      "policy_decision": "allow",
+      "tls_mode": "mutual_tls",
+      "tls_overhead_ms": 3.05
+    }
+  ],
+  "policy_enforcement": {
+    "total_evaluations": 8,
+    "allowed": 6,
+    "denied": 2,
+    "total_warnings": 5,
+    "average_policy_score": 0.7312,
+    "mesh_health_score": 0.5484
+  },
+  "recommendations": [
+    {
+      "severity": "high",
+      "service": "edge-router",
+      "recommendation": "Service 'edge-router' has unhealthy endpoints - investigate health check failures"
+    },
+    {
+      "severity": "high",
+      "service": "mesh",
+      "recommendation": "High denial rate (25.0%) - review mTLS and circuit breaker configurations"
+    },
+    {
+      "severity": "medium",
+      "service": "catalog-api",
+      "recommendation": "Service 'catalog-api' has degraded endpoints - monitor for further deterioration"
+    },
+    {
+      "severity": "medium",
+      "service": "inventory-service",
+      "recommendation": "Service 'inventory-service' has degraded endpoints - monitor for further deterioration"
+    },
+    {
+      "severity": "medium",
+      "service": "mesh",
+      "recommendation": "Mesh health score (0.55) below threshold - review service dependencies"
+    }
+  ]
+}

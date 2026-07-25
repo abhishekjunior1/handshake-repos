@@ -1,0 +1,65 @@
+{
+  "stream_config": {
+    "window_size_sec": 30.0,
+    "stream_start": 1000.0,
+    "allowed_lateness_sec": 30.0
+  },
+  "events": [
+    {
+      "event_id": "evt-001",
+      "timestamp": 1005.0,
+      "partition_key": "sensor-A",
+      "value": 23.5,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "evt-002",
+      "timestamp": 1012.0,
+      "partition_key": "sensor-A",
+      "value": 24.1,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "evt-003",
+      "timestamp": 1018.0,
+      "partition_key": "sensor-A",
+      "value": 22.8,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "evt-004",
+      "timestamp": 1025.0,
+      "partition_key": "sensor-A",
+      "value": 25.2,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "evt-005",
+      "timestamp": 1035.0,
+      "partition_key": "sensor-A",
+      "value": 23.9,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "evt-006",
+      "timestamp": 1042.0,
+      "partition_key": "sensor-A",
+      "value": 24.7,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "evt-007",
+      "timestamp": 1048.0,
+      "partition_key": "sensor-A",
+      "value": 26.1,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "evt-008",
+      "timestamp": 1055.0,
+      "partition_key": "sensor-A",
+      "value": 22.4,
+      "event_type": "measurement"
+    }
+  ]
+}

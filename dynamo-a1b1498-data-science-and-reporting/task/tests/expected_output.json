@@ -1,0 +1,147 @@
+{
+  "study_name": "Neoadjuvant Chemotherapy Regimen Comparison",
+  "n_patients": 20,
+  "n_events": 12,
+  "censoring_rate": 0.4,
+  "analysis_parameters": {
+    "alpha": 0.05,
+    "confidence_level": 0.95
+  },
+  "kaplan_meier": {
+    "standard": {
+      "median_survival": 12.0,
+      "final_survival": 0.152381,
+      "total_events": 7,
+      "total_censored": 3,
+      "n_patients": 10,
+      "survival_curve": [
+        {
+          "time": 4.0,
+          "survival": 0.8,
+          "ci_lower": 0.4085791157,
+          "ci_upper": 0.9458887156,
+          "at_risk": 10,
+          "events": 2
+        },
+        {
+          "time": 8.0,
+          "survival": 0.5714285714,
+          "ci_lower": 0.2171195119,
+          "ci_upper": 0.8146090055,
+          "at_risk": 7,
+          "events": 2
+        },
+        {
+          "time": 12.0,
+          "survival": 0.4571428571,
+          "ci_lower": 0.142926512,
+          "ci_upper": 0.7298251097,
+          "at_risk": 5,
+          "events": 1
+        },
+        {
+          "time": 16.0,
+          "survival": 0.3047619048,
+          "ci_lower": 0.0535028217,
+          "ci_upper": 0.6174265871,
+          "at_risk": 3,
+          "events": 1
+        },
+        {
+          "time": 20.0,
+          "survival": 0.1523809524,
+          "ci_lower": 0.0084417411,
+          "ci_upper": 0.4764768149,
+          "at_risk": 2,
+          "events": 1
+        }
+      ]
+    },
+    "intensive": {
+      "median_survival": 20.0,
+      "final_survival": 0.380952,
+      "total_events": 5,
+      "total_censored": 5,
+      "n_patients": 10,
+      "survival_curve": [
+        {
+          "time": 4.0,
+          "survival": 0.9,
+          "ci_lower": 0.4728565934,
+          "ci_upper": 0.9852876908,
+          "at_risk": 10,
+          "events": 1
+        },
+        {
+          "time": 8.0,
+          "survival": 0.8,
+          "ci_lower": 0.4085791157,
+          "ci_upper": 0.9458887156,
+          "at_risk": 9,
+          "events": 1
+        },
+        {
+          "time": 12.0,
+          "survival": 0.5714285714,
+          "ci_lower": 0.2171195119,
+          "ci_upper": 0.8146090055,
+          "at_risk": 7,
+          "events": 2
+        },
+        {
+          "time": 20.0,
+          "survival": 0.380952381,
+          "ci_lower": 0.0700649598,
+          "ci_upper": 0.7044323883,
+          "at_risk": 3,
+          "events": 1
+        }
+      ]
+    }
+  },
+  "log_rank_tests": [
+    {
+      "comparison": "standard_vs_intensive",
+      "chi_square": 1.241638,
+      "p_value": 0.265156,
+      "significant": false,
+      "observed_events_a": 7,
+      "observed_events_b": 5,
+      "expected_events_a": 5.2375,
+      "expected_events_b": 6.7625
+    }
+  ],
+  "cox_model": {
+    "log_likelihood": 0.0,
+    "n_iterations": 5,
+    "converged": true,
+    "concordance_index": 0.370079,
+    "hazard_ratios": [
+      {
+        "feature": "regimen_standard",
+        "coefficient": 120.946022,
+        "hazard_ratio": 3.3588462841877336e+52,
+        "ci_lower": 3.3588462841877336e+52,
+        "ci_upper": 3.3588462841877336e+52,
+        "se": 0.0,
+        "z_score": 0.0,
+        "p_value": 1.0
+      },
+      {
+        "feature": "tumor_size",
+        "coefficient": -1676.829893,
+        "hazard_ratio": 0.0,
+        "ci_lower": 0.0,
+        "ci_upper": 0.0,
+        "se": 0.0,
+        "z_score": 0.0,
+        "p_value": 1.0
+      }
+    ]
+  },
+  "summary": {
+    "total_comparisons": 1,
+    "significant_comparisons": 0,
+    "concordance_index": 0.370079
+  }
+}

@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/nvic-interrupt-controller"
+description = "NVIC-style nested vectored interrupt priority controller pipeline with priority resolution, preemption, and tail-chain optimization."
+
+[metadata]
+category = "Hardware Embedded and Low Level Systems"
+subcategory = "Low-level runtime and performance"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~970 lines) implementing ARM NVIC interrupt handling without external libraries. Three bugs are distributed across three different files (pipeline.py, priority_resolver.py, latency_calculator.py), each exploiting domain-specific conventions that look like reasonable design choices. Bug 1 uses configured priority directly instead of computing effective priority from PRIGROUP splitting — justified by a comment about 'transparent preemption matching configuration intent.' Bug 2 applies BASEPRI masking uniformly to all vectors including NMI/HardFault which architecturally bypass BASEPRI — justified as 'consistent masking behavior across all interrupt sources.' Bug 3 uses full 12-cycle entry timing for tail-chain scenarios instead of the shortened 6-cycle optimization — justified as 'conservative worst-case latency guarantees.' The visible data masks all bugs through mathematical equivalence (PRIGROUP=7 makes configured==effective, BASEPRI=0 disables masking, single event eliminates tail-chaining). Agents must locate bugs across multiple files in unfamiliar embedded systems domain code. Data is synthetic, representative of firmware validation work done by embedded systems engineers."
+solution_explanation = "Fix 1 (pipeline.py): Replace 'preemption_priority = configured_pri' with 'preemption_priority = compute_effective_priority(configured_pri, sub_pri, prigroup)' to use the effective priority combining group and sub-priority bits per PRIGROUP. Fix 2 (priority_resolver.py): Add a check 'if vector_number in (2, 3): return True' before the BASEPRI comparison so NMI and HardFault always bypass priority masking. Fix 3 (latency_calculator.py): Change 'base_latency = FULL_ENTRY_CYCLES' in the tail-chain branch to 'base_latency = TAIL_CHAIN_CYCLES' to use the shortened 6-cycle entry. Each fix is 1-3 lines but requires understanding ARM NVIC architecture conventions."
+verification_explanation = "The verifier substitutes a hidden interrupt configuration (PRIGROUP=4 with group/sub split, BASEPRI=64 with NMI/HardFault configured above threshold, handler completion events enabling tail-chain scenarios) and compares pipeline output field-by-field against expected values. Bug 1 causes wrong effective priorities in preemption_events and handler_timeline (configured 48 used instead of effective 37, changing which vectors can preempt and resulting in different handler execution order). Bug 2 causes NMI/HardFault to appear as 'masked' instead of 'pending'. Bug 3 causes tail-chain entries to show 12 cycles instead of 6 (buggy produces average_entry_latency 12.0 and total_entry_cycles 36, versus correct 9.0 and 18 with proper 6-cycle tail-chains). All bugs must be fixed simultaneously — partial fixes still produce wrong output on multiple verified fields."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

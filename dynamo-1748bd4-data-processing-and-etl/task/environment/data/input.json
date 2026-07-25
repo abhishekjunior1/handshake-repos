@@ -1,0 +1,103 @@
+{
+  "transactions": [
+    {
+      "transaction_id": "TXN-2024-0001",
+      "transaction_date": "2024-01-15",
+      "product": "laptop_pro",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 450.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "north"
+    },
+    {
+      "transaction_id": "TXN-2024-0002",
+      "transaction_date": "2024-01-15",
+      "product": "wireless_headphones",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 120.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "south"
+    },
+    {
+      "transaction_id": "TXN-2024-0003",
+      "transaction_date": "2024-01-15",
+      "product": "tablet_air",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 380.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "east"
+    },
+    {
+      "transaction_id": "TXN-2024-0004",
+      "transaction_date": "2024-01-15",
+      "product": "smart_watch",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 250.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "west"
+    },
+    {
+      "transaction_id": "TXN-2024-0005",
+      "transaction_date": "2024-01-15",
+      "product": "bluetooth_speaker",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 175.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "north"
+    },
+    {
+      "transaction_id": "TXN-2024-0006",
+      "transaction_date": "2024-01-15",
+      "product": "usb_hub",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 100.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "south"
+    },
+    {
+      "transaction_id": "TXN-2024-0007",
+      "transaction_date": "2024-01-15",
+      "product": "mechanical_keyboard",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 200.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "east"
+    },
+    {
+      "transaction_id": "TXN-2024-0008",
+      "transaction_date": "2024-01-15",
+      "product": "monitor_4k",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 499.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "west"
+    },
+    {
+      "transaction_id": "TXN-2024-0009",
+      "transaction_date": "2024-01-15",
+      "product": "webcam_hd",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 150.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "north"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "sensors": {
+    "sample_rate_hz": 100,
+    "accel_range_g": 16,
+    "gyro_range_dps": 2000,
+    "mag_range_ut": 4800,
+    "temp_range_c": [-40, 125]
+  },
+  "calibration": {
+    "accel_matrix": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+    "accel_bias": [0.0, 0.0, 0.0],
+    "gyro_matrix": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+    "gyro_bias": [0.0, 0.0, 0.0],
+    "mag_matrix": [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+    "mag_bias": [0.0, 0.0, 0.0]
+  },
+  "fusion": {
+    "complementary_alpha": 0.98,
+    "mag_declination_deg": 0.0,
+    "initial_orientation": [1.0, 0.0, 0.0, 0.0]
+  },
+  "control": {
+    "kp": 2.5,
+    "ki": 0.8,
+    "kd": 0.15,
+    "setpoint": [0.0, 0.0, 0.0],
+    "output_limit": 1.0,
+    "integral_limit": 0.5
+  },
+  "telemetry": {
+    "include_raw_sensors": true,
+    "include_calibrated": true,
+    "quaternion_format": "wxyz",
+    "decimal_precision": 6
+  },
+  "sensor_data": [
+    {
+      "timestamp_us": 1000000,
+      "accel": [0.0, 0.0, 9.81],
+      "gyro": [0.0, 0.0, 0.0],
+      "mag": [22.5, 5.2, -41.0],
+      "temp_c": 25.0
+    }
+  ]
+}

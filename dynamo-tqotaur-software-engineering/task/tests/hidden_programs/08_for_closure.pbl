@@ -1,0 +1,6 @@
+mut sum = 0;
+for i in 0..5 {
+    let f = fn() { return i; };
+    sum = sum + f();
+}
+print sum;

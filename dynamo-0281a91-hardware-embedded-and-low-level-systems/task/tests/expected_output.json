@@ -1,0 +1,413 @@
+{
+  "pipeline_version": "1.0.0",
+  "total_frames": 8,
+  "summary": {
+    "final_orientation_wxyz": [
+      0.999882,
+      0.013056,
+      -0.006122,
+      0.005203
+    ],
+    "average_motor_output": 0.495491,
+    "total_fault_events": 2,
+    "frames_processed": 8
+  },
+  "frames": [
+    {
+      "frame_id": 0,
+      "timestamp_us": 1000000,
+      "orientation_wxyz": [
+        1.0,
+        0.000209,
+        -0.000827,
+        -1.2e-05
+      ],
+      "euler_deg": [
+        0.02398,
+        -0.094815,
+        -0.001405
+      ],
+      "motor_commands": [
+        1.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "control": {
+        "error_magnitude": 0.051657,
+        "output_magnitude": 1.00007,
+        "integral_magnitude": 0.000258,
+        "saturated": true
+      },
+      "calibrated": {
+        "accel": [
+          0.15545,
+          -0.02704,
+          9.52588
+        ],
+        "gyro": [
+          0.055422,
+          -0.104391,
+          -0.002422
+        ]
+      },
+      "health": {
+        "status": "healthy",
+        "accel_faults": [],
+        "gyro_faults": [],
+        "mag_faults": [],
+        "details": "Insufficient history for fault detection"
+      }
+    },
+    {
+      "frame_id": 1,
+      "timestamp_us": 1010000,
+      "orientation_wxyz": [
+        0.999999,
+        0.000802,
+        -0.001532,
+        7e-05
+      ],
+      "euler_deg": [
+        0.091836,
+        -0.175506,
+        0.007874
+      ],
+      "motor_commands": [
+        0.666708,
+        0.745189,
+        0.263789,
+        0.324314
+      ],
+      "control": {
+        "error_magnitude": 0.053088,
+        "output_magnitude": 0.208908,
+        "integral_magnitude": 0.000782,
+        "saturated": false
+      },
+      "calibrated": {
+        "accel": [
+          0.186,
+          0.00326,
+          9.59646
+        ],
+        "gyro": [
+          0.123732,
+          -0.072831,
+          0.016888
+        ]
+      },
+      "health": {
+        "status": "healthy",
+        "accel_faults": [],
+        "gyro_faults": [],
+        "mag_faults": [],
+        "details": "Insufficient history for fault detection"
+      }
+    },
+    {
+      "frame_id": 2,
+      "timestamp_us": 1020000,
+      "orientation_wxyz": [
+        0.999996,
+        0.001572,
+        -0.002143,
+        0.000287
+      ],
+      "euler_deg": [
+        0.180088,
+        -0.245577,
+        0.032536
+      ],
+      "motor_commands": [
+        0.644681,
+        0.767063,
+        0.258102,
+        0.330154
+      ],
+      "control": {
+        "error_magnitude": 0.05438,
+        "output_magnitude": 0.211907,
+        "integral_magnitude": 0.001319,
+        "saturated": false
+      },
+      "calibrated": {
+        "accel": [
+          0.2264,
+          -0.05694,
+          9.5566
+        ],
+        "gyro": [
+          0.192122,
+          -0.041361,
+          0.045898
+        ]
+      },
+      "health": {
+        "status": "healthy",
+        "accel_faults": [],
+        "gyro_faults": [],
+        "mag_faults": [],
+        "details": "Insufficient history for fault detection"
+      }
+    },
+    {
+      "frame_id": 3,
+      "timestamp_us": 1030000,
+      "orientation_wxyz": [
+        0.999992,
+        0.002812,
+        -0.00286,
+        0.000679
+      ],
+      "euler_deg": [
+        0.321981,
+        -0.327993,
+        0.076893
+      ],
+      "motor_commands": [
+        0.612866,
+        0.820178,
+        0.227152,
+        0.339804
+      ],
+      "control": {
+        "error_magnitude": 0.056023,
+        "output_magnitude": 0.232035,
+        "integral_magnitude": 0.00187,
+        "saturated": false
+      },
+      "calibrated": {
+        "accel": [
+          0.359,
+          -0.10868,
+          9.45634
+        ],
+        "gyro": [
+          0.319392,
+          -0.009261,
+          0.084248
+        ]
+      },
+      "health": {
+        "status": "healthy",
+        "accel_faults": [],
+        "gyro_faults": [],
+        "mag_faults": [],
+        "details": "Insufficient history for fault detection"
+      }
+    },
+    {
+      "frame_id": 4,
+      "timestamp_us": 1040000,
+      "orientation_wxyz": [
+        0.999982,
+        0.00459,
+        -0.003635,
+        0.001331
+      ],
+      "euler_deg": [
+        0.525387,
+        -0.417182,
+        0.150668
+      ],
+      "motor_commands": [
+        0.56621,
+        0.884062,
+        0.197229,
+        0.352499
+      ],
+      "control": {
+        "error_magnitude": 0.05807,
+        "output_magnitude": 0.257543,
+        "integral_magnitude": 0.002439,
+        "saturated": false
+      },
+      "calibrated": {
+        "accel": [
+          0.51215,
+          -0.16094,
+          9.32584
+        ],
+        "gyro": [
+          0.466122,
+          0.043499,
+          0.142098
+        ]
+      },
+      "health": {
+        "status": "healthy",
+        "accel_faults": [],
+        "gyro_faults": [],
+        "mag_faults": [],
+        "details": "All sensors nominal"
+      }
+    },
+    {
+      "frame_id": 5,
+      "timestamp_us": 1050000,
+      "orientation_wxyz": [
+        0.999964,
+        0.006882,
+        -0.004418,
+        0.002282
+      ],
+      "euler_deg": [
+        0.787487,
+        -0.508038,
+        0.257962
+      ],
+      "motor_commands": [
+        0.511663,
+        0.951607,
+        0.171005,
+        0.365725
+      ],
+      "control": {
+        "error_magnitude": 0.060618,
+        "output_magnitude": 0.287382,
+        "integral_magnitude": 0.003027,
+        "saturated": false
+      },
+      "calibrated": {
+        "accel": [
+          0.66515,
+          -0.21284,
+          9.22564
+        ],
+        "gyro": [
+          0.612782,
+          0.106469,
+          0.209758
+        ]
+      },
+      "health": {
+        "status": "healthy",
+        "accel_faults": [],
+        "gyro_faults": [],
+        "mag_faults": [],
+        "details": "All sensors nominal"
+      }
+    },
+    {
+      "frame_id": 6,
+      "timestamp_us": 1060000,
+      "orientation_wxyz": [
+        0.999933,
+        0.009689,
+        -0.005283,
+        0.00356
+      ],
+      "euler_deg": [
+        1.10823,
+        -0.609276,
+        0.40208
+      ],
+      "motor_commands": [
+        0.454678,
+        1.0,
+        0.14059,
+        0.374338
+      ],
+      "control": {
+        "error_magnitude": 0.06403,
+        "output_magnitude": 0.327238,
+        "integral_magnitude": 0.00364,
+        "saturated": false
+      },
+      "calibrated": {
+        "accel": [
+          0.869,
+          -0.2952,
+          9.0955
+        ],
+        "gyro": [
+          0.778972,
+          0.179889,
+          0.287108
+        ]
+      },
+      "health": {
+        "status": "fault_detected",
+        "accel_faults": [
+          {
+            "sensor": "accel",
+            "axis": "x",
+            "type": "drift",
+            "value": 0.6426
+          }
+        ],
+        "gyro_faults": [
+          {
+            "sensor": "gyro",
+            "axis": "x",
+            "type": "drift",
+            "value": 0.5868499999999999
+          }
+        ],
+        "mag_faults": [],
+        "details": "accel.x: drift (value=0.6426); gyro.x: drift (value=0.5868)"
+      }
+    },
+    {
+      "frame_id": 7,
+      "timestamp_us": 1070000,
+      "orientation_wxyz": [
+        0.999882,
+        0.013056,
+        -0.006122,
+        0.005203
+      ],
+      "euler_deg": [
+        1.492528,
+        -0.70925,
+        0.587054
+      ],
+      "motor_commands": [
+        0.382721,
+        1.0,
+        0.113614,
+        0.389774
+      ],
+      "control": {
+        "error_magnitude": 0.068372,
+        "output_magnitude": 0.371504,
+        "integral_magnitude": 0.004284,
+        "saturated": false
+      },
+      "calibrated": {
+        "accel": [
+          1.0219,
+          -0.36714,
+          8.97524
+        ],
+        "gyro": [
+          0.955042,
+          0.253339,
+          0.374098
+        ]
+      },
+      "health": {
+        "status": "fault_detected",
+        "accel_faults": [
+          {
+            "sensor": "accel",
+            "axis": "x",
+            "type": "drift",
+            "value": 0.6629000000000003
+          }
+        ],
+        "gyro_faults": [
+          {
+            "sensor": "gyro",
+            "axis": "x",
+            "type": "drift",
+            "value": 0.63565
+          }
+        ],
+        "mag_faults": [],
+        "details": "accel.x: drift (value=0.6629); gyro.x: drift (value=0.6357)"
+      }
+    }
+  ]
+}

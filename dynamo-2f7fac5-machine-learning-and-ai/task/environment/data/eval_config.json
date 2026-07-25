@@ -1,0 +1,820 @@
+{
+  "classes": [
+    "negative",
+    "positive"
+  ],
+  "evaluation_mode": "single_split",
+  "predictions": [
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.94,
+        "positive": 0.06
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8607,
+        "positive": 0.1393
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.6793,
+        "positive": 0.3207
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.4152,
+        "positive": 0.5848
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.9381,
+        "positive": 0.0619
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7479,
+        "positive": 0.2521
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8705,
+        "positive": 0.1295
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.732,
+        "positive": 0.268
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7143,
+        "positive": 0.2857
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.4474,
+        "positive": 0.5526
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1707,
+        "positive": 0.8293
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8878,
+        "positive": 0.1122
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3154,
+        "positive": 0.6846
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.9113,
+        "positive": 0.0887
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2085,
+        "positive": 0.7915
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1581,
+        "positive": 0.8419
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.5608,
+        "positive": 0.4392
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7292,
+        "positive": 0.2708
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2026,
+        "positive": 0.7974
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2191,
+        "positive": 0.7809
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.9317,
+        "positive": 0.0683
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8342,
+        "positive": 0.1658
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8569,
+        "positive": 0.1431
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8388,
+        "positive": 0.1612
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8041,
+        "positive": 0.1959
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8662,
+        "positive": 0.1338
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.5753,
+        "positive": 0.4247
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7063,
+        "positive": 0.2937
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.6583,
+        "positive": 0.3417
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7982,
+        "positive": 0.2018
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.194,
+        "positive": 0.806
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.6762,
+        "positive": 0.3238
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1396,
+        "positive": 0.8604
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.9372,
+        "positive": 0.0628
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8429,
+        "positive": 0.1571
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.5728,
+        "positive": 0.4272
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3241,
+        "positive": 0.6759
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7917,
+        "positive": 0.2083
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2665,
+        "positive": 0.7335
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8513,
+        "positive": 0.1487
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8449,
+        "positive": 0.1551
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.5909,
+        "positive": 0.4091
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8623,
+        "positive": 0.1377
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2462,
+        "positive": 0.7538
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.9312,
+        "positive": 0.0688
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.699,
+        "positive": 0.301
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7811,
+        "positive": 0.2189
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7974,
+        "positive": 0.2026
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2384,
+        "positive": 0.7616
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1057,
+        "positive": 0.8943
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1617,
+        "positive": 0.8383
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2352,
+        "positive": 0.7648
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1936,
+        "positive": 0.8064
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2761,
+        "positive": 0.7239
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.0685,
+        "positive": 0.9315
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8446,
+        "positive": 0.1554
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3785,
+        "positive": 0.6215
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.6018,
+        "positive": 0.3982
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1944,
+        "positive": 0.8056
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3889,
+        "positive": 0.6111
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2342,
+        "positive": 0.7658
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2379,
+        "positive": 0.7621
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3203,
+        "positive": 0.6797
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.0784,
+        "positive": 0.9216
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.6173,
+        "positive": 0.3827
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.4268,
+        "positive": 0.5732
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.5712,
+        "positive": 0.4288
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2556,
+        "positive": 0.7444
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1458,
+        "positive": 0.8542
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3986,
+        "positive": 0.6014
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2301,
+        "positive": 0.7699
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.101,
+        "positive": 0.899
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3653,
+        "positive": 0.6347
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.158,
+        "positive": 0.842
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3253,
+        "positive": 0.6747
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.69,
+        "positive": 0.31
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.243,
+        "positive": 0.757
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3601,
+        "positive": 0.6399
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2147,
+        "positive": 0.7853
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3619,
+        "positive": 0.6381
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1976,
+        "positive": 0.8024
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.0878,
+        "positive": 0.9122
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.9217,
+        "positive": 0.0783
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1824,
+        "positive": 0.8176
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3971,
+        "positive": 0.6029
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.7216,
+        "positive": 0.2784
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1362,
+        "positive": 0.8638
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8738,
+        "positive": 0.1262
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2776,
+        "positive": 0.7224
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2632,
+        "positive": 0.7368
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1807,
+        "positive": 0.8193
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.9106,
+        "positive": 0.0894
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3143,
+        "positive": 0.6857
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.8505,
+        "positive": 0.1495
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.2706,
+        "positive": 0.7294
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.3386,
+        "positive": 0.6614
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.0807,
+        "positive": 0.9193
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.1055,
+        "positive": 0.8945
+      }
+    },
+    {
+      "predicted_class": "positive",
+      "probabilities": {
+        "negative": 0.4298,
+        "positive": 0.5702
+      }
+    },
+    {
+      "predicted_class": "negative",
+      "probabilities": {
+        "negative": 0.6156,
+        "positive": 0.3844
+      }
+    }
+  ],
+  "labels": [
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "negative",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive",
+    "positive"
+  ],
+  "cross_validation": {
+    "n_folds": 5,
+    "random_seed": 42,
+    "scoring_weights": "class_distribution"
+  },
+  "calibration": {
+    "n_bins": 10,
+    "bin_strategy": "equal_width"
+  }
+}

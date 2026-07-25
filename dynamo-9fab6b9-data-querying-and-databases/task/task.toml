@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/mvcc-snapshot-executor"
+description = "MVCC snapshot isolation query executor with multi-version visibility rules, command-ID semantics, and conflict detection."
+
+[metadata]
+category = "Data Querying and Databases"
+subcategory = "SQL querying"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 6 modules (~670 lines) implementing PostgreSQL-style MVCC snapshot isolation from scratch. Two bugs are in pipeline.py's visibility logic: (1) the snapshot construction includes the current transaction in its own active set — the comment justifies this as preventing self-visibility through the normal path, but it incorrectly causes the current transaction's own row deletions/overwrites to be treated as 'not yet committed' by the visibility checker, making superseded old versions remain visible alongside new versions; (2) the self-visibility command-ID check uses strict greater-than (v_cid > current_cid) instead of greater-than-or-equal — the comment justifies this as 'read-after-write consistency within statements', but it incorrectly makes versions created at the current command ID visible when they should be excluded (the current command shouldn't see its own output-in-progress). Both bugs are masked on visible data: the transaction has current_cid=0 (no self-created versions exist) and all other transactions committed before the snapshot (self-in-active doesn't affect committed visibility). Hidden data has multi-statement transactions (current_cid=2 with self-created versions at cid 0 and 2) and concurrent uncommitted transactions that interact with self-in-active set membership. The pipeline also contains correct MVCC conventions: NULLS LAST ordering and xmax exclusive upper bound (txn_id+1) — both appear as off-by-one errors but are standard PostgreSQL snapshot semantics. Data is synthetic transaction/version state shaped like a production OLTP system — work a database kernel engineer or PostgreSQL internals specialist would perform."
+solution_explanation = "Two fixes in pipeline.py: (1) After calling build_snapshot(), filter out the current txn_id from the active list — self-visibility is handled through the cid mechanism, not the active set. Including self in active causes the visibility checker to treat the current transaction's own writes as 'uncommitted by an active transaction' and incorrectly preserve old versions that should be superseded. (2) Change the self-visibility cid check from 'v_cid > current_cid' to 'v_cid >= current_cid' — versions at exactly the current cid are being created NOW and should not be visible to the creating statement. The NULLS LAST ordering and xmax=txn_id+1 must NOT be modified."
+verification_explanation = "The verifier substitutes a multi-statement transaction (current_cid=2) with self-created versions at cid 0 and 2, concurrent uncommitted transactions (txn 60, 70), and a committed transaction (txn 60) that committed after the snapshot. Bug 1 causes the old version of row r1 (balance=1000) to appear alongside the new version (balance=1200) — the self-created overwrite isn't properly recognized. Bug 2 causes row r9 (created at cid=2, the current command) to incorrectly appear in results. Tests check exact row values, visibility counts, and snapshot metadata."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

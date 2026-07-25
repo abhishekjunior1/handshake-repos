@@ -1,0 +1,73 @@
+{
+  "routes": [
+    {"network": "10.50.0.0/16", "next_hop": "gw-internal", "interface": "eth0", "priority": 10, "metric": 5},
+    {"network": "10.50.20.0/24", "next_hop": "gw-subnet", "interface": "eth1", "priority": 5, "metric": 3},
+    {"network": "192.168.0.0/16", "next_hop": "gw-services", "interface": "eth2", "priority": 15, "metric": 10},
+    {"network": "0.0.0.0/0", "next_hop": "gw-default", "interface": "eth0", "priority": 100, "metric": 200}
+  ],
+  "firewall_rules": [
+    {"rule_id": 1, "source": "10.50.0.0/16", "destination": "192.168.1.0/24", "port": 443, "protocol": "tcp", "action": "allow"},
+    {"rule_id": 2, "source": "10.50.0.0/16", "destination": "192.168.1.0/24", "port": 8080, "protocol": "tcp", "action": "allow"},
+    {"rule_id": 3, "source": "10.50.0.0/16", "destination": "192.168.2.0/24", "port": 443, "protocol": "tcp", "action": "allow"},
+    {"rule_id": 4, "source": "any", "destination": "any", "port": 80, "protocol": "tcp", "action": "allow"}
+  ],
+  "firewall_default_action": "deny",
+  "nat_rules": [
+    {"rule_id": 1, "match_destination": "203.0.113.50", "translate_to": "192.168.1.10"},
+    {"rule_id": 2, "match_destination": "203.0.113.60", "translate_to": "192.168.1.20"},
+    {"rule_id": 3, "match_destination": "203.0.113.70", "translate_to": "192.168.2.30"}
+  ],
+  "dns_records": {
+    "api.services.corp": "203.0.113.50",
+    "web.services.corp": "203.0.113.60"
+  },
+  "qos": {
+    "priority_ports": [443, 22],
+    "bulk_ports": [8080, 8443],
+    "next_hop_policies": {
+      "gw-services": {"dscp_override": 34, "class_override": "assured"}
+    }
+  },
+  "load_balancer": {
+    "backends": [
+      {"address": "192.168.1.101", "port": 9443, "healthy": true},
+      {"address": "192.168.1.102", "port": 9443, "healthy": true},
+      {"address": "192.168.1.103", "port": 9443, "healthy": true}
+    ]
+  },
+  "packets": [
+    {
+      "source_ip": "10.50.20.5",
+      "hostname": "api.services.corp",
+      "destination_ip": null,
+      "port": 443,
+      "protocol": "tcp",
+      "ttl": 64,
+      "use_lb": true
+    },
+    {
+      "source_ip": "10.50.20.10",
+      "destination_ip": "203.0.113.60",
+      "port": 8080,
+      "protocol": "tcp",
+      "ttl": 60,
+      "use_lb": false
+    },
+    {
+      "source_ip": "10.50.5.1",
+      "destination_ip": "203.0.113.70",
+      "port": 443,
+      "protocol": "tcp",
+      "ttl": 1,
+      "use_lb": false
+    },
+    {
+      "source_ip": "10.50.20.15",
+      "destination_ip": "192.168.1.50",
+      "port": 80,
+      "protocol": "tcp",
+      "ttl": 48,
+      "use_lb": false
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "groups": [
+    {
+      "id": "cohort_1",
+      "observations": [
+        46.162819,
+        47.343169,
+        45.307625,
+        46.7203,
+        44.900493
+      ],
+      "metadata": {
+        "site": "location_1",
+        "phase": 1
+      }
+    },
+    {
+      "id": "cohort_2",
+      "observations": [
+        48.280772,
+        48.679194,
+        46.39094,
+        46.632935,
+        46.651618,
+        46.594032
+      ],
+      "metadata": {
+        "site": "location_2",
+        "phase": 2
+      }
+    },
+    {
+      "id": "cohort_3",
+      "observations": [
+        50.020702,
+        49.027139,
+        47.815839,
+        48.418134,
+        48.027843,
+        48.120505,
+        46.830481
+      ],
+      "metadata": {
+        "site": "location_3",
+        "phase": 3
+      }
+    },
+    {
+      "id": "cohort_4",
+      "observations": [
+        50.479297,
+        48.536656,
+        47.570051,
+        50.057813,
+        50.100341,
+        49.780851,
+        48.924513,
+        50.078341
+      ],
+      "metadata": {
+        "site": "location_4",
+        "phase": 1
+      }
+    },
+    {
+      "id": "cohort_5",
+      "observations": [
+        51.854562,
+        49.224342,
+        50.822926,
+        50.918483,
+        49.974772
+      ],
+      "metadata": {
+        "site": "location_5",
+        "phase": 2
+      }
+    },
+    {
+      "id": "cohort_6",
+      "observations": [
+        50.805429,
+        52.493157,
+        52.029691,
+        51.29398,
+        53.004442,
+        50.435607
+      ],
+      "metadata": {
+        "site": "location_6",
+        "phase": 3
+      }
+    },
+    {
+      "id": "cohort_7",
+      "observations": [
+        51.551563,
+        52.737349,
+        53.702452,
+        52.086845,
+        54.480538,
+        52.742714,
+        52.264134
+      ],
+      "metadata": {
+        "site": "location_7",
+        "phase": 1
+      }
+    },
+    {
+      "id": "cohort_8",
+      "observations": [
+        54.781818,
+        53.448605,
+        52.462364,
+        53.465664,
+        54.266386,
+        53.536515,
+        55.745779,
+        53.597821
+      ],
+      "metadata": {
+        "site": "location_8",
+        "phase": 2
+      }
+    }
+  ],
+  "model_config": {
+    "prior_mean": 0.0,
+    "prior_variance": 1000000.0,
+    "credible_level": 0.95,
+    "estimation_method": "empirical_bayes",
+    "shrinkage_type": "james_stein",
+    "interval_method": "posterior_t",
+    "model_comparison": [
+      "DIC",
+      "WAIC"
+    ]
+  }
+}

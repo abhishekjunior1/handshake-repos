@@ -1,0 +1,137 @@
+{
+  "benchmark_summary": {
+    "name": "classification_model_comparison",
+    "n_models": 4,
+    "n_datasets": 3,
+    "n_folds": 5,
+    "n_metrics": 1,
+    "total_evaluations": 60
+  },
+  "model_rankings": {
+    "rankings": [
+      {
+        "model": "random_forest",
+        "mean_rank": 1.666667,
+        "position": 1.0,
+        "std_rank": 1.154701,
+        "best_rank": 1.0,
+        "worst_rank": 3.0
+      },
+      {
+        "model": "gradient_boost",
+        "mean_rank": 2.0,
+        "position": 2.0,
+        "std_rank": 0.0,
+        "best_rank": 2.0,
+        "worst_rank": 2.0
+      },
+      {
+        "model": "neural_net",
+        "mean_rank": 3.0,
+        "position": 3.0,
+        "std_rank": 1.732051,
+        "best_rank": 1.0,
+        "worst_rank": 4.0
+      },
+      {
+        "model": "svm_rbf",
+        "mean_rank": 3.333333,
+        "position": 4.0,
+        "std_rank": 0.57735,
+        "best_rank": 3.0,
+        "worst_rank": 4.0
+      }
+    ]
+  },
+  "statistical_significance": {
+    "pairwise_comparisons": [
+      {
+        "model_a": "gradient_boost",
+        "model_b": "neural_net",
+        "t_statistic": 2.707063,
+        "p_value": 0.01702,
+        "corrected_p_value": 0.102117,
+        "significant": false,
+        "mean_difference": 0.032933
+      },
+      {
+        "model_a": "gradient_boost",
+        "model_b": "random_forest",
+        "t_statistic": -1.414023,
+        "p_value": 0.179207,
+        "corrected_p_value": 1.0,
+        "significant": false,
+        "mean_difference": -0.007667
+      },
+      {
+        "model_a": "gradient_boost",
+        "model_b": "svm_rbf",
+        "t_statistic": 13.5,
+        "p_value": 0.0,
+        "corrected_p_value": 0.0,
+        "significant": true,
+        "mean_difference": 0.027
+      },
+      {
+        "model_a": "neural_net",
+        "model_b": "random_forest",
+        "t_statistic": -2.309838,
+        "p_value": 0.03666,
+        "corrected_p_value": 0.219958,
+        "significant": false,
+        "mean_difference": -0.0406
+      },
+      {
+        "model_a": "neural_net",
+        "model_b": "svm_rbf",
+        "t_statistic": -0.433101,
+        "p_value": 0.67154,
+        "corrected_p_value": 1.0,
+        "significant": false,
+        "mean_difference": -0.005933
+      },
+      {
+        "model_a": "random_forest",
+        "model_b": "svm_rbf",
+        "t_statistic": 8.548747,
+        "p_value": 1e-06,
+        "corrected_p_value": 4e-06,
+        "significant": true,
+        "mean_difference": 0.034667
+      }
+    ],
+    "n_significant": 2,
+    "n_total": 6
+  },
+  "score_normalization": {
+    "normalized_scores": {
+      "image_classification": {
+        "gradient_boost": 0.761364,
+        "neural_net": 0.0,
+        "random_forest": 1.0,
+        "svm_rbf": 0.431818
+      },
+      "text_sentiment": {
+        "gradient_boost": 0.733179,
+        "neural_net": 0.0,
+        "random_forest": 1.0,
+        "svm_rbf": 0.535963
+      },
+      "fraud_detection": {
+        "gradient_boost": 0.527108,
+        "neural_net": 1.0,
+        "random_forest": 0.210843,
+        "svm_rbf": 0.0
+      }
+    }
+  },
+  "aggregate_performance": {
+    "aggregate_scores": {
+      "gradient_boost": 0.662398,
+      "random_forest": 0.592777,
+      "svm_rbf": 0.000284,
+      "neural_net": 0.0
+    },
+    "aggregation_method": "geometric_mean"
+  }
+}

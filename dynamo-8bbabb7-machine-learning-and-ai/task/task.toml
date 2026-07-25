@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/sensor-feature-extraction"
+description = "Time-frequency feature extraction pipeline for multi-channel sensor signals with windowing, spectral analysis, and cross-channel correlation."
+
+[metadata]
+category = "Machine Learning and AI"
+subcategory = "Feature engineering"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "transform"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 6 modules (~830 lines) implementing time-frequency feature extraction from scratch for multi-channel sensor data. Three bugs are in pipeline.py's data-flow logic: (1) cross-channel correlations are computed on raw windowed signals instead of detrended windows — the comment justifies using 'full signal structure including deterministic trends' for correlation, but this conflates static trend relationships with dynamic coupling; (2) normalization always self-computes baseline statistics from the current batch, ignoring reference baseline parameters when provided in the config — the comment justifies this as 'self-relative scaling that adapts to operating condition changes'; (3) the reported window count uses overlap=0 (non-overlapping count) instead of the actual configured overlap — the comment justifies this as 'interpretable feature density' using 'independent observation units.' All three bugs are masked on visible data: signals are palindrome-structured (zero linear trend so detrend is identity for correlation), no baseline config is provided (self-compute is the correct fallback), and window_size equals signal length (only 1 window regardless of overlap). The pipeline contains correct-but-suspicious patterns: population kurtosis (divides by n not n-1) and 85% spectral rolloff (not the conventional 95%). Data is synthetic multi-channel vibration/temperature sensor readings shaped like industrial condition monitoring — work a reliability engineer or signal processing specialist would perform."
+solution_explanation = "Three fixes in pipeline.py: (1) Import detrend_signal from correlation_features and apply it to each window before computing cross-correlation — this isolates dynamic oscillatory coupling from static trend relationships. (2) Add conditional: if baseline_config is provided, use it directly as baseline_stats for normalization; otherwise fall back to compute_baseline_stats from current features. (3) Change compute_window_count call from overlap=0 to overlap=overlap to report actual window count. The population kurtosis and 85% rolloff threshold must NOT be modified."
+verification_explanation = "The verifier substitutes a 60-sample 3-channel signal with linear trends (slope 0.02 and -0.015), a reference baseline (mean=0.5, std=2.0), and window_size=20 with overlap=0.5 (producing 5 windows vs 3 non-overlapping). Bug 1 causes cross-channel correlation to differ by 0.05+ (trend contamination). Bug 2 causes all normalized features to use wrong baseline (self-computed mean/std vs reference 0.5/2.0 — completely different normalization). Bug 3 reports n_windows=3 instead of 5. Tests compare at rel_tol=1e-3. All bugs produce deviations far exceeding tolerance."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

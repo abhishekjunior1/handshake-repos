@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/tabular-transform"
+description = "Fix data-flow bugs in a tabular transformation pipeline."
+
+[metadata]
+category = "Data Processing and ETL"
+subcategory = "Tabular transformation"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 6 modules (~580 lines) implementing tabular data transformations without pandas or external data libraries. Three bugs involve ordering, semantics, and type-system interactions across module boundaries. Bug 1: the pipeline computes derived columns from a stale snapshot of the primary table taken before type coercion and before join, so arithmetic references to joined columns (base_price) and coerced values are missing or wrong. Bug 2: the pivot operation uses first-value semantics for duplicate index/pivot key pairs instead of summing, silently dropping data from repeated measurements. Bug 3: the join operation uses the raw right table without coercing its key column types to match the left table's coerced keys, causing a type mismatch (int vs string) that produces no join matches and leaves joined columns as None. The visible configuration uses a single table with no coercion, no join, and unique pivot keys — making all three bugs mathematically invisible. The hidden configuration introduces multi-table joins with type-coerced keys, derived columns that reference joined data, and duplicate pivot keys that expose all bugs simultaneously. A data engineer building ETL pipelines would encounter these issues — the data is synthetic, shaped like a manufacturing quality-control dataset. Decoy patterns (descending sort order, null exclusion in aggregation, int-via-float coercion) look suspicious but are correct."
+solution_explanation = "Fix 1: In pipeline.py, change the derived_columns handler to use working_data instead of primary_snapshot — derived columns must operate on the current transformed state including type-coerced values and joined columns. Fix 2: In pivot_ops.py, change the duplicate-key handling from storing only the first value to summing all values for each (index, pivot) combination — duplicate measurements should be aggregated, not discarded. Fix 3: In pipeline.py's join handler, coerce the right table's join key column to match the left table's coerced type before performing the merge, ensuring int-to-int key comparison instead of int-to-string mismatch."
+verification_explanation = "The verifier substitutes a hidden configuration with 2 tables (measurements + product_info), numeric type coercion (product_id to int, value to float), duplicate pivot keys (multiple weight/length measurements per product), and a join between coerced int keys and raw string keys. Tests check 12 specific assertions including product_id types (must be int not string), aggregate values (weighted_cost as sum of value*base_price, length_cost similarly), sort order, and absence of null values. Relative tolerance of 1e-4 on numeric comparisons. All three bugs must be fixed simultaneously — Bug 1 (stale snapshot) makes derived columns return None, Bug 2 (first-value pivot) loses half the data, Bug 3 (join type mismatch) makes base_price unavailable for derived computation."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

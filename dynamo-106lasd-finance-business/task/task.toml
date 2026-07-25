@@ -1,0 +1,32 @@
+artifacts = ["/app/distributions.json", "/app/engine.py", "/app/config.py", "/app/interest.py", "/app/waterfall.py"]
+
+[task]
+name = "dynamo/cashflow-debug"
+description = "Find and fix three interacting bugs across a multi-file CDO cashflow engine that produces silently wrong output on specific loan configurations."
+
+[metadata]
+category = "regulated_knowledge_work_and_business_operations"
+subcategory = "finance_and_quantitative_workflows"
+model_tested = "GPT-5.4"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "This is the work of quant developers debugging a production multi-file cashflow engine at a structured-finance desk. Data is entirely synthetic (20-loan pool, bespoke 4-module engine with no public prior art). The engine runs cleanly on the visible pool (all 30/360, no defaults, no early prepays) — the bugs are SILENT wrong-value defects that only manifest on specific loan configurations. Three bugs across three files interact: (1) interest.py ignores the day_count parameter — always uses 30/360 even for actual/360 loans, producing wrong interest in 31-day months. The visible pool is all 30/360 so it's invisible. (2) config.py's get_penalty_base() returns original_balance instead of current balance (contradicting its own docstring). The agent might 'fix' this in waterfall.py where it's called — but that breaks the module boundary and the visible-pool test. The correct fix is 1 line in config.py. (3) engine.py allocates losses BEFORE interest/principal distribution instead of after — reducing tranche balances before coupons are computed. With no defaults in the visible pool, this code path never executes. COMPOUND TRAP: Loan L002 in the hidden pool is both actual/360 AND prepays early within lockout, triggering bugs 1+2 simultaneously. Fixing only one still fails. The loss-ordering bug (3) changes interest amounts in default months because tranche balances are wrong when coupons are calculated."
+solution_explanation = "Three targeted fixes: (1) interest.py: import monthly_rate_fraction from config and use it instead of hardcoded 30/360 formula. (2) config.py: change get_penalty_base to return loan['balance'] instead of loan['original_balance']. (3) engine.py: move the loss_allocated block from before Step 2 to after Step 3 (principal distribution). Each fix is 1-3 lines. The rest of the engine (turbo logic, sequential principal, pro-rata interest) is correct."
+verification_explanation = "The verifier injects full_pool.json (actual/360 loans, early prepays within lockout, defaults in months 3 and 5 that split across tranche boundaries) and re-runs the engine. Checks exact integer match on all 4 fields × 3 tranches × 12 months. The buggy engine produces wrong values in months with defaults (bug 3 changes interest), months 1-5 for actual/360 loans (bug 1), and month 3-4 for early prepay (bug 2). About 20 of 36 tranche-month cells differ."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

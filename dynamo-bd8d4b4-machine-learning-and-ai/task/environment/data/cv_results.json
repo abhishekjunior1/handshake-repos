@@ -1,0 +1,24 @@
+{
+  "results": {
+    "gradient_boost": {
+      "sentiment_analysis": {
+        "accuracy": [0.847]
+      }
+    },
+    "neural_net": {
+      "sentiment_analysis": {
+        "accuracy": [0.823]
+      }
+    },
+    "random_forest": {
+      "sentiment_analysis": {
+        "accuracy": [0.791]
+      }
+    },
+    "svm_rbf": {
+      "sentiment_analysis": {
+        "accuracy": [0.815]
+      }
+    }
+  }
+}

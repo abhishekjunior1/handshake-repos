@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/flow-aggregation"
+description = "Network flow aggregation pipeline with sampled deduplication and smoothed baselines."
+
+[metadata]
+category = "data_processing_and_etl"
+subcategory = "streaming_data_processing"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "This task requires debugging a 600+ line network flow aggregation pipeline spanning 7 modules that implement multi-collector deduplication, tumbling time-bin assignment, per-prefix traffic computation with exponential smoothing, and cross-bin baseline carry-forward. The two bugs exploit data-flow interaction patterns in the pipeline orchestrator (pipeline.py): (1) compute_bin_traffic is called with raw_count (pre-deduplication flow count) as population_size instead of the actual deduplicated count, causing per-flow average and variance to use the wrong denominator — on visible data where all flow_ids are unique, raw_count equals the deduped count so the bug is invisible; (2) the carry-forward baseline update uses mode='smoothed' (exponential moving average with alpha=0.3) instead of mode='accumulate' (simple summation) — the smoothed mode loses historical traffic context. On visible data with a single time bin, carry-forward baseline is never consumed by a subsequent bin's compute_bin_traffic so the bug has no effect. Both bugs are in the orchestrator's data-flow logic, not in any individual module."
+solution_explanation = "Fix two bugs in pipeline.py: (1) Change the compute_bin_traffic call to pass population_size=len(deduped_flows) instead of population_size=raw_count — after deduplication removes duplicate collector observations, the population size for per-flow normalization and variance computation must reflect the actual number of unique flows, not the raw observation count including duplicates. (2) Change the update_baseline call from mode='smoothed' to mode='accumulate' — the baseline tracks cumulative traffic across bins for utilization context, and using EMA loses historical information needed for correct smoothed_utilization computation in subsequent bins."
+verification_explanation = "The verifier copies hidden_flows.json (a 35-record datacenter spine flow stream with bin_duration=30s, 4 tumbling bins, and 8 duplicate flow observations from redundant collectors) into /app/flows.json, runs the pipeline, then uses pytest to compare output.json against expected_output.json. Tests check deduplication counts, per-bin flow counts, total bytes, per-flow averages, smoothed utilization, per-prefix counts and byte totals, and population variance using approximate equality (rel_tol=1e-4). Bug 1 causes per_flow_avg and variance to be incorrect in bins with duplicates (bins 0, 1, 2, 3 all have duplicates). Bug 2 causes smoothed_utilization to diverge across bins 1-3 because the baseline carried forward uses EMA instead of accumulation, progressively losing historical traffic context."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

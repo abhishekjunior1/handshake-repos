@@ -1,0 +1,97 @@
+{
+  "graph": {
+    "nodes": [
+      {
+        "id": "A",
+        "type": "server",
+        "weight": 1.0,
+        "properties": {
+          "region": "us-east"
+        }
+      },
+      {
+        "id": "B",
+        "type": "server",
+        "weight": 1.0,
+        "properties": {
+          "region": "us-east"
+        }
+      },
+      {
+        "id": "C",
+        "type": "server",
+        "weight": 1.0,
+        "properties": {
+          "region": "us-east"
+        }
+      },
+      {
+        "id": "D",
+        "type": "server",
+        "weight": 1.0,
+        "properties": {
+          "region": "us-east"
+        }
+      },
+      {
+        "id": "E",
+        "type": "server",
+        "weight": 1.0,
+        "properties": {
+          "region": "us-east"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "source": "A",
+        "target": "B",
+        "type": "link",
+        "weight": 1.0,
+        "properties": {}
+      },
+      {
+        "source": "B",
+        "target": "C",
+        "type": "link",
+        "weight": 1.0,
+        "properties": {}
+      },
+      {
+        "source": "C",
+        "target": "D",
+        "type": "link",
+        "weight": 1.0,
+        "properties": {}
+      },
+      {
+        "source": "D",
+        "target": "E",
+        "type": "link",
+        "weight": 1.0,
+        "properties": {}
+      }
+    ]
+  },
+  "queries": {
+    "centrality": {
+      "top_k": 3
+    },
+    "pagerank": {
+      "damping": 0.85,
+      "max_iterations": 100,
+      "top_k": 3
+    },
+    "clustering": {
+      "enabled": true
+    },
+    "influence_spread": {
+      "seeds": [
+        "A"
+      ],
+      "steps": 3,
+      "decay": 0.5,
+      "top_k": 5
+    }
+  }
+}

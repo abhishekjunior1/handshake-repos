@@ -1,0 +1,42 @@
+[
+  {
+    "valid": true,
+    "reason": "valid"
+  },
+  {
+    "valid": true,
+    "reason": "valid"
+  },
+  {
+    "valid": true,
+    "reason": "valid"
+  },
+  {
+    "valid": true,
+    "reason": "valid"
+  },
+  {
+    "valid": true,
+    "reason": "valid"
+  },
+  {
+    "valid": true,
+    "reason": "valid"
+  },
+  {
+    "valid": true,
+    "reason": "valid"
+  },
+  {
+    "valid": true,
+    "reason": "valid"
+  },
+  {
+    "valid": false,
+    "reason": "mac_mismatch"
+  },
+  {
+    "valid": false,
+    "reason": "replay_detected"
+  }
+]

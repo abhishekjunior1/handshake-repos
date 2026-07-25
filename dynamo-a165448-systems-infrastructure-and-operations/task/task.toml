@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/storage-tiering"
+description = "Debug a block-level storage tiering engine that incorrectly classifies block heat and estimates device wear."
+
+[metadata]
+category = "Systems Infrastructure and Operations"
+subcategory = "Storage and filesystem administration"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1200 lines) implementing block-level storage tiering analysis without external libraries. Two bugs reside in the orchestrator's value-passing to correct module functions: (1) applying a global classification threshold instead of per-tier thresholds based on each block's current tier placement, and (2) using cumulative write volume instead of interval-specific writes for instantaneous wear rate calculation. Both bugs are invisible on the visible single-tier single-interval configuration because global equals tier-specific thresholds when only one tier exists, and cumulative equals interval writes when the observation window is a single interval. A storage infrastructure engineer working on tiered caching systems would solve this. The data is synthetic, shaped like enterprise SAN trace telemetry."
+solution_explanation = "Fix 1: Replace the global threshold classification with per-tier threshold lookup — build a device-to-tier mapping, then classify each block using its tier's specific hot/warm boundaries from the tier configuration. Fix 2: Change the write_blocks_for_rate selection from 'total_write_blocks' to 'interval_write_blocks' in the device_writes dictionary access, so wear rate reflects only the current measurement interval. Both fixes are 5-8 line changes in pipeline.py."
+verification_explanation = "The verifier substitutes a hidden 3-tier configuration (SSD, HDD, archive) with divergent per-tier thresholds and a measurement interval that excludes early writes. It runs the fixed pipeline and compares output against expected_output.json. Heat distribution must match exactly (128 hot, 128 warm, 32 cold vs buggy 0/288/0). Wear rates must match within 1e-10 tolerance (SSD rate 0.0 vs buggy 2.46e-05). Migration plan counts, tier balance score, and health indicators must all match. The tolerance gap between correct and buggy outputs exceeds 100% on affected fields."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

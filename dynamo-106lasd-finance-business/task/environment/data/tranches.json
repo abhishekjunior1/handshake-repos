@@ -1,0 +1,5 @@
+[
+  {"name": "Senior_A", "balance": 7000000, "coupon_bps": 350, "seniority": 1, "attachment_pct": 20, "detachment_pct": 100},
+  {"name": "Mezz_B", "balance": 2000000, "coupon_bps": 550, "seniority": 2, "attachment_pct": 5, "detachment_pct": 20},
+  {"name": "Equity_C", "balance": 1000000, "coupon_bps": 0, "seniority": 3, "attachment_pct": 0, "detachment_pct": 5}
+]

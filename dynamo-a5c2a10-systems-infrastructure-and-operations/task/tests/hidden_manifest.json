@@ -1,0 +1,88 @@
+{
+  "consumers": [
+    {
+      "consumer_id": "consumer-1",
+      "rate_limit": 2
+    },
+    {
+      "consumer_id": "consumer-2",
+      "rate_limit": 2
+    },
+    {
+      "consumer_id": "consumer-3",
+      "rate_limit": 2
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "task-a",
+      "priority": 1,
+      "payload": {"action": "index_document", "doc_id": "doc-100"},
+      "arrival_tick": 0,
+      "failure_schedule": [true, true, false]
+    },
+    {
+      "task_id": "task-b",
+      "priority": 1,
+      "payload": {"action": "index_document", "doc_id": "doc-101"},
+      "arrival_tick": 0,
+      "failure_schedule": [true, false]
+    },
+    {
+      "task_id": "task-c",
+      "priority": 2,
+      "payload": {"action": "send_notification", "user": "u-42"},
+      "arrival_tick": 0,
+      "failure_schedule": []
+    },
+    {
+      "task_id": "task-d",
+      "priority": 2,
+      "payload": {"action": "send_notification", "user": "u-43"},
+      "arrival_tick": 0,
+      "failure_schedule": [true, true, true, false]
+    },
+    {
+      "task_id": "task-e",
+      "priority": 3,
+      "payload": {"action": "generate_report", "report": "daily"},
+      "arrival_tick": 0,
+      "failure_schedule": [true, false]
+    },
+    {
+      "task_id": "task-f",
+      "priority": 3,
+      "payload": {"action": "generate_report", "report": "weekly"},
+      "arrival_tick": 0,
+      "failure_schedule": []
+    },
+    {
+      "task_id": "task-g",
+      "priority": 1,
+      "payload": {"action": "sync_data", "source": "external-api"},
+      "arrival_tick": 0,
+      "failure_schedule": [true, true, true, true]
+    },
+    {
+      "task_id": "task-h",
+      "priority": 2,
+      "payload": {"action": "cleanup_cache", "region": "us-east"},
+      "arrival_tick": 0,
+      "failure_schedule": [true, false]
+    },
+    {
+      "task_id": "task-i",
+      "priority": 3,
+      "payload": {"action": "archive_logs", "days": 30},
+      "arrival_tick": 0,
+      "failure_schedule": []
+    },
+    {
+      "task_id": "task-j",
+      "priority": 1,
+      "payload": {"action": "validate_schema", "schema": "v2"},
+      "arrival_tick": 0,
+      "failure_schedule": [true, true, true, true, true]
+    }
+  ]
+}

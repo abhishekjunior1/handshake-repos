@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/bond-portfolio-valuation"
+description = "Fix bugs in a bond portfolio valuation pipeline that computes accrued interest, YTM, duration, and convexity."
+
+[metadata]
+category = "regulated_knowledge_work_and_business_operations"
+subcategory = "finance_and_quantitative_workflows"
+model_tested = "GPT-5.4"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 files (~1300 lines) implementing bond analytics from scratch without external libraries. Three bugs are domain-specific data-flow issues in the orchestrator — each module function is individually correct but receives wrong parameter values from the pipeline. The bugs are justified by plausible comments referencing institutional conventions (money-market day-count, annualized yield comparison, same-day settlement). Visible portfolio data uses zero-coupon bonds with annual frequency and T+0 settlement, creating mathematical degeneracy where buggy and correct code produce identical results. Hidden data uses coupon-bearing bonds with semi-annual/quarterly frequencies, T+2 settlement, and mixed day-count conventions that expose all three bugs simultaneously. Additionally, two correct design patterns (dirty-price duration denominator and dirty-MV portfolio weights) look suspicious but are standard fixed-income practice — modifying them breaks output by 15-42%. Data is synthetic, modeled on institutional treasury portfolios. A quantitative analyst or fixed-income portfolio manager would perform this work."
+solution_explanation = "Three string-replacement patches in pipeline.py: (1) Replace hardcoded 'ACT/360' day-count convention with the bond's own day_count_convention field from the JSON input — the money-market convention comment is misleading because accrued interest must use each bond's specified convention. (2) Replace hardcoded frequency=1 (annual compounding) in the YTM call with the bond's actual coupon_frequency — annualizing for comparison is done by multiplying per-period yield by frequency, not by forcing annual compounding. (3) Replace hardcoded settlement offset of 0 with the bond's settlement_days field — T+0 is not appropriate when bonds specify T+2 settlement. Each fix is a single parameter value change in the orchestrator."
+verification_explanation = "The verifier substitutes a hidden portfolio of 5 coupon-bearing bonds (semi-annual, quarterly frequencies; ACT/ACT, 30/360, ACT/360 conventions; T+2 settlement; mid-period accrual) and compares the pipeline output against pre-computed expected values at rel_tol=1e-4. The tolerance band absorbs minor floating-point differences while rejecting buggy outputs that deviate by 1.9% (market value), 50-100% (duration), and 40-100% (YTM) from correct values. Settlement dates are checked as exact strings. All three bugs must be fixed simultaneously — partial fixes still produce significant deviations across multiple test assertions."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

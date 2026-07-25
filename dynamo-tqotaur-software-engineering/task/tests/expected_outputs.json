@@ -1,0 +1,10 @@
+{
+  "01_basic.pbl": "5\n10",
+  "02_bool.pbl": "true\ntrue\nfalse",
+  "03_closure.pbl": "10\n20",
+  "04_ref.pbl": "20",
+  "05_logic.pbl": "false\ntrue\nfalse\ntrue",
+  "06_shared_parent.pbl": "2\n2",
+  "07_bool_in_expr.pbl": "true\nfalse",
+  "08_for_closure.pbl": "10"
+}

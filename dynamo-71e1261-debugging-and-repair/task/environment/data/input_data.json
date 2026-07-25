@@ -1,0 +1,1124 @@
+{
+  "test_suite": "core_services",
+  "runs": [
+    {
+      "run_id": "run_001",
+      "timestamp": "2024-02-01T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 48.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 47.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 50.8,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 96.7,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 104.7,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_002",
+      "timestamp": "2024-02-02T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 47.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 52.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 50.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 104.4,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 98.3,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_003",
+      "timestamp": "2024-02-03T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 49.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 50.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 45.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 96.4,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 104.7,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_004",
+      "timestamp": "2024-02-04T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 52.8,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 48.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 48.8,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 97.7,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 95.3,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_005",
+      "timestamp": "2024-02-05T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 51.1,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 50.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 47.8,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 96.4,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 100.5,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_006",
+      "timestamp": "2024-02-06T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 46.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 45.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 46.1,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 100.0,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 96.9,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_007",
+      "timestamp": "2024-02-07T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 50.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 48.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 47.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 97.4,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 101.3,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_008",
+      "timestamp": "2024-02-08T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 46.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 50.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 45.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 96.0,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 102.2,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_009",
+      "timestamp": "2024-02-09T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 45.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 50.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 47.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 101.7,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 101.5,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_010",
+      "timestamp": "2024-02-10T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 48.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 52.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 49.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 100.9,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 99.8,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_011",
+      "timestamp": "2024-02-11T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 48.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 48.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 50.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 101.9,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 97.7,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_012",
+      "timestamp": "2024-02-12T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 47.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 50.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 45.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 104.6,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 104.7,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_013",
+      "timestamp": "2024-02-13T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 51.8,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 48.1,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 49.1,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 97.5,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 95.7,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_014",
+      "timestamp": "2024-02-14T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 46.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 49.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 46.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 98.1,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 99.4,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_015",
+      "timestamp": "2024-02-15T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 51.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 52.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 49.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 97.0,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 99.7,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_016",
+      "timestamp": "2024-02-16T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 50.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 48.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 50.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 96.7,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 97.3,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_017",
+      "timestamp": "2024-02-17T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 50.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 46.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 49.1,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 98.1,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 97.2,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_018",
+      "timestamp": "2024-02-18T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 47.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 47.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 47.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 98.4,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 98.7,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_019",
+      "timestamp": "2024-02-19T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 52.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 46.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 47.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 103.4,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 101.3,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_020",
+      "timestamp": "2024-02-20T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 47.8,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 51.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 45.8,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 102.0,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 98.3,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_021",
+      "timestamp": "2024-02-21T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 47.1,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 45.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 46.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 97.4,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 96.4,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_022",
+      "timestamp": "2024-02-22T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 47.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 51.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 46.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 98.0,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 97.9,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_023",
+      "timestamp": "2024-02-23T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 48.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 45.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 45.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 100.0,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 104.1,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_024",
+      "timestamp": "2024-02-24T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 45.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 50.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 51.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 99.7,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 99.8,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_025",
+      "timestamp": "2024-02-25T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 49.7,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 49.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 49.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 98.1,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 98.4,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_026",
+      "timestamp": "2024-02-26T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 46.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 45.1,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 46.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 98.3,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 100.0,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_027",
+      "timestamp": "2024-02-27T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 46.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 50.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 48.2,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 101.5,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 104.8,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_028",
+      "timestamp": "2024-02-28T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 46.4,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 47.3,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 49.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 99.0,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 99.7,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_029",
+      "timestamp": "2024-02-01T10:00:00",
+      "environment": "ci_prod_01",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 46.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 51.5,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 45.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 98.2,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 103.2,
+          "error_type": "assertion"
+        }
+      ]
+    },
+    {
+      "run_id": "run_030",
+      "timestamp": "2024-02-02T10:00:00",
+      "environment": "ci_prod_02",
+      "results": [
+        {
+          "test_id": "default.test_auth_login",
+          "status": "passed",
+          "duration_ms": 48.9,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_auth_token_refresh",
+          "status": "passed",
+          "duration_ms": 50.6,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_cache_invalidation",
+          "status": "passed",
+          "duration_ms": 50.0,
+          "error_type": null
+        },
+        {
+          "test_id": "default.test_db_connection_pool",
+          "status": "failed",
+          "duration_ms": 100.5,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "default.test_db_query_timeout",
+          "status": "failed",
+          "duration_ms": 103.1,
+          "error_type": "assertion"
+        }
+      ]
+    }
+  ],
+  "config": {
+    "decay_factor": 1.0,
+    "window_size": 10,
+    "correlation_threshold": 0.7,
+    "flip_rate_threshold": 0.3,
+    "timing_cv_threshold": 0.4,
+    "deterministic_threshold": 0.8,
+    "confidence_method": "harmonic"
+  }
+}

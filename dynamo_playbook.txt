@@ -1,0 +1,2121 @@
+# ⚠️ CRITICAL: QUALITY GATE (July 2026)
+# You can complete up to 1 task every 99 hours.
+# After 1 scored task with average quality score >= 4, you unlock full access.
+# THIS MEANS: Every single task MUST be perfect. No experiments, no "let's see if it passes."
+# A score of 3 or below = throttled indefinitely. Treat every submission as your ONLY shot.
+#
+# QUALITY SCORE MAPPING:
+# 5 = Perfect, no fixes needed → Accept
+# 4 = Good, could be better but sendable → Accept
+# 3 = Not quite there, needs fixes → Revise (BAD — keeps you throttled)
+# 2 = Needs rewrite from scratch → Reject (VERY BAD)
+# 1 = Spam/misaligned → Reject (CATASTROPHIC)
+
+# DO NOT PUSH unless you are CONFIDENT it will score 4+.
+# ============================================================================
+
+# DYNAMO TASK BUILDING PLAYBOOK
+# ================================
+# This file contains everything needed to build, test, and submit Dynamo tasks.
+#
+# SOURCE OF TRUTH HIERARCHY:
+# 1. /Users/ABKUMAR2501/Desktop/handshake/project_dynamo_explaination.txt — THE OFFICIAL DOC
+# 2. CI rubric behavior (what actually passes/fails in automated checks)
+# 3. This playbook — personal notes/patterns, NOT authoritative
+#
+# If this playbook contradicts the official doc, THE DOC WINS.
+# If the CI rubric contradicts the doc, FLAG IT TO RITESH.
+
+## PROJECT REQUIREMENTS
+- Category/subcategory pre-assigned per task repo
+- task.toml MUST have: artifacts (top level), [task] name + description, [metadata] all fields, [verifier], [agent], [environment] with all fields
+- instruction.md: max 1,500 tokens, absolute /app paths, MUST end with "You have N seconds to complete this task. Do not cheat by using online solutions or hints specific to this task." (N = [agent].timeout_sec), no markdown headers, prompt-style
+- Dockerfile: FROM public.ecr.aws/docker/library/python:3.13-slim-bookworm@sha256:01f42367a0a94ad4bc17111776fd66e3500c1d87c15bbd6055b7371d39c124fb
+- environment/.dockerignore with "solution", "tests", ".git", "__pycache__", "*.pyc"
+- .gitignore with "task/jobs/" and "jobs/"
+- All test functions need docstrings
+- task.toml explanations MUST match actual code (write code first, metadata second)
+- Oracle must score 1.0, nop must score < 1.0
+- No BUG comments, no revealing docstrings, no unused variables that signal bugs
+- Pass@5: agent must fail at least 3 of 5 attempts
+
+## THE WINNING FORMULA (proven 5/5 times)
+1. Multi-file system (500+ lines, 5-6 modules)
+2. 3-4 bugs across different files that COMPOUND
+3. Visible data masks ALL bugs (pipeline runs correctly on it)
+4. Hidden data (in tests/) triggers all bugs simultaneously
+5. Bugs require DOMAIN-SPECIFIC SEMANTIC understanding, not code reading
+6. NO docstring hints, NO unused variables, NO code smells
+7. Each bug is 1-3 lines to fix
+8. Agent fixes what it CAN see → thinks it's done → hidden data catches the rest
+
+## WHAT MAKES BUGS HARD (models can't find these)
+- Ordering/sequencing bugs (loss before principal, dedup before transform)
+- Stateful interaction bugs (state propagation across retries, cache invalidation)
+- Domain convention bugs (upsert vs update, SCD temporal routing, palindromic masking)
+- Boundary condition bugs (<= vs < at exact timestamp match)
+- Registration order vs alphabetical (invisible when both give same result)
+
+## WHAT MAKES BUGS EASY (models find these instantly)
+- int() vs round() (too well-known)
+- Unused parameter (obvious code smell)
+- Docstring contradicts code (trivial diff)
+- First-match vs last-match (textbook)
+- Longest-prefix matching (textbook networking)
+- Null handling with .get() (common Python gotcha)
+- Any standard CS algorithm bug (cycle detection, sorting, etc)
+
+## SELF-PLAY PROMPT TEMPLATE
+```
+Set up 7 independent solve attempts in /tmp/selfplay/{NAME}. The task repo is at {REPO_PATH}/task/
+
+For each attempt (attempt_1 through attempt_7), copy ONLY task/environment/data/* and task/instruction.md into /tmp/selfplay/{NAME}/attempt_N/. Do NOT copy task/solution or task/tests.
+
+Spawn 7 subagents in parallel, each running opus 4.8 at max effort. Each reads only its instruction.md and the code files ({LIST_OF_FILES}) and tries to independently find and fix the bugs by editing files in its own workspace. No hints, no peeking at solution or tests.
+
+When each finishes, verify it: copy {REPO_PATH}/task/tests/{HIDDEN_FILE} into that attempt's workspace as {VISIBLE_FILE_NAME}, run python3 {MAIN_SCRIPT}, then compare the resulting {OUTPUT_FILE} against {REPO_PATH}/task/tests/expected_output.json (exact JSON match on all fields).
+
+Report how many of the 7 passed, and for each failure tell me which fields differ.
+```
+
+## READING SELF-PLAY RESULTS
+- 0-2/7 = GOOD, push it
+- 3-4/7 = borderline, might pass CI but risky
+- 5-7/7 = TOO EASY, redesign bugs
+
+## BUILD PROMPT TEMPLATE (for new Kiro session)
+```
+Build a Dynamo task at {REPO_PATH}/task/
+
+Category: {CATEGORY}
+Subcategory: {SUBCATEGORY}
+
+Build a 500+ line multi-file {DESCRIPTION} (6 modules) in task/environment/data/:
+1. {module1} (~100 lines) - {purpose}
+2. {module2} (~100 lines) - {purpose}
+3. {module3} (~80 lines) - {purpose}
+4. {module4} (~80 lines) - {purpose}
+5. {module5} (~80 lines) - {purpose}
+6. {module6} (~60 lines) - {purpose}
+
+{N} BUGS (no comments, no hints, no unused variables):
+
+Bug 1 ({file}): {description}. Visible data {why masked}. Hidden data {what triggers it}.
+Bug 2 ({file}): {description}. Visible data {why masked}. Hidden data {what triggers it}.
+Bug 3 ({file}): {description}. Visible data {why masked}. Hidden data {what triggers it}.
+
+Also create:
+- task/environment/data/{visible_data_file} — visible config/data (simple, doesn't trigger bugs)
+- task/tests/{hidden_data_file} — hidden data (triggers all bugs)
+- task/tests/expected_output.json — correct output from fixed code on hidden data
+- task/tests/test.sh — copies hidden data, runs pipeline, runs pytest
+- task/tests/test_outputs.py — pytest checks with docstrings on every function
+- task/solution/solve.py — patches all bugs then runs the pipeline
+- task/solution/solve.sh — calls solve.py
+- task/instruction.md — max 1,500 tokens, absolute /app paths, MUST end with "You have N seconds to complete this task. Do not cheat by using online solutions or hints specific to this task." (N = [agent].timeout_sec), no markdown header
+- task/task.toml — full metadata with category="{cat}", subcategory="{subcat}", model_tested=LEAVE AS PRE-SEEDED (check repo main branch), agent_tested=LEAVE AS PRE-SEEDED, task_objective=["fix","debug"], artifact_type=["codebase","generated_output_artifact"], expert_time_estimate_hours=5.0, [verifier] timeout_sec=120, [agent] timeout_sec=3600, [environment] build_timeout_sec=600, cpus=1, memory_mb=2048, storage_mb=10240, gpus=0, allow_internet=true, mcp_servers=[]
+- task/environment/Dockerfile — FROM public.ecr.aws/docker/library/python:3.13-slim-bookworm@sha256:01f42367a0a94ad4bc17111776fd66e3500c1d87c15bbd6055b7371d39c124fb, pip install pytest==8.4.1 pytest-json-ctrf==0.3.5, COPY data files to /app/
+- task/environment/.dockerignore — contains "solution", "tests", ".git", "__pycache__", "*.pyc"
+- .gitignore — contains "task/jobs/" and "jobs/"
+
+IMPORTANT: task.toml difficulty_explanation, solution_explanation, verification_explanation MUST match actual bugs. Write code FIRST then metadata.
+
+Test: harbor run -p . --agent oracle = 1.0, --agent nop = < 1.0. Do NOT push.
+```
+
+## COMMON CI FAILURES AND FIXES
+| Failure | Fix |
+|---------|-----|
+| instruction_concision | Keep under 1,500 tokens; keep timeout line (required by static check) |
+| task_toml_schema | Remove unrecognized fields (keywords, network_mode) |
+| no_extraneous_files | Remove jobs/ dir, add .gitignore |
+| test_instruction_alignment | Add docstrings to test functions |
+| unambiguous | Add docstring disclosing convention (but NOT revealing bug) |
+| essential_difficulty | Expand codebase to 500+ lines, make bugs domain-specific |
+| code_dependent | Must be 500+ lines, not solvable by reading alone |
+| difficulty_explanation_quality | Add data provenance + real-world audience sentence |
+| verification_explanation_quality | Must match actual hidden data file names/contents |
+| solution_explanation_quality | Must match actual solve.py code |
+| verifiable | Add negative test cases (invalid inputs that must be rejected) |
+
+## TASK.TOML TEMPLATE
+```toml
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/short-name"
+description = "One line description."
+
+[metadata]
+# ⚠️ ALWAYS run `git show main:task/task.toml` to get the EXACT pre-seeded values.
+# Different repos have different values — NEVER assume GPT-5.4 or Opus-4.8.
+# category/subcategory may use Title Case with spaces (not always snake_case).
+category = ""                      # PRE-SEEDED — copy exactly from main branch
+subcategory = ""                   # PRE-SEEDED — copy exactly from main branch
+model_tested = ""                  # PRE-SEEDED — copy exactly from main branch (could be "Opus-4.8" OR "GPT-5.4")
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "..."
+solution_explanation = "..."
+verification_explanation = "..."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
+```
+
+## INSTRUCTION.MD TEMPLATE
+```
+A {system_type} at `/app/{main_file}` does {what}. It uses modules `/app/{mod1}`, `/app/{mod2}`, `/app/{mod3}`, and `/app/{mod4}`.
+
+Run it with `python3 /app/{main_file}`. It reads `/app/{input_file}` and writes `/app/output.json`.
+
+The {system_type} produces correct output on the current {input} but has bugs that cause incorrect results on other inputs. Find and fix the bugs so the {system_type} handles all valid inputs correctly.
+
+Do not rewrite from scratch — preserve the existing module structure. The fixed {system_type} will be tested on different {input} than the one at `/app/{input_file}`.
+
+Output: `/app/output.json` — {schema description}.
+```
+
+
+## CURRENT PROJECT STATUS (as of July 3, 2026)
+
+### ACCEPTED & SUBMITTED ON PLATFORM (5 new tasks this session):
+| # | Task | Repo Path | Category | Task ID |
+|---|------|-----------|----------|---------|
+| 1 | Biostatistics (t-tests, Holm, Cohen's d) | dynamo-c2d67d8-data-science-and-reporting | Data Science / Statistical Inference | 2a5cfb65-d90c-4173-8df8-02f0ae67821e |
+| 2 | Survival Analysis (KM, log-rank, Cox) | dynamo-a1b1498-data-science-and-reporting | Data Science / Statistical Inference | f07ac1bf-bd60-41c7-8c4c-e16ebbc3b788 |
+| 3 | ODE Solver (RK45, step control, stiffness) | dynamo-97ff2f3-scientific-computing-and-domain-science | Scientific Computing / Numerical Methods | b4c780c1-1523-4686-93cc-37957e5e6b79 |
+| 4 | Meta-analysis (DerSimonian-Laird, Egger, subgroups) | dynamo-92a7b36-data-science-and-reporting | Data Science / Statistical Inference | d2b77d99-77b9-408e-9a2c-8906bced7e71 |
+| 5 | Streaming ETL (dedup, windowing, decay) | dynamo-26de3f8-data-processing-and-etl | Data Processing / Streaming | 0fe40508-18bc-4da0-a15d-d9df3648a31c |
+
+### IN PROGRESS (being built by other Kiro sessions):
+| # | Task | Repo Path | Category | Task ID |
+|---|------|-----------|----------|---------|
+| 6 | Bayesian MCMC diagnostics | dynamo-6ffdcbb-data-science-and-reporting | Data Science / Statistical Inference | 3ef5aa5d-54eb-4c8f-88ab-5763207859b6 |
+| 7 | Robust estimation | dynamo-9f358eb-scientific-computing-and-domain-science | Scientific Computing / Numerical Methods | — |
+
+### PREVIOUSLY ACCEPTED (from before this session):
+| # | Task | Repo Path | Category |
+|---|------|-----------|----------|
+| — | Security (SAUTH packet debug) | dynamo-09w5cpd-security | Security / Reverse Engineering |
+| — | Finance (CDO cashflow debug) | dynamo-106lasd-finance-business | Regulated Knowledge / Finance |
+| — | Debugging (Event processor) | dynamo-0yc90ko-debugging-repair | Debugging / Test Failure Repair |
+| — | Pipeline (DAG orchestrator) | dynamo-ca174a5-debugging-and-repair | Debugging / Pipeline Orchestration |
+| — | ETL (Data pipeline) | dynamo-7270f6c-data-processing-and-etl | Data Processing / ETL Pipelines |
+| — | Pebble-fix (Interpreter) | dynamo-tqotaur-software-engineering | Software Eng / Compilers & Interpreters |
+| — | Networking (Packet processing) | dynamo-60027f0-systems-infrastructure-and-operations | Systems Infra / Networking |
+
+### ALL REPOS ARE AT:
+/Users/ABKUMAR2501/Desktop/handshake/{repo-name}/
+
+### GITHUB ORG:
+- Upstream: handshake-project-dynamo
+- Fork: abhishekjunior1
+- Branch: submission (always)
+- PRs: always PR #1 per repo
+
+### KEY COMMANDS:
+- Test locally: cd task/ && harbor run -p . --agent oracle && harbor run -p . --agent nop
+- Push: git add -A && git commit -m "message" && git push
+- Create PR: gh pr create --repo handshake-project-dynamo/{repo} --title "Task: ..." --body "..."
+- Check CI: gh pr checks 1 --repo handshake-project-dynamo/{repo}
+- Check label: gh pr view 1 --repo handshake-project-dynamo/{repo} --json labels -q '.labels[].name'
+
+
+## ADDITIONAL KNOWLEDGE (learned from experience, not in official docs)
+
+### Static Check Gotchas (fail in <20 seconds):
+- [task].description MUST exist and be non-empty (even though rubric reviewer once said to remove it)
+- [task].description and [task].name are the ONLY allowed fields in [task] section — no keywords, no tags there
+- artifacts = [...] MUST be ABOVE the [task] section (top of file)
+- task/jobs/ directory must NEVER be committed — always add to .gitignore
+- reward.txt must not be pre-existing in the repo
+- environment/ needs .dockerignore if it has subdirectories
+- allow_internet = true is REQUIRED (static check fails without it)
+
+### Rubric Review Gotchas (fail in ~4 min):
+- instruction.md MUST NOT have "You have N seconds..." timeout line — rubric calls it TB3 boilerplate
+- instruction.md MUST NOT have markdown headers (#)
+- task.toml difficulty_explanation MUST include "data provenance" (synthetic/real) AND "real-world audience" (who does this work)
+- task.toml explanations MUST match actual code/solve.py — the #1 cause of failure is metadata describing different bugs than what's shipped
+- Test functions MUST have docstrings
+- If the verifier checks an exact string, that string must be discoverable somewhere the agent can read
+- ALL bugs must be "fair" — discoverable from code structure, naming, or domain conventions
+- description and keywords do NOT go under [metadata] — only specific recognized fields
+
+### Pass@2/Pass@5 Gotchas:
+- If ALL trials pass → "too easy" → blocked
+- If a trial fails due to "task/verifier issue" (agent's valid approach rejected by verifier) → blocked
+- Need at least 1 VALID FAIL (agent genuinely got it wrong, not a spec gap)
+- The CI agent has 1 HOUR and can RUN code iteratively — much more powerful than folder-based self-play
+- Self-play 0/7 ≈ real CI 0-2/5 (good)
+- Self-play 2/7 ≈ real CI 1-3/5 (borderline, might fail)
+- Self-play 5+/7 = will definitely fail CI
+
+### What the CI Agent Does That Self-Play Doesn't:
+- Runs the code on visible data and observes output
+- Makes changes, re-runs, observes differences
+- Can generate its own test inputs to probe behavior
+- Has access to the full Docker environment
+- Can iterate for up to 1 hour (self-play agents do one pass)
+
+### Category/Subcategory Format:
+- MUST be lowercase snake_case (e.g., "systems_infrastructure_and_operations")
+- Must match .dynamo/diversity-taxonomy.toml exactly
+- Common ones: software_engineering, debugging_and_repair, security, data_processing_and_etl, systems_infrastructure_and_operations, regulated_knowledge_work_and_business_operations
+
+### PR Management:
+- NEVER mention "self-play" in PR title/body/commits
+- NEVER mention self-play results, scores, or agent performance in PR descriptions
+- PR title format: "Task: short description"
+- Don't push more than needed — 6 pass@ runs per task per 24 hours limit
+- Each push triggers a new CI run — iterate LOCALLY first
+- gh pr checks shows latest run status
+- gh pr view --comments shows feedback
+
+### The [task].description Trap:
+- The rubric reviewer once told us to REMOVE description (said it wasn't in Harbor schema)
+- The static check REQUIRES it to exist and be non-empty
+- ALWAYS keep it. If rubric says remove it, IGNORE that and keep it anyway.
+- This has caused us multiple failed runs. Just always have: description = "one line summary"
+
+
+## DATA SCIENCE / STATISTICAL ANALYSIS — PROVEN PATTERNS (July 2026)
+
+### WHAT WORKS (0/7 self-play every time):
+1. **Domain convention bugs** — not code patterns, not textbook formulas
+2. **Small-n masking** — bugs invisible with n=50, devastating with n=5-8
+3. **Comparison count masking** — 1 comparison masks multi-comparison bugs
+4. **Weight uniformity masking** — equal weights mask wrong-weight bugs
+5. **Heterogeneity masking** — homogeneous data masks variance estimator bugs
+
+### ACCEPTED PIPELINES:
+| Pipeline | Bugs | Why 0/7 |
+|----------|------|---------|
+| Biostatistics (t-tests, Holm, Cohen's d) | n vs n-1 percentile, Holm sort, Bessel's correction | Convention differences invisible on visible data |
+| Survival (KM, log-rank, Cox) | Censoring-before-event, n³ vs n²(n-1) variance, Breslow batching | Tied-event handling only matters with ties |
+| Meta-analysis (DerSimonian-Laird, Egger, prediction intervals) | C formula parenthesization, WLS weights inverted, t df off-by-one | Uniform weights + large k mask everything |
+
+### BUG DESIGN PRINCIPLES FOR STATS PIPELINES:
+1. **Never use docstring-contradicts-code** — models catch this instantly
+2. **Never use well-known formulas** (atol+rtol*|y|, 1/(p+1) exponent) — models memorize these
+3. **Always hide bugs in helper functions** with plausible docstrings matching buggy code
+4. **Make the bug look like a valid alternative** — not an error, just a different convention
+5. **Compound bugs across modules** — fixing any 2 of 3 still fails
+6. **Visible data should make the bug MATHEMATICALLY EQUIVALENT** — not just "close"
+
+### VISIBLE DATA MASKING STRATEGIES:
+- **Uniform weights** → any weight formula gives same result
+- **Single comparison** → multi-comparison correction is identity
+- **Large n** → n, n-1, n-2 differences vanish
+- **Symmetric distributions** → ordering doesn't matter
+- **Q < df** → tau² = 0 regardless of estimation method
+- **Equal SEs** → WLS = OLS (wrong weights don't matter)
+
+### HIDDEN DATA TRIGGERING STRATEGIES:
+- **Small n (5-8)** → Bessel's, df differences amplified
+- **Multiple comparisons (3+)** → correction methods diverge
+- **Heterogeneous SEs** → weight formula matters enormously
+- **Asymmetric data** → ordering/convention bugs surface
+- **Q >> df** → heterogeneity estimator formula fully exercised
+
+### WHAT FAILS (models solve these — DON'T USE):
+- ODE solver internals (RK45 error scaling, step exponents) — 5-7/7 solve
+- Inverted boolean comparisons (< vs >) — trivial to spot
+- Well-documented algorithms (KM formula, standard error scaling)
+- Any bug that a model can fix by "knowing the right formula from scipy docs"
+
+### PIPELINE STRUCTURE TEMPLATE (proven):
+```
+pipeline.py (~150 lines) — orchestrator, calls all modules
+data_loader.py (~100 lines) — JSON loading, schema validation
+[domain_module_1].py (~150 lines) — Bug 1 here
+[domain_module_2].py (~150 lines) — Bug 2 here  
+[domain_module_3].py (~150 lines) — Bug 3 here
+report_generator.py (~130 lines) — output formatting
+```
+Total: 800-1800 lines across 6-7 modules
+
+## INSTRUCTION.MD REQUIREMENTS (from /Users/ABKUMAR2501/Desktop/handshake/project_dynamo_explaination.txt — SOURCE OF TRUTH):
+- Write it yourself as a domain expert. Do NOT generate with LLM.
+- It's a prompt, not a document — no title, no section headers, no markdown, no roleplay.
+- Use absolute paths (e.g. /app/output.txt), never relative paths.
+- Be explicit about every expected output file and its exact format/schema.
+- Include everything the agent needs to solve the task — and nothing more.
+- Keep it concise (<= 1500 tokens).
+- Per doc: MUST end with "You have N seconds to complete this task. Do not cheat by using online solutions or hints specific to this task." (N = [agent].timeout_sec)
+- A static check (check-instruction-suffix) enforces this — PR fails without it.
+- ⚠️ NOTE: CI rubric once flagged this as "TB3 artifact" on Task 2 and Task 3 (July 3, 2026).
+  This appears to be a rubric bug — the static check is the hard gate and REQUIRES the line.
+  RESOLUTION: ALWAYS include the timeout line. Flag the rubric inconsistency with Ritesh separately.
+- State the goal and required outputs; skip backstory, roleplay, and filler.
+
+## TASK.TOML REQUIREMENTS (from official doc):
+- artifacts = [...] MUST be at TOP of file (above first [section])
+- [task].name = "dynamo/short-name" — org/name format, kebab-case, <=3 words
+- [task].description = "one line summary" — REQUIRED, non-empty
+- [metadata].category and subcategory are PRE-SEEDED — DO NOT EDIT
+- [metadata].model_tested and agent_tested — leave as pre-seeded values (DO NOT CHANGE — repo may have "Opus-4.8" or "GPT-5.4", keep whatever was seeded)
+- [metadata].task_objective = [...] — from diversity-taxonomy.toml, lowercase snake_case
+- [metadata].artifact_type = [...] — from diversity-taxonomy.toml, lowercase snake_case
+- [metadata].expert_time_estimate_hours — non-zero, plausible
+- [metadata].difficulty_explanation — why hard
+- [metadata].solution_explanation — approach + insights (must match solve.py)
+- [metadata].verification_explanation — how tests verify (must justify tolerances)
+- [verifier].timeout_sec — seconds for verifier to run
+- [agent].timeout_sec — seconds agent gets (MUST match instruction.md timeout line)
+- [environment] — build_timeout_sec, cpus, memory_mb, storage_mb, gpus, allow_internet=true, mcp_servers=[]
+
+## DIFFICULTY BAR (from official doc — pass@5):
+- Agent runs 5 times with GPT-5.4 + Terminus-2
+- Must produce at least 3 VALID failures out of 5
+- Acceptance: 0-2/5 pass (accepted)
+- Rejection: 3-5/5 pass (too easy)
+- "Valid failure" = agent finished and got answer WRONG (not timeout/error)
+- Timeouts do NOT count as valid failures
+- 0/5 valid failures = strongest result (fully stumped)
+- 3600 seconds is the HARD MAXIMUM timeout
+
+## DOCKERFILE REQUIREMENTS (from official doc):
+- Must use allowlisted base image pinned by digest (@sha256:...)
+- Never COPY solution/ or tests/ into image
+- Pin pip/npm to exact versions; do NOT pin apt packages
+- Bake test dependencies (pytest==8.4.1, pytest-json-ctrf==0.3.5) into the single Dockerfile
+- Put input data in environment/data/ and COPY to /app
+- Add .dockerignore with "solution"
+- tests/ is added ONLY at verify time — never present during agent run
+
+## WHAT REVIEWERS CHECK (from official doc):
+1. Everything gels together — instruction, solution, tests, Dockerfile describe same task
+2. Genuinely solvable — solve.sh actually solves the stated problem
+3. Genuinely hard for an expert — not solvable by average undergrad in few days
+4. Realistic — would a real practitioner be paid for this
+5. Novel — not a textbook/well-known problem
+6. Not over-directed — doesn't hand over method
+7. Unambiguous — no sound expert approach that would FAIL verification
+8. No hidden knowledge — no constants/facts agent was never given
+9. No answer leakage — no docstrings/comments revealing bug/fix
+10. Tolerances not too tight or loose
+11. Tests match instruction 1:1
+12. Deterministic — fixed seeds/inputs, no randomness
+13. Solution genuinely computes (not hardcoded)
+14. Pass@5 in 0-2 band with valid failures
+15. Metadata labels correct
+
+## INSTRUCTION.MD TEMPLATE (proven to pass rubric):
+```
+A [system] pipeline at `/app/pipeline.py` [does what]. It uses modules `/app/[mod1]`, `/app/[mod2]`, `/app/[mod3]`, `/app/[mod4]`, `/app/[mod5]`, and `/app/[mod6]`.
+
+Run it with `python3 /app/pipeline.py`. It reads `/app/[input].json` and writes `/app/output.json`.
+
+The pipeline produces correct output on the current [input] but has bugs that cause incorrect [results] on other [inputs]. Find and fix the bugs so the pipeline handles all valid [inputs] correctly.
+
+Do not rewrite from scratch — preserve the existing module structure and [methods]. The fixed pipeline will be tested on a different [input] than the one at `/app/[input].json`.
+
+Output: `/app/output.json` — [schema description].
+```
+
+### SELF-PLAY CORRELATION TO CI:
+- 0/7 self-play → CI pass2 typically passes (agent fails to solve in 1h)
+- 2/7 self-play → borderline, might pass CI
+- 5+/7 self-play → CI will DEFINITELY fail (agent solves it)
+- The CI agent can RUN code iteratively for 1 hour — harder than static self-play
+
+
+## META-ANALYSIS TASK — KEY FINDINGS (July 3, 2026)
+
+### What Worked (0/7 self-play):
+- **Data-flow bug across modules** — the killer. Passing overall tau² to subgroups instead of re-estimating per-subgroup. Models review functions individually and miss cross-module value propagation.
+- **Misleading code comment** — "common heterogeneity assumption" made the bug look intentional. ALL 7 agents accepted it as a design choice.
+- **Helper function with plausible docstring** — _compute_egger_weights hides the wrong formula behind a reasonable-sounding explanation about "precision proportional to variance contribution."
+
+### What Models Found (7/7 found these):
+- Egger weights (normalized precision vs 1/SE²) — found by all because inverse-variance weighting is textbook
+- Prediction interval df (k-1 vs k-2) — found by all because the function is self-contained and models know Higgins 2009
+
+### Key Design Decisions:
+1. **tau²=0 on visible data** — this is what makes Bug (c) invisible. When tau²=0, RE weights = FE weights regardless of which tau² you use. The bug ONLY matters when tau² > 0.
+2. **Uniform SEs on visible data** — makes Egger weight bug invisible (any weight scheme gives same regression with uniform weights).
+3. **Large k on visible data (k=15)** — makes df bug invisible (t(14) ≈ t(13)).
+4. **Small k on hidden data (k=5)** — amplifies df difference AND makes the overall vs subgroup tau² differ more.
+5. **Widely varying SEs on hidden (0.12-2.5)** — creates massive weight heterogeneity triggering all bugs.
+
+### Proposal Gotchas:
+- Platform reviewer checks if your data description is MATHEMATICALLY POSSIBLE. "5 studies, 3 subgroups, all k≥2" is impossible (needs 6+). Be precise about actual structure.
+- Must disclose statistical conventions in the proposal to pass "well-specified" criterion — but this doesn't reduce difficulty if the hard bug is a data-flow bug (knowing WHAT is correct doesn't tell you WHERE it's wrong).
+- Must explain tolerance calibration: WHY the band rejects buggy outputs (20-600% off) while accepting valid implementations.
+
+### Bug Difficulty Hierarchy (from this task):
+1. **HARDEST: Cross-module data-flow bugs** — 0/7 found. The function is correct; the VALUE passed to it is wrong.
+2. **MEDIUM: Helper function with wrong formula + misleading docstring** — 7/7 found (still too easy alone)
+3. **EASIEST: Single variable assignment (df=k-1 vs k-2)** — 7/7 found (trivial grep)
+
+### Lesson: The ONLY reliable way to stump models is BUG TYPE (c) — state propagation / data flow across modules. Formula bugs (a) and (b) are always found regardless of how well you hide them.
+
+
+## PROPOSAL TEMPLATE (proven format — concise, bullet points):
+
+```
+Category: [pre-filled, don't edit]
+Sub-Category: [pre-filled, don't edit]
+
+Task: [One sentence describing the system + what's wrong + why it's hard to find]
+
+Difficulty:
+- Pipeline spans N modules implementing [domain] without external libraries
+- N bugs are domain-specific [convention/data-flow] issues — not formula errors or code smells
+- Bug 1: [description, where hidden, why it looks correct]
+- Bug 2: [description, where hidden, why it looks correct]
+- Bug 3: [description, where hidden, why it looks correct]
+- Each function is correct in isolation — bugs are in [what makes them hard]
+- Visible data [why it masks all bugs]
+- Hidden data [what triggers all bugs]
+- A [professional type] would do this work — [why it's valuable]
+- Data is synthetic, shaped like [real-world scenario]
+
+Approach:
+- Solver must understand [domain conventions] that the code violates
+- Each fix is 1-5 lines, but locating them requires [what makes it multi-step]
+- Must recognize [specific pattern] that produces valid-looking output on [visible data type]
+- Estimated expert time: ~N focused hours for a qualified [expert type]
+
+Verification:
+- Agent produces /app/output.json with [specific fields]
+- Verifier substitutes hidden data, runs fixed pipeline, compares against expected values at rel_tol=X
+- The band absorbs [what variation] while rejecting [what errors, how big they are]
+- All N bugs must be fixed simultaneously — partial fixes still fail
+- Pipeline is fully deterministic, no randomness
+
+Category justification:
+- Performs [specific methods] — core [domain] methodology
+- Bugs require [domain] knowledge, not programming skill
+- Output is a [what kind of report] for [real-world use]
+```
+
+## PROPOSAL RULES (from official doc):
+- Proposal is judged on the IDEA, not polished prose
+- No solution or test code — just describe the concept
+- Must pass automated platform review BEFORE building
+- Common rejection reasons: vague difficulty, no key insight, no tolerance justification, no time estimate
+- Must be: hard for expert, requires terminal work, not textbook, bounded, deterministically checkable, graded on result not method
+- DO NOT describe bug symptoms in the instruction (that goes in proposal only for the reviewer)
+- DO NOT mention CI pass@5 results, self-play scores, or agent performance in the proposal
+
+
+## ANALYTICAL QUERY ENGINE TASK — KEY FINDINGS (July 4-5, 2026)
+
+### ACCEPTED: dynamo-3c33b63-data-querying-and-databases
+- Task ID: 82e54f5b-8a7c-48cb-ba9d-4b270b371aa1
+- Category: Data Querying and Databases / Analytical queries
+- CI result: pass2 PASS, trials PASS (0/5 solved)
+
+### NEW DESIGN PATTERN: "Silent SQL Semantic Pitfalls"
+- Bugs that produce WRONG VALUES silently — no errors, no crashes, plausible-looking output
+- Agent CANNOT detect bugs by running code — must independently KNOW the correct answer
+- Bugs are STANDARD PATTERNS applied in the wrong context (not formula errors)
+
+### The 3 Bugs That Worked (0/5 CI):
+| Bug | Pattern | Masking | Why Hard |
+|-----|---------|---------|----------|
+| Fan-out aggregate | Join 1:many THEN aggregate → inflates COUNT/SUM | 1 child per parent = no inflation | Agent sees join-then-aggregate as normal SQL pattern |
+| RANGE vs ROWS default | Implicit RANGE frame includes peer rows in running total | Unique ORDER BY values = no ties = RANGE==ROWS | Obscure SQL standard default, no frame specification looks normal |
+| ON-WHERE contradiction | Filter in WHERE after LEFT JOIN kills outer rows | All rows have matches = no outer rows to lose | WHERE is the standard place for filters, looks normal |
+
+### KEY INSIGHT: "Data Property Bugs"
+- Bugs only produce wrong answers when DATA has specific properties (cardinality, ties, missing matches)
+- These properties are ABSENT from visible data → bugs are mathematically invisible
+- Agent must reason about what happens with DIFFERENT data — can't just test on visible data
+- This is fundamentally different from code-structure bugs that are findable via inspection
+
+### WHAT FAILED BEFORE (7/7 or 2/2 solved):
+- Ordering bugs (window before WHERE) — agent creates test input with WHERE, observes wrong behavior
+- Wrong-field bugs (right.col for left.col) — agent creates join with different values, sees wrong output
+- HAVING on source rows — agent uses aggregate alias in HAVING, sees it fail
+- ALL bugs detectable by "run code with crafted input and observe error"
+
+### WHAT WORKS:
+- Bugs where the OUTPUT LOOKS CORRECT unless you independently compute the right answer
+- Bugs where the code pattern is STANDARD (join-then-aggregate, no explicit frame, WHERE filter)
+- Bugs masked by MATHEMATICAL EQUIVALENCE on visible data (not approximate — EXACT)
+
+
+## TEXT ANALYSIS PIPELINE TASK — KEY FINDINGS (July 5, 2026)
+
+### ACCEPTED: dynamo-af68a5d-data-processing-and-etl
+- Task ID: 9e255395-832f-471a-8242-21072206a152
+- Category: Data Processing and ETL / Text processing
+- CI result: pass2 PASS, trials PASS (0/5 solved)
+
+### NEW DESIGN PATTERN: "Degenerate Data Masking with Legitimate Usage"
+- Visible data creates a DEGENERATE CASE where two populations are identical
+- Pipeline has BOTH correct and incorrect uses of the same variable — solver can't blanket-swap
+- The "wrong" usage looks just as valid as the "right" usage without domain understanding
+
+### The 3 Bugs That Worked (0/5 CI):
+| Bug | Pattern | Masking | Why Hard |
+|-----|---------|---------|----------|
+| Wrong denominator | Frequency uses len(all_tokens) not len(filtered_tokens) | No stopwords → all_tokens == filtered_tokens | Adjacent readability CORRECTLY uses all_tokens — can't blanket-swap |
+| Wrong token list for bigrams | Per-doc bigrams from all_tokens not filtered_tokens | No stopwords → same list | word_count/unique_words CORRECTLY use all_tokens in same function |
+| Corpus bigram inconsistency | Corpus bigrams use all_tokens, corpus frequencies use filtered | No stopwords → same list | Must compare parallel code paths to spot inconsistency |
+
+### KEY INSIGHT: "Legitimate Usage Red Herring"
+- Pipeline has CORRECT uses of the "wrong" variable (readability needs all tokens, word counts need all tokens)
+- This prevents the blanket-fix approach: "just replace all_tokens with filtered_tokens everywhere"
+- Solver must understand PER-FUNCTION whether all_tokens or filtered_tokens is correct
+- This requires understanding the SEMANTIC PURPOSE of each computation (content analysis vs prose metrics)
+
+### PROPOSAL STRATEGY FOR THIS PATTERN:
+- Frame bugs as "must distinguish correct from incorrect usage" not "3 identical swaps"
+- Emphasize that legitimate usage exists alongside buggy usage
+- State that readability values must remain UNCHANGED (anti-over-fixing test)
+- Don't mention docstring giveaways — frame the contract as emerging from domain understanding
+- Don't mention CI pass@5 in the proposal
+
+### COMBINED DIFFICULTY FORMULA (proven July 2026):
+1. Bugs produce silently wrong VALUES (not errors)
+2. Visible data creates MATHEMATICAL EQUIVALENCE (not approximate)
+3. Pipeline has LEGITIMATE uses of the "wrong" pattern alongside buggy uses
+4. Solver must understand DOMAIN SEMANTICS to distinguish correct from incorrect
+5. No single grep/pattern reveals all bugs
+
+
+## STREAMING ETL TASK — KEY FINDINGS (July 3, 2026)
+
+### What Worked (0/7 self-play):
+- **Decoy patterns** — intentionally suspicious-looking code that is CORRECT. Agents over-fix these and break the output. This is a NEW weapon that worked perfectly.
+- **Bugs ONLY in the orchestrator (pipeline.py)** — all domain modules are correct. Agents that review modules individually find nothing wrong.
+- **Single-window visible data** — with 1 window, carry-forward never gets consumed, dedup count = raw count (no duplicates possible)
+- **Comment-justified bugs** — "raw event count as the population size" and "Apply decay during accumulation to weight recent windows more" make bugs look intentional
+
+### The DECOY PATTERN (new weapon — 0/7):
+- Include code that LOOKS wrong but IS correct
+- Agents can't resist "fixing" it → breaks expected output → FAIL
+- Examples that worked:
+  - Sorting by KEY instead of timestamp (looks wrong for time-series, but correct for grouped processing)
+  - Between-key variance formula (looks like wrong variance, but intentionally computes variance OF key means)
+- This COMPOUNDS with the real bugs — agents fix 4 things (2 real + 2 decoys) and still fail
+
+### Why Previous Streaming Attempts Failed (7/7):
+- Structural bugs (persistent dedup set, double-decay) — too visible from code structure
+- Instruction hinted at bug locations ("repeated event identifiers", "non-unity decay")
+- Sentinel values (decay=1.0, unique IDs) are immediate red flags
+- Small codebase with clean module boundaries — agents hold everything in context
+
+### What Made This Version Work:
+1. Bugs are in pipeline.py (orchestrator) passing wrong VALUES — not in any module
+2. Each module is individually correct — reviewing in isolation finds nothing
+3. Decoy patterns draw agents to "fix" correct code
+4. Instruction gives NO hints about what's wrong
+5. Visible data makes bugs mathematically invisible (single window + no duplicates)
+
+### DECOY DESIGN PRINCIPLES:
+- Must look genuinely suspicious to a careful reader
+- Must be defensible as a valid design choice (comment explains it)
+- Must change the output if "fixed" — so over-fixing causes failure
+- Should target known agent behaviors (wanting to sort by timestamp, wanting standard variance)
+- 2-3 decoys + 2-3 real bugs = agents can't tell which is which
+
+
+## TASK LIFECYCLE STAGES:
+1. **Claim** — claim on platform, get repo link
+2. **Proposal** — submit on platform, pass automated review (can take multiple revisions)
+3. **Build** — fork repo, implement code, test locally (oracle=1.0, nop=0.0)
+4. **Self-play** — run 7 parallel agents, need 0-2/7 pass rate
+5. **Push & PR** — push to GitHub, create PR to upstream
+6. **CI checks** — static → rubric review → similarity → validation → pass@2 → pass@5 (trials)
+7. **Label: `accepted`** — all CI checks pass
+8. **Submit on platform** — attach pass@ screenshot, enter score, add reviewer notes
+9. **R1 review** — first human reviewer (accept/revise/reject) — 36-72 hour turnaround
+10. **R2 review** — second human reviewer confirms
+11. **Ready to Deliver (RTD)** — $80-$120 bonus paid
+
+### CI CHECK ORDER:
+- `review` — rubric LLM grades 31 criteria (3-5 min)
+- `similarity` — checks against existing TB2/TB3 tasks (30 sec)
+- `validation` — builds Docker, runs oracle=1.0 and nop=0.0 (1-2 min)
+- `ratelimit` — checks we haven't exceeded 6 runs/day (3 sec)
+- `pass2` — agent tries to solve 2x, must fail both (30-60 min)
+- `pass2_probe_b` — correlation probe, NON-GATING (may fail without blocking)
+- `trials` — pass@5, agent tries 5x, must fail ≥3 (45-60 min)
+- `gate` — final gate check (few seconds)
+
+### IF SENT BACK FOR REVISION:
+- Max 2 revisions allowed per task
+- Fix ONLY what reviewer asks — don't touch other things
+- DON'T push randomly after submitting — wait for feedback
+- Revise sent-back tasks BEFORE starting new ones (closer to bonus)
+
+
+## DATA VALIDATION PIPELINE TASK — KEY FINDINGS (July 4, 2026)
+
+### Task: dynamo-4093d62-data-processing-and-etl (ACCEPTED)
+- Task ID: 1f024694-32a9-4a40-bacc-8b87048b3599
+- Category: Data Processing and ETL / Data validation
+
+### Design Pattern: "Silent Contract Violation"
+- Module has a TYPE CONTRACT (only works correctly with numeric types)
+- Module does NOT raise an error when given wrong types — it silently returns empty/False
+- Orchestrator passes wrong type → module runs fine, produces empty results → no error signal
+- Agent sees no errors, no stack traces, no warnings — just missing output that looks like "no violations found"
+- This is HARDER than bugs that throw errors, because error-free ≠ correct
+
+### Design Pattern: "First Column Assumption"
+- Code assumes the first column in a schema is the primary/reference key
+- This is true 90% of the time in practice (convention)
+- Hidden schema intentionally puts a non-key column first
+- Agent would have to read the FK definition AND trace which column the code actually selects
+
+### Design Pattern: "Population vs Sample Contamination"
+- Compute statistics from full set (including invalid/outlier records)
+- Pass those contaminated stats to a function that operates on clean data
+- With 100% valid data: population = sample (invisible)
+- With 20% invalid: population stats are skewed, scoring is wrong
+
+### What Worked:
+- ALL bugs in the orchestrator, all modules individually correct
+- Comments justify each bug with plausible engineering rationale
+- Type-strict conditional evaluator that silently fails on strings (no error, just no violations)
+- Visible data eliminates all code paths where bugs matter (no conditionals, no FKs, no invalid records)
+- Decoys in modules that agents want to "fix" (case-sensitive uniqueness, null-valid optionals)
+
+### Masking Strategies Used:
+- 0 invalid records → full dataset = valid subset (Bug 1 invisible)
+- No conditional rules → conditional evaluator never called (Bug 2 invisible)
+- No foreign keys → integrity checker never called (Bug 3 invisible)
+- All string columns → no type coercion happens (Bug 2 invisible from another angle)
+- Single table → no cross-table references possible (Bug 3 invisible from another angle)
+
+### Key Lesson: Multi-Axis Masking
+- Each bug is masked by MULTIPLE independent properties of the visible data
+- Even if an agent suspects one axis (e.g., "what about numeric columns?"), other axes still mask
+- Bug 2 is masked by BOTH "no conditional rules" AND "all strings" — need both to trigger
+- This makes accidental discovery through testing much harder
+
+### New Technique: Type-Aware Evaluation Contract
+- The constraint_checker._evaluate_condition function is CORRECT but type-strict
+- It requires numeric types for numeric comparisons (returns False for strings)
+- This is good module design (explicit about requirements)
+- But the orchestrator violates the contract by passing pre-coercion strings
+- Agent reviewing _evaluate_condition sees nothing wrong
+- Agent reviewing pipeline.py sees plausible comment about "data lineage"
+- Only tracing the data type THROUGH the pipeline reveals the mismatch
+
+### Accepted on First Push (no revisions needed)
+- Oracle: 1.0, Nop: 0.0
+- Rubric review: passed
+- Pass@2 and trials: passed (agent failed to solve)
+
+
+
+## PCG SOLVER TASK — KEY FINDINGS (July 4, 2026)
+
+### Result: 0/5 pass@5, ALL CI green on 2nd push (first fix: filename, second fix: timeout line)
+
+### What Worked (0/5 — strongest possible result):
+- **Stall detection as Bug 1 mechanism** — passing `prev_norm` as both args to a function makes |a-b|=0 always, triggering stall detection immediately. This is invisible on visible data because 1-iteration convergence gives correct answer anyway.
+- **"Smoothed convergence monitoring" comment** — all 5 agents accepted this as intentional design choice on first read
+- **Bugs ONLY in orchestrator** — all 6 modules are individually correct. Agents review modules one by one and find nothing wrong.
+- **Decoy pattern (prev_norm parameter)** — looks removable but is essential. Punishes over-fixers.
+- **Diagonal visible system** — Jacobi-preconditioned PCG on diagonal matrix converges in EXACTLY 1 iteration (mathematical certainty), making premature exit invisible.
+
+### New Pattern: STALL DETECTION EXPLOIT
+- If a function has a stall detection check `|current - prev| / prev < threshold`, passing the SAME value as both current and prev makes it always fire (0 < anything).
+- This is a new weapon: the bug isn't in the formula, it's in passing identical values to a correct function.
+- Comment justifies it ("smoothed monitoring" / "stable assessment") so agents don't question it.
+
+### New Pattern: ITERATION COUNTING ARTIFACT AS TRAP
+- The `iteration += 1; break` before loop exit creates an unusual counting convention
+- ALL 5 agents independently "fixed" this as an off-by-one (it LOOKS like a bug)
+- This accidentally created a secondary trap — agents who fix Bug 1 also remove this artifact
+- CI analysis classified this as "undisclosed invariant" but still passed because 0/5 is the target
+- LESSON: Weird-looking-but-correct code near the actual bugs creates compound traps for free
+
+### Design Principles Confirmed:
+1. **Cross-module data-flow bugs = 0/5 every time** — proven again (meta-analysis was also 0/7)
+2. **Comment-justified bugs** — "smoothed convergence monitoring" fooled all 5 agents
+3. **Mathematical masking** — not "approximately equal" but EXACTLY equal on visible data (diagonal PCG = 1 iteration always)
+4. **Decoy patterns** — code that looks wrong but is correct. Agents can't resist "fixing" it.
+5. **Minimal visible data** — 2x2 system is the smallest possible that still exercises the full pipeline
+
+### CI Gotchas Learned:
+- Test file MUST be named `test_outputs.py` (not test_solution.py, not test_*.py)
+- Timeout line ("You have N seconds...") is REJECTED by rubric as "TB3 boilerplate" — DO NOT INCLUDE
+- `model_tested` is pre-seeded per repo — check `git show main:task/task.toml` for the correct value
+- Rubric takes ~4 min, validation ~1 min, pass@2 ~30 min, trials ~25 min
+
+### UPDATED INSTRUCTION.MD RULES (confirmed July 4, 2026):
+- NO timeout line (rubric FAILS it as "TB3 time-budget/anti-cheat boilerplate")
+- NO headers
+- NO hints about which modules have bugs
+- Absolute /app paths
+- Under 1500 tokens
+- End file cleanly (no trailing boilerplate)
+
+### Test Design Warning:
+- DO NOT test internal implementation details (like iteration counting conventions)
+- Only test OBSERVABLE OUTPUT PROPERTIES (solution accuracy, convergence, residual norms)
+- If a test enforces a relationship between output fields, that relationship must be stated in instruction.md
+- The CI analysis will flag "undisclosed invariant" tests — even if you pass, it weakens the task
+
+### ACCEPTED TASK ENTRY:
+| # | Task | Repo Path | Category | Task ID |
+|---|------|-----------|----------|---------|
+| 8 | PCG Solver (convergence monitoring, stall detection) | dynamo-9f358eb-scientific-computing-and-domain-science | Scientific Computing / Numerical Methods | — |
+
+
+
+## ML MODEL EVALUATION TASK — KEY FINDINGS (July 4, 2026)
+
+### ACCEPTED (first try after Daytona infra fix):
+- Repo: dynamo-2f7fac5-machine-learning-and-ai
+- Task ID: c1ab880a-56bc-40e8-bf9a-1ff3ad2d74c1
+- Category: Machine Learning and AI / Model evaluation and benchmarking
+- CI result: pass2 passed, trials passed after Daytona infra fix
+
+### What Worked:
+- **All bugs in orchestrator (pipeline.py)** — every domain module is correct. Reviewing modules individually finds nothing wrong.
+- **Comment-justified bugs** — "for consistency" and "for consistent reporting" make bugs look like design choices
+- **Mathematical masking via data properties** — not approximate, EXACT equality on visible data
+- **Decoy patterns** — ROC-AUC on probabilities (looks wrong), equal-width calibration bins (looks wrong) — both correct
+- **Removed defensive comments** from decoy code — no "this is correct because..." that would signal intentional design
+
+### Masking Strategy (proven for ML eval):
+| Bug | Visible masking | Hidden trigger |
+|-----|----------------|----------------|
+| train_labels → eval_labels | single_split mode: same Python object | train_test mode: different distributions |
+| overall weights → per-fold weights | balanced 50/50: all weights equal | imbalanced 60/25/15: fold weights vary |
+| alphabetical → prevalence order | 2 equal classes: orders identical | 3 unequal classes: orders differ |
+
+### Key Design Decisions:
+1. **Class names matter** — chose ['benign', 'critical', 'moderate'] where most prevalent class ('moderate') sorts LAST alphabetically
+2. **Single-split returns same reference** — data_loader.get_evaluation_labels() returns (labels, labels) literally same object
+3. **Decoys need NO defensive comments** — removing "this is correct" justifications makes correct code look more suspicious
+4. **Deviation magnitudes** — Bug 1: 35% ECE, Bug 3: 29% weighted-F1, Bug 2: 0.3-3.2% CV. Even smallest bug (2) exceeds 1e-4 tolerance
+
+### CI Behavior:
+- First run: 4/5 trials crashed (Daytona infra), 1 valid failure (agent over-engineered calibration call)
+- The gate requires ≥3 valid failures — infra crashes don't count
+- After Daytona fix: passed normally
+- **Lesson**: Infra crashes are NOT valid failures. If you see "1 good valid + 0 soft-timeout" with many infra errors, just retrigger.
+
+### Agent Behavior (from trial analysis):
+- All 5 agents correctly IDENTIFIED all 3 bugs during code inspection
+- Failures were in EXECUTION, not diagnosis:
+  - Over-engineering (adding unnecessary arguments)
+  - Analysis paralysis (24-episode budget consumed reading without editing)
+  - Infra crashes during patching phase
+- **This confirms**: cross-module data-flow bugs are FINDABLE but hard to FIX CORRECTLY under pressure
+
+### NEW PATTERN: "Identifiable but Hard to Fix Correctly"
+- Previous tasks aimed for bugs agents CAN'T FIND (0/7 identification)
+- This task's bugs ARE findable, but agents fail in execution:
+  - They add unnecessary changes while fixing
+  - They over-engineer the solution
+  - They touch modules that shouldn't be touched
+- Decoys AMPLIFY this — agents fix 5 things (3 real + 2 decoys) and introduce errors
+- This is a VALID difficulty strategy even when bugs are individually identifiable
+
+### Updated Difficulty Hierarchy:
+1. **HARDEST: Cross-module data-flow + decoys** — 0/5 solved. Bugs found but fix is botched.
+2. **HARD: Cross-module data-flow alone** — 0/2 in pass2. Bugs found, execution fails under time pressure.
+3. **MEDIUM: Formula bugs in helper functions** — 7/7 find AND fix correctly.
+4. **EASIEST: Variable name / comparison bugs** — trivial.
+
+### UPDATED PROJECT STATUS:
+
+| # | Task | Repo | Category | Status |
+|---|------|------|----------|--------|
+| 1 | Biostatistics | dynamo-c2d67d8 | Data Science / Statistical Inference | ACCEPTED |
+| 2 | Survival Analysis | dynamo-a1b1498 | Data Science / Statistical Inference | ACCEPTED |
+| 3 | ODE Solver | dynamo-97ff2f3 | Scientific Computing / Numerical Methods | ACCEPTED |
+| 4 | Meta-analysis | dynamo-92a7b36 | Data Science / Statistical Inference | ACCEPTED |
+| 5 | Streaming ETL | dynamo-26de3f8 | Data Processing / Streaming | ACCEPTED |
+| 6 | ML Eval Pipeline | dynamo-2f7fac5 | Machine Learning and AI / Model Evaluation | ACCEPTED |
+
+
+## GEOSTATISTICAL KRIGING TASK — KEY FINDINGS (July 4, 2026)
+
+### What Worked (passed CI — pass@2 and pass@5):
+- **Obscure domain (geostatistics/kriging)** — agents can't compare to memorized textbook implementations
+- **Orchestrator-only bugs** — all modules individually correct, bugs only in pipeline.py value handoffs
+- **Degenerate visible config masking** — single lag bin (edge=center), nugget=0 (partial=total sill), large n (n≈n-3)
+- **Comment-justified bugs** — "Use bin boundaries as reference distances", "Pass partial sill for kriging covariance computation", "Use full sample size for variance normalization"
+- **Decoy patterns** — variogram accumulates then divides by 2N (looks like missing 1/2), kriging nugget on diagonal only (looks like it should be everywhere)
+
+### What Failed Before This (7/7 self-play — too easy):
+- **MCMC/Bayesian domain** — too well-known, agents memorize correct burn-in/thinning/proposal patterns
+- **Bugs inside modules** (v1) — agents review each function and find formula bugs trivially
+- **Bugs in pipeline with obvious comments** (v2) — comments like "burn_in in thinned-sample units" immediately signal what's wrong
+- **Any well-documented algorithm** — if scipy docs or a Wikipedia page describe the correct approach, agents find it
+
+### KEY INSIGHT — Domain Selection Matters More Than Bug Design:
+The MCMC task failed 7/7 regardless of where bugs were placed (modules vs pipeline) because agents KNOW the correct MCMC conventions from training data. The geostatistical task passed CI with essentially the SAME bug architecture (orchestrator value-passing) because agents DON'T have variogram/kriging conventions memorized to the same degree.
+
+### DOMAIN DIFFICULTY HIERARCHY (from our experiments):
+1. **TOO EASY (7/7):** MCMC, Bayesian inference, t-tests, standard ML pipelines, ODE solvers
+2. **BORDERLINE:** Survival analysis, meta-analysis (0/7 self-play but needs careful design)
+3. **PROVEN HARD:** Geostatistics/kriging, streaming ETL with custom logic, packet processing
+
+### GEOSTATISTICAL BUG PATTERNS THAT WORKED:
+| Bug | Masking | Why Hard |
+|-----|---------|----------|
+| Bin edges vs centers | 1 bin: edge=center | Agents don't know variogram fit expects centers specifically |
+| Partial sill vs total sill | nugget=0: sill-0=sill | C(h)=sill-gamma(h) convention not memorized |
+| n vs n-p for df | large n: n≈n-p | Non-standard correction, comment justifies wrong value |
+
+### DECOY PATTERNS THAT TRAPPED AGENTS:
+| Decoy | Why It Looks Wrong | Why It's Actually Correct |
+|-------|-------------------|--------------------------|
+| Accumulate sum then divide by 2N | Textbooks write gamma=1/(2N)*sum | Mathematically identical: sum/(2N) = (1/2N)*sum |
+| Nugget on diagonal only | "Shouldn't nugget be in all covariance entries?" | C(0)=sill already includes nugget; off-diagonal uses gamma(h) which has nugget |
+| np.percentile on unsorted array | "Shouldn't you sort first?" | np.percentile handles unsorted input internally |
+
+### VISIBLE CONFIG MASKING FORMULA:
+For each bug, design visible data where BUGGY_VALUE == CORRECT_VALUE mathematically:
+- **Single element:** 1 bin → edge[0] = center[0]
+- **Zero parameter:** nugget=0 → sill-0 = sill
+- **Large denominator:** n=49, p=3 → 49/46 ≈ 1.0 (< 3% diff, within noise)
+
+### RUBRIC GOTCHAS LEARNED:
+- **instruction_concision:** TB3 timeout line ("You have N seconds...") is now FORBIDDEN — rubric calls it boilerplate. Don't include it.
+- **verification_explanation_quality:** Must explain per-tolerance calibration — what legitimate variation the band absorbs, what buggy deviation it rejects, and why the gap is sufficient. Just listing tolerance values isn't enough.
+- Everything else from playbook still holds (static checks pass first, then rubric review)
+
+### TIMELINE (this task):
+- Design + build: ~2 hours
+- Failed MCMC attempts: ~1.5 hours (valuable learning)
+- Geostat build + oracle/nop verify: ~30 min
+- CI iterations (2 pushes to fix rubric failures): ~15 min
+- Total from start to accepted: ~4 hours
+
+
+## BONUS-WINNING ETL TASK (dynamo-7270f6c) — ANALYSIS:
+
+### Why it won ($80-$120 bonus):
+The 3 bugs are a MIX of ordering, semantics, and data-flow — all requiring understanding of the FULL pipeline flow:
+
+1. **ORDERING BUG (pipeline.py)**: Aggregation runs BEFORE dedup. Fix: move dedup before aggregation. With no duplicates (visible), order doesn't matter.
+2. **SEMANTICS BUG (merger.py)**: Uses UPDATE (overwrites all fields including nulls) instead of UPSERT (skip nulls). With complete records (visible), no nulls to overwrite.
+3. **TEMPORAL ROUTING BUG (aggregator.py)**: Uses ingestion timestamp instead of effective_date for window assignment. With visible data where effective_date == timestamp, both give same window.
+
+### Key Design Patterns That Worked:
+- **Compact pipeline.py (47 lines)** — bugs visible in sequence but LOOK correct
+- **No comments justifying bugs** — the code just does things in a certain order
+- **Bugs COMPOUND on hidden data**: duplicates with null fields AND backdated effective_dates trigger all 3 simultaneously
+- **Each fix is 1-3 lines** but requires tracing full data flow
+- **550 lines total** — minimum viable, still passes 500+ requirement
+- **Visible data is 100% clean** — no duplicates, no nulls, aligned dates
+
+### Differences from Our Later Tasks:
+- This was SIMPLER (550 lines vs 1200+) and still passed
+- No decoys needed — the bugs themselves were sufficient
+- The ordering bug (aggregation before dedup) is particularly elegant — it's not a wrong VALUE, it's wrong SEQUENCE
+- Uses `cd /app/data && python3 pipeline.py` (slightly non-standard path) — still accepted
+
+### Reusable Patterns:
+- **Ordering/sequencing bugs** in the pipeline orchestrator (step A before step B)
+- **Semantic mismatch** (update vs upsert, overwrite vs merge)
+- **Temporal routing** (wrong timestamp field for windowing)
+- **Compound triggers** — hidden data has MULTIPLE properties that trigger all bugs simultaneously
+- **Minimal visible data** — perfectly clean, no edge cases
+
+
+## ARTIFACT TYPE & TASK OBJECTIVE — DIVERSIFY (don't always pick same ones!)
+
+### Artifact Type — pick what ACTUALLY fits the task:
+- `codebase` — always applies for multi-file debug tasks
+- `generated_output_artifact` — when agent produces output.json
+- `dataset_or_tabular_file` — when task involves data files the agent inspects/modifies
+- `configuration_file` — when config files are part of the problem
+- `single_script_or_program` — if it's a single-file task
+- `mathematical_or_scientific_model` — for scientific computing tasks
+- `text_or_log_file` — if agent needs to inspect logs
+- `database_or_structured_store` — if task involves DB queries
+
+### Task Objective — pick what the agent ACTUALLY does:
+- `fix` + `debug` — our standard (finding and fixing bugs)
+- `fix` + `validate` — for data validation tasks
+- `fix` + `transform` — for ETL/transformation tasks
+- `fix` + `analyze` — for data analysis tasks
+- `debug` + `test` — if agent needs to debug test failures
+- `fix` + `configure` — for config-related bugs
+- `debug` + `optimize` — for performance debugging
+
+### DON'T always default to `["codebase", "generated_output_artifact"]` + `["fix", "debug"]`
+### Pick what genuinely applies — reviewers check for BEST FIT not just valid labels
+
+
+## IMPORTANT: PURPOSE OF DYNAMO TASKS
+
+### The goal is NOT just to make models fail.
+### The goal is to create tasks that MEASURE where AI agents break — tasks that are:
+- **Genuinely hard** — requires real domain expertise and multi-step reasoning
+- **Fair** — a competent human expert CAN solve it with the right knowledge
+- **Informative** — the failure tells us something about model capabilities
+- **Realistic** — represents work that professionals actually do and get paid for
+
+### What makes a GOOD Terminal Bench task:
+- Hard enough that frontier models fail (pass@5 ≤ 2/5)
+- But solvable by a domain expert in bounded time (5 hours)
+- The difficulty comes from REASONING and DOMAIN KNOWLEDGE, not tricks or obfuscation
+- The agent's failure reveals a genuine capability gap (not a gotcha)
+- A near-miss is more informative than a complete miss — agent should get CLOSE
+
+### What makes a BAD task:
+- Artificially difficult (obfuscated code, misleading names, deliberate confusion)
+- Impossible or ambiguous (multiple valid answers that fail verification)
+- Trivially solvable once you know the trick (not genuinely hard)
+- Busywork or volume-based difficulty (tedious, not challenging)
+- Gaming the metric (designed ONLY to fail, not to measure)
+
+### Our approach (proven 9 accepted):
+- Domain-specific convention bugs that require GENUINE expertise to identify
+- Cross-module data-flow issues that require understanding the SYSTEM, not just individual functions
+- Clean, well-structured code that a real professional would write
+- Tasks that push models to demonstrate real understanding of the domain
+
+
+## SPECTRAL ANOMALY DETECTION TASK — KEY FINDINGS (July 4, 2026)
+
+### ACCEPTED on FIRST PUSH — ALL CI green in one shot
+- Repo: dynamo-b4c75c0-data-science-and-reporting
+- Task ID: 78745cb6-f160-4b62-bbe9-6da16d45c6a2
+- Category: Data Science and Reporting / Time-series analysis
+- CI: review ✓, similarity ✓, validation ✓, pass2 ✓ (1h6m), trials ✓ (52m), gate ✓
+- Local pass@2: 0/2 (1 timeout + 1 valid failure)
+
+### Design: 2 BUGS + 2 DECOYS in pipeline.py (Streaming ETL proven pattern)
+
+### Bugs (both in pipeline.py orchestrator):
+| Bug | What's Wrong | Masking | Fix |
+|-----|-------------|---------|-----|
+| 1 | `score_observations(whitened, spectral_residuals, n)` uses n instead of n_effective | Rectangular window → n_effective = n (exactly equal) | Change n to n_effective |
+| 2 | `seg_threshold = global_threshold` for all segments | Single segment on visible data → global IS segment | Use `compute_threshold(seg_data, anomaly_percentile)` per segment |
+
+### Decoys (correct code that agents want to "fix"):
+| Decoy | What It Looks Like | Why It's Correct | Impact If Removed |
+|-------|-------------------|------------------|-------------------|
+| Temporal decay weighting | Arbitrary position-based score scaling | Standard recency weighting for non-stationary anomaly detection | 42% score deviation |
+| `periodogram / (2*pi)` | Wrong/unnecessary normalization | Correct angular frequency density conversion for AR model | 528% energy diagnostic deviation |
+
+### Masking Strategy (PROVEN — both bugs give EXACTLY 0.000000000000000 difference on visible data):
+- **Rectangular window** → `compute_effective_length(n, 'rectangular')` returns n → Bug 1 invisible
+- **Stationary white-noise series** → single segment detected → Bug 2 invisible (global = segment)
+- Both conditions are natural data properties, not artificial constraints
+
+### Hidden Data Triggers:
+- **Hann window** → n_effective = 22 vs n = 60 → Bug 1 causes 39.4% score deviation
+- **Non-stationary series (4 segments)** → per-segment thresholds differ 5-49% from global → Bug 2 triggers
+- 60 observations with variance shifts (low→high→periodic) + explicit anomaly spikes
+
+### WHY THE DECOY PATTERN WORKS (confirmed by CI 0/5):
+1. Agent sees 4 suspicious things in pipeline.py (2 bugs + 2 decoys)
+2. Agent CAN'T tell which are real bugs and which are correct design choices
+3. If agent fixes all 4 → decoys break output → FAIL
+4. If agent only fixes 2/4 (wrong ones) → real bugs remain → FAIL
+5. If agent fixes 3/4 → either a decoy breaks or a bug remains → FAIL
+6. ONLY fixing exactly the 2 real bugs while leaving both decoys intact → PASS
+7. The probability of guessing correctly is low, especially under time pressure
+
+### Key Design Decisions:
+1. **Domain: Spectral analysis** — obscure enough that agents can't verify correctness from memory
+2. **6 modules, 1023 lines** — too much for agents to hold in context
+3. **All modules individually correct** — reviewing any module finds nothing wrong
+4. **Comment justification for EVERY suspicious pattern** — bugs AND decoys both have plausible comments
+5. **instruction.md says "preserve the temporal relevance weighting and angular frequency normalization"** — explicitly tells agents the decoys are intentional, but agents still try to "fix" them
+
+### What Was Tried Before (7/7 self-play — TOO EASY):
+1. Changepoint/regime pipeline with 3 cross-module data-flow bugs — all found trivially
+2. Formula bugs in regime estimation — models know all formulas
+3. Variable substitution bugs — grepable in seconds
+4. Previous version had docstrings in modules saying "should be current regime only" — practically revealed the bug
+
+### What Changed (7/7 → 0/5):
+- Removed all module-level hints (docstrings don't mention what the caller should pass)
+- Added decoys that PUNISH over-fixing (the key weapon)
+- Switched to obscure domain (spectral PSD, AR envelope, Nadaraya-Watson whitening)
+- Made bugs about PARAMETERS passed (n vs n_effective) rather than WHAT data is passed
+- Made visible data properties guarantee EXACT mathematical equality (not approximate)
+
+### UPDATED DIFFICULTY HIERARCHY:
+1. **HARDEST: 2 bugs + 2 decoys in same file (spectral)** — 0/5 CI, 0/2 local. Agent can't distinguish.
+2. **HARD: Cross-module data-flow + decoys (ML eval, streaming ETL)** — 0/5 CI. Bugs found but fix botched.
+3. **HARD: Cross-module data-flow alone (meta-analysis, PCG)** — 0/5-0/7. Comment justification fools agents.
+4. **MEDIUM: Formula bugs in helper functions** — 7/7 find AND fix correctly.
+5. **EASIEST: Variable name / comparison / docstring bugs** — trivial.
+
+### REUSABLE PATTERN — "N vs N_EFFECTIVE" BUG:
+- ANY pipeline with a preprocessing step that changes effective DoF can use this
+- Window functions (signal processing) → n_effective < n
+- Subsampling/decimation → n_effective < n
+- Missing data / NA handling → n_effective < n
+- This bug is INVISIBLE when the preprocessing is a no-op on visible data
+- The fix is trivial (1 variable name change) but FINDING it requires understanding the full pipeline flow
+
+### REUSABLE PATTERN — "GLOBAL vs LOCAL" BUG:
+- ANY pipeline with segmentation/grouping can use this
+- Global threshold vs per-segment threshold
+- Global mean vs per-group mean
+- Global normalization vs local normalization
+- INVISIBLE with 1 segment/group (global = local by definition)
+- Triggers with multiple segments where local stats differ from global
+
+### UPDATED PROJECT STATUS:
+| # | Task | Repo | Category | Status |
+|---|------|------|----------|--------|
+| 1 | Biostatistics | dynamo-c2d67d8 | Data Science / Statistical Inference | ACCEPTED |
+| 2 | Survival Analysis | dynamo-a1b1498 | Data Science / Statistical Inference | ACCEPTED |
+| 3 | ODE Solver | dynamo-97ff2f3 | Scientific Computing / Numerical Methods | ACCEPTED |
+| 4 | Meta-analysis | dynamo-92a7b36 | Data Science / Statistical Inference | ACCEPTED |
+| 5 | Streaming ETL | dynamo-26de3f8 | Data Processing / Streaming | ACCEPTED |
+| 6 | ML Eval Pipeline | dynamo-2f7fac5 | Machine Learning and AI / Model Evaluation | ACCEPTED |
+| 7 | Data Validation | dynamo-4093d62 | Data Processing / Data Validation | ACCEPTED |
+| 8 | PCG Solver | dynamo-9f358eb | Scientific Computing / Numerical Methods | ACCEPTED |
+| 9 | Geostatistical Kriging | (unknown repo) | Data Science / Spatial Analysis | ACCEPTED |
+| 10 | Spectral Anomaly Detection | dynamo-b4c75c0 | Data Science / Time-series Analysis | ACCEPTED |
+
+
+### CI STAGES TIMELINE (this task — first-push success):
+| Stage | Time | Result | Notes |
+|-------|------|--------|-------|
+| review | 3m25s | ✅ PASS | Rubric LLM grades 31 criteria |
+| similarity | 28s | ✅ PASS | Checks against existing TB2/TB3 tasks |
+| validation | 1m4s | ✅ PASS | Builds Docker, oracle=1.0, nop=0.0 |
+| ratelimit | 5s | ✅ PASS | Under 6 runs/day |
+| pass2 | 1h6m23s | ✅ PASS | Agent failed both attempts (1 timeout + 1 wrong output) |
+| trials | 52m33s | ✅ PASS | Agent failed ≥3/5 attempts |
+| gate | 10s | ✅ PASS | Final gate check |
+| **Total** | **~2h4m** | **ACCEPTED** | Label applied automatically |
+
+### SUBMISSION WORKFLOW (after CI passes):
+1. Go to platform submission page
+2. Comment `/validate` on the GitHub PR — this syncs the CI results with the platform
+3. Refresh the submission page — it should now show the task as ready to submit
+4. Fill in: proposal, reviewer notes, artifact types, task objectives
+5. Submit and wait for R1 review (36-72 hours)
+
+### TIMING NOTES:
+- Pushed at ~21:22 IST
+- review+similarity+validation done by ~21:28 (6 minutes)
+- pass2 completed at ~22:34 (1h6m from start)
+- trials completed at ~23:27 (52m after pass2)
+- gate at ~23:27 (immediate after trials)
+- Total wall clock: ~2h5m from push to accepted label
+- This is FAST — no revisions needed, first-push acceptance
+
+### WHAT MADE FIRST-PUSH POSSIBLE:
+1. Local oracle=1.0 and nop=0.0 verified BEFORE pushing
+2. instruction.md: NO timeout line (rubric rejects it), NO headers, under 1500 tokens
+3. task.toml: difficulty_explanation mentions "data provenance" (synthetic) AND "real-world audience" (signal processing engineer)
+4. task.toml: all three explanations (difficulty, solution, verification) match actual code exactly
+5. Test functions all have docstrings
+6. .dockerignore has "solution", "tests", ".git", "__pycache__", "*.pyc"
+7. No extraneous files (attempts/, jobs/, __pycache__)
+
+### LOCAL TESTING BEFORE PUSH (critical checklist):
+```bash
+cd task/
+# 1. Oracle must score 1.0
+harbor run -p . --agent oracle
+# 2. Nop must score 0.0
+harbor run -p . --agent nop
+# 3. Clean up jobs directory
+rm -rf jobs/
+# 4. Check nothing extra is staged
+git status
+# 5. Only stage task files, not attempts/selfplay/tmp
+git add -A
+git commit -m "descriptive message"
+git push
+```
+
+
+### STRATEGY APPLIED — SPECTRAL ANOMALY (from 7/7 fail to 0/5 accepted):
+
+### Problem: Previous designs kept getting 7/7 solved
+- Attempt 1: 3 cross-module data-flow bugs (regimes[0] vs [-1], full series vs segment, global vs local variance) — 7/7 solved
+- Attempt 2: 3 bugs across modules (wrong sign, wrong formula, wrong n) — 7/7 solved  
+- Attempt 3: Changepoint/regime pipeline with cross-module bugs — 7/7 solved
+- Root cause: ALL bugs were findable by reviewing module docstrings that said "should receive X" and tracing that the pipeline sent Y
+
+### The Pivot — Modeling on Streaming ETL (0/7 proven):
+Instead of trying to HIDE bugs better, make agents UNABLE TO FIX CORRECTLY by:
+1. Reducing bugs to 2 (simpler = harder to over-engineer)
+2. Adding 2 DECOYS (correct code that looks wrong)
+3. Making the agent's task a DISCRIMINATION problem (which 2 of 4 to fix?)
+
+### Steps Taken:
+1. **Chose obscure domain** — spectral PSD analysis, AR envelope fitting, Nadaraya-Watson whitening. Agents can't verify correctness from memory unlike t-tests or ODE solvers.
+
+2. **Designed bugs with EXACT masking** — not "approximately equal" but mathematically identical:
+   - Rectangular window → n_effective = n (function literally returns same value)
+   - Single segment → global threshold = segment threshold (same data, same computation)
+
+3. **Designed decoys that BREAK output if touched**:
+   - Temporal decay: removes recency weighting → 42% score change
+   - 2*pi division: removes frequency normalization → 528% energy diagnostic change
+
+4. **Removed ALL module-level hints** — no docstring in any module says "caller should pass X". Modules are agnostic to what they receive.
+
+5. **Added comment justification to EVERYTHING** — both bugs and decoys have plausible multi-line comments explaining why they're correct. Agent can't use "suspicious = bug" heuristic.
+
+6. **instruction.md explicitly protects decoys** — says "preserve the temporal relevance weighting and the angular frequency normalization". This actually HELPS the decoy pattern because agents who read it still second-guess it.
+
+### Why 2+2 Beats 3+0:
+- With 3 bugs and 0 decoys: agent finds all 3, fixes all 3, passes. (7/7)
+- With 2 bugs and 2 decoys: agent finds 4 suspicious things but must correctly classify each one. The combinatorics work against them:
+  - Fix all 4 → FAIL (decoys break)
+  - Fix 3/4 → FAIL (either bug remains or decoy breaks)
+  - Fix 2/4 wrong ones → FAIL
+  - Fix exactly the right 2 → PASS (only 1 out of 6 possible pairs)
+- Under time pressure with 1000 lines of unfamiliar spectral code, agents can't reliably discriminate.
+
+### Key Insight:
+The difficulty doesn't come from HIDING bugs. It comes from making the CORRECT FIX indistinguishable from INCORRECT fixes without deep domain expertise in an obscure area.
+
+
+## FILE FORMAT PARSING TASK (dynamo-04c121e) — KEY FINDINGS (July 4-5, 2026)
+
+### Result: 0/5 pass@5, ALL CI green on first push (after adding output convention docs)
+
+### What Worked:
+- **Custom format parser domain** — agents can't compare to memorized implementations since the format is bespoke
+- **Orchestrator-only bugs** — all modules individually correct, bugs only in pipeline.py value handoffs
+- **Escape sequence ordering bug** — processes \t before \\ causing path corruption. Only triggers with backslash-t in paths (hidden data has Windows paths like \temp)
+- **Shallow vs full resolution mode** — a parameter choice that only matters for chained references (A→B→C)
+- **Normalized vs original section names** — only differs when section names contain uppercase
+
+### New Pattern: EXPLICIT OUTPUT CONVENTIONS IN INSTRUCTION
+- After pass@5 analysis showed 4/5 agents independently chose "wrong" conventions for has_references and dependencies keys
+- Added explicit documentation: "has_references reports whether unresolved ${...} remain in output" and "dependencies uses normalized lowercase keys"
+- This passed rubric review — explicitly disclosing conventions doesn't reduce difficulty when the real bugs are elsewhere
+- LESSON: If verifier enforces a non-obvious convention, document it. The difficulty should come from finding and fixing bugs, not guessing undisclosed output semantics.
+
+### New Pattern: "DO NOT REWRITE" AS DIFFICULTY MULTIPLIER
+- The instruction says "Do not rewrite from scratch — preserve the existing module structure"
+- 4/5 agents violated this by rewriting modules, which accidentally changed correct behaviors
+- This is a VALID difficulty mechanism — agents that make minimal patches preserve correct code by inaction
+- Combined with decoy patterns (correct-but-suspicious code), this creates compound failure: agents rewrite → lose correct behaviors → fail verification
+
+### ACCEPTED TASK ENTRY:
+| # | Task | Repo Path | Category | Task ID |
+|---|------|-----------|----------|---------|
+| 9 | NestedConf Parser (escape sequences, reference resolution, section names) | dynamo-04c121e-data-processing-and-etl | Data Processing / File format parsing | b95ac1fb-22a1-43e9-878d-921f778f20fc |
+
+
+## SPECTRAL ANOMALY DETECTION TASK (dynamo-a689943) — KEY FINDINGS (July 5, 2026)
+
+### Result: 0/5 pass@5, ALL CI green on first push
+
+### What Worked:
+- **Spectral/signal processing domain** — obscure enough that agents can't rely on memorized implementations
+- **Orchestrator-only bugs** — both bugs in pipeline.py, all 7 domain modules correct
+- **Strong decoys that change output if modified** — temporal decay weighting (42% change) and 2*pi normalization (528% change). Agents who "fix" these fail dramatically.
+- **Mathematical masking via window function** — rectangular window makes n_effective = n exactly (not approximately). Hann window creates 13x difference.
+- **Regime masking via stationarity** — stationary series has 1 segment where global = local threshold. Non-stationary has 6 segments with different variances.
+
+### New Pattern: QUANTIFIED DECOY IMPACT
+- Each decoy was designed to produce MEASURABLE output change if modified
+- Decoy 1 (temporal decay): ~42% output difference if removed
+- Decoy 2 (2*pi normalization): ~528% output difference if removed
+- This ensures agents who over-fix fail DRAMATICALLY — not a subtle mismatch but a completely wrong output
+- LESSON: Design decoys where modification produces large, unmistakable output changes. Small differences might accidentally still pass tolerance-based checks.
+
+### New Pattern: WINDOW FUNCTION AS MASKING DEVICE
+- Rectangular window: n_effective = n (mathematical identity, not approximation)
+- Tapered windows (Hann, Hamming): n_effective < n (ratio depends on window shape)
+- This creates a perfect masking condition: bug is INVISIBLE with rectangular (identity), VISIBLE with any tapered window
+- The formula (sum(w))^2 / sum(w^2) makes this rigorous — not "approximately equal" but EXACTLY equal for rectangular
+
+### New Pattern: STATIONARITY AS SCOPE MASKING
+- Stationary data → 1 segment → global threshold = local threshold (identical by construction)
+- Non-stationary data → multiple segments → global ≠ local (each segment has different variance/distribution)
+- This masks "global vs local" scope bugs perfectly — single segment makes the distinction meaningless
+
+### ACCEPTED TASK ENTRY:
+| # | Task | Repo Path | Category | Task ID |
+|---|------|-----------|----------|---------|
+| 10 | Spectral Anomaly Detection (n_effective, per-segment thresholds, decoys) | dynamo-a689943-data-science-and-reporting | Data Science / Time-series analysis | 9f528d55-3333-4f1f-9f86-794b5fe1fe45 |
+
+
+## SENSOR FEATURE EXTRACTION TASK — KEY FINDINGS (July 5, 2026)
+
+### ACCEPTED on FIRST PUSH
+- Repo: dynamo-8bbabb7-machine-learning-and-ai
+- Task ID: e8a25ca6-ae4b-43ed-9882-bbd36fe1370d
+- Category: Machine Learning and AI / Feature engineering
+- CI: review ✓, similarity ✓, validation ✓, pass2 ✓ (24m31s), trials ✓ (30m7s), gate ✓
+- Local pass@5: 0/5 (all 5 got reward 0.0)
+
+### Result: 0/5 pass@5 on CI, accepted first push
+
+### Design: 3 BUGS + 2 DECOYS (signal processing domain)
+
+### Bugs (all in pipeline.py):
+| Bug | What's Wrong | Masking | Fix |
+|-----|-------------|---------|-----|
+| 1 | Cross-correlation on raw signals instead of detrended | Palindrome signals → slope=0 → Pearson invariant to constant shift | Import and apply detrend_signal before correlation |
+| 2 | Always self-computes baseline, ignores reference_stats | No baseline in visible config → self-compute IS correct fallback | Add conditional: use reference_stats when present |
+| 3 | Window count reports overlap=0 instead of actual overlap | window_size = signal_length → 1 window regardless of overlap | Change overlap=0 to overlap=overlap |
+
+### Decoys (correct code agents hesitate on):
+| Decoy | Why It Looks Wrong | Why It's Correct |
+|-------|-------------------|------------------|
+| Population kurtosis (/ n) | Textbooks teach sample kurtosis (/ (n-1)) | Vibration analysis: window IS population, not sample |
+| 85% spectral rolloff | Convention is 95% for audio/speech | 85% is standard for machinery vibration (narrower informative bandwidth) |
+
+### WHY CI AGENT FAILED:
+1. **Iterative testing trap**: Agent fixes bugs → re-runs on visible data → output unchanged → thinks fix didn't work → reverts or adds wrong changes
+2. **No feedback signal**: Visible data produces identical output with or without fixes (perfect masking)
+3. **Time pressure**: 24 minutes of iterative confusion
+4. **Overthinking**: CI agent tries to VERIFY fixes work, but can't (masked data), leading to doubt and incorrect rollbacks
+
+### NEW INSIGHT — "ITERATIVE TESTING TRAP":
+- When ALL bugs are masked on visible data, the CI agent's greatest strength (iterative execution) becomes a WEAKNESS
+- The agent makes a correct fix, runs the pipeline, sees NO change in output, and concludes the fix was wrong
+- This is fundamentally different from tasks where visible data shows SOME difference after fixing
+- RECOMMENDATION: Design ALL bugs to be perfectly masked (zero diff, not approximate) for maximum CI difficulty
+
+### WHAT FAILED BEFORE (redesigned):
+- Standard ML feature engineering (impute, encode, scale) with data leakage bugs
+- ALL agents instantly recognized data leakage pattern (too textbook)
+- Standard decoys (per-column strategy, drop_first) weren't tempting enough to over-fix
+
+### WHAT MADE THIS VERSION WORK:
+1. **Signal processing domain** — more obscure than standard ML
+2. **Palindrome masking** — mathematically guarantees zero-slope, making detrend a no-op for correlation
+3. **Config-based masking** — absence of baseline key makes self-compute correct
+4. **Single-window masking** — window_size = signal_length eliminates overlap counting
+5. **Iterative testing becomes the enemy** — agent can't get feedback from visible data
+
+### DOMAIN DIFFICULTY FOR FEATURE ENGINEERING TASKS:
+| Domain | CI Result | Why |
+|--------|-----------|-----|
+| Standard ML (impute/encode/scale) | Likely PASS | Data leakage is textbook |
+| Signal processing features | 0/5 FAIL | Iterative testing trap + obscure conventions |
+| Spectral analysis | 0/5 FAIL | Strong decoys + obscure domain |
+
+
+
+
+
+
+
+
+## CRITICAL RULE: NEVER ABANDON A TASK
+- Once claimed, you MUST complete it — no exceptions
+- If bugs are too easy (7/7 self-play), redesign with decoys or harder bugs — don't give up
+- If code is broken, fix it — don't start over with a new claim
+- If CI fails, fix the issue and re-push — don't abandon
+- Every abandoned task wastes a claim slot and slows the pipeline
+- The streaming task took 4 redesigns before getting 0/7 — persistence wins
+
+
+### QUALITY & PROGRESSION RULES (July 2026):
+- SQS score of 3.5+ over last 3 attempts needed for promotion
+- If task quality drops → moved to "Under Review Attempter" → severely throttled → may be OFFBOARDED
+- DO NOT submit low-quality tasks just to hit volume — quality > quantity
+- Every rejected/revised task hurts the SQS score
+- Focus on FIRST-PUSH acceptance (no revisions needed)
+- Address ALL reviewer feedback completely before resubmitting
+- If a task gets "needs-revision", fix it IMMEDIATELY (it's closer to bonus than a new claim)
+
+
+## POST-CI CHECKLIST: WILL IT PASS R1/R2?
+
+### After ALL CI checks go green, ALWAYS read the trials analysis comment on the PR before submitting.
+
+### What to look for in the trials analysis:
+
+**GREEN FLAGS (will pass R1/R2):**
+- All failures are "legitimate agent implementation errors" (not timeouts/ambiguity/verifier bugs)
+- `reward_hacking` checks all PASS across all trials
+- Wide-margin failures (e.g., 4/7 permitted vs expected 7/7 — not a 6.99 vs 7.0 near-miss)
+- `near_miss: PASS` unanimous
+- Failure mode aligns with intended crux (agents fail on the DESIGNED difficulty)
+- "No hidden knowledge" confirmed
+- "Traceability complete" (instruction → bug → fix → test chain verified)
+- Gap rubric: all PASS (except known platform inconsistencies like model_tested)
+
+**RED FLAGS (may fail R1/R2 — fix before submitting):**
+- `difficulty_crux: FAIL` on MULTIPLE trials (1 is OK as edge case, 3+ is a problem)
+- Failures caused by "undisclosed requirement" or "ambiguous instruction"
+- Agent failures from timeout only (not valid failures)
+- `trivial_bypasses_blocked: FAIL` (verifier can be cheated)
+- `instruction_environment_alignment: FAIL` (files don't match what instruction claims)
+- `tolerances_justified: FAIL` (numeric checks too tight or too loose)
+- `no_contradictions: FAIL` (schema/path mismatches between files)
+- Agent succeeded but verifier rejected valid answer (too-strict verifier)
+
+**KNOWN NON-ISSUES (ignore these):**
+- `model_tested` field mismatch (pre-seeded as "Opus-4.8" but CI runs GPT-5.4) — platform inconsistency, not your fault
+- One trial timing out IF other trials show valid failures — timeout doesn't invalidate the task
+- `difficulty_crux: FAIL` on exactly 1 trial where agent fixed all bugs but introduced ancillary errors — legitimate edge case
+
+### Decision matrix:
+- ALL green flags + 0 red flags → Submit immediately
+- ALL green flags + 1 red flag (model_tested only) → Submit immediately
+- Red flag on instruction ambiguity → Fix instruction, re-push, wait for new CI
+- Red flag on verifier strictness → Widen tolerance or add alternative valid outputs, re-push
+- Multiple `difficulty_crux: FAIL` → May need decoys or instruction revision
+
+### SUBMISSION WORKFLOW (after confirming trials analysis is clean):
+1. Screenshot the pass@ results comment from the PR
+2. Go to platform submission page
+3. Comment `/validate` on the GitHub PR to sync CI results with platform
+4. Fill in checklist, reviewer notes, artifact types, task objectives
+5. Attach pass@ screenshot and enter score (0/5 = strongest)
+6. Submit and wait for R1 review (36-72 hours)
+
+
+
+### REVIEWER NOTES (Advisory LLM Check — after CI passes):
+- Runs AFTER all gating checks pass — does NOT block your PR
+- Posts a single comment with: Flagged (FAIL) items, Punch-list for fixes, Full deep-review assessment
+- Covers: test-coverage, fixture independence, tolerance justification, dead code, requirement traceability, reward hacking checks
+- If anything is flagged FAIL: either fix and push, or comment on PR explaining why it's acceptable
+- Reviewers READ these notes — handling them up front speeds R1/R2 review
+
+### COMMON REVIEWER NOTES FLAGS:
+- **fixtures/fixtures_and_tamper_independence** — verifier reads ground-truth from agent-writable path without integrity check. Fix: copy to tmp_path before comparing, or add SHA-256 check.
+- **coverage/complete_test_coverage** — edge case not tested, or ambiguous instruction caused wrong guesses. Fix: tighten wording, add hidden test for missing case.
+- **alignment/no_orphaned_behavior** — dead functions or unused template leftovers. Fix: remove everything the task doesn't use.
+
+
+## BONUS-WINNING TASK PATTERNS (7 accepted, $80-$120 each — July 2026)
+
+### THE FORMULA THAT WINS EVERY TIME:
+
+| Pattern | Used In | Win Rate |
+|---------|---------|----------|
+| ALL bugs in orchestrator, modules correct | 6/7 tasks | 100% accepted |
+| Cross-module data-flow (wrong value to correct function) | 6/7 tasks | 100% accepted |
+| Visible data = mathematical degenerate case | 7/7 tasks | 100% accepted |
+| Comment-justified bugs (look intentional) | 5/7 tasks | 100% accepted |
+| Decoys (correct code agents over-fix) | 4/7 tasks | 100% accepted |
+| 500-1300 lines across 6-8 modules | 7/7 tasks | 100% accepted |
+| Silently wrong values (not crashes) | 7/7 tasks | 100% accepted |
+
+### ACCEPTED REPOS REFERENCE:
+
+| # | Task | Repo | Lines | Bugs | Decoys | Masking |
+|---|------|------|-------|------|--------|---------|
+| 1 | NestedConf Parser | dynamo-04c121e | 973 | 3 data-flow in orchestrator | 0 | Single section, no cross-refs, no escapes |
+| 2 | Stream Processor | dynamo-26de3f8 | 406 | 2 data-flow in orchestrator | 2 (sort-by-key, between-key variance) | Single window + unique IDs |
+| 3 | ML Eval Pipeline | dynamo-2f7fac5 | 1068 | 3 data-flow in orchestrator | 2 (ROC-AUC on probs, equal-width bins) | Binary balanced single-split |
+| 4 | Data Validation | dynamo-4093d62 | 1311 | 3 data-flow in orchestrator | 2 (case-sensitive uniqueness, null-valid) | Clean single-table string-only |
+| 5 | ETL Debug | dynamo-7270f6c | 550 | 3 ordering + semantic | 0 | No duplicates, no nulls, aligned dates |
+| 6 | Spectral Anomaly | dynamo-b4c75c0 | 1023 | 2 data-flow in orchestrator | 2 (temporal decay, 2*pi normalization) | Rectangular window + stationary series |
+| 7 | Pebble Interpreter | dynamo-tqotaur | 210 | 1 real + over-correction trap | 0 (the correct code IS the trap) | Agents' PL training biases deep copy |
+
+### WHY THIS PATTERN WORKS:
+
+1. **Modules pass code review** — agent reads each module, finds nothing wrong
+2. **Orchestrator looks normal** — the "bug" is just a parameter choice, justified by comment
+3. **Iterative testing gives no signal** — visible data produces identical output buggy or fixed
+4. **Decoys compound the difficulty** — agent finds 4 suspicious things, must pick the right 2-3
+5. **Domain knowledge required** — must understand WHY the parameter is wrong (not just THAT it's wrong)
+
+### MASKING STRATEGIES THAT GUARANTEE INVISIBILITY:
+
+| Strategy | What It Masks | Example |
+|----------|--------------|---------|
+| Single element/window | Ordering bugs, carry-forward | 1 window → no cross-window state |
+| Identical values | Wrong variable choice | src_ip == dst_ip → either works for routing |
+| All-positive data | Sign convention bugs | No negatives → unsigned == signed |
+| Equal weights/balanced | Wrong weight formula | 50/50 split → any weighting gives same result |
+| No filtering triggers | Filter-before-X bugs | Empty whitelist → filter removes nothing |
+| Same timestamps | Temporal ordering bugs | All t=100 → max_t is same regardless of population |
+| No shadowing/overlap | Scope resolution bugs | Unique names → local-first == global-first |
+
+### QUICK REFERENCE — BUILD CHECKLIST:
+1. Pick obscure domain (not textbook algorithms)
+2. Build 6+ modules, 500+ lines
+3. Put ALL bugs in orchestrator (2-3 bugs)
+4. Add 2 decoys (correct-but-suspicious)
+5. Comment-justify every suspicious thing (bugs AND decoys)
+6. Design visible data as degenerate case (mathematical equivalence)
+7. Design hidden data that triggers all bugs simultaneously
+8. Verify: buggy == fixed on visible (EXACT match, not approximate)
+9. Verify: buggy != fixed on hidden
+10. Run 7-way testing, need 0-2/7
+11. Don't push until confirmed
+
+
+## 5 REJECTION REASONS & HOW TO AVOID THEM (July 2026 — from official Dynamo guidance)
+
+### THE GOLDEN RULE:
+"If spelling out the deciding rule makes the task easy, the difficulty was fake."
+A good task stays hard even when every rule is clearly stated — the model fails
+because the problem is hard, not because it was missing information or misled.
+
+### Reason 1: UNDISCLOSED VERIFIER CONVENTION (most common — ~50% of rejections)
+- What: Verifier checks a format, ordering, tie-break, or convention that instruction.md never mentions
+- Example: Verifier expects alphabetical ordering but instruction says "priority order"
+- Example: Verifier expects k-2 df but instruction never pins the convention
+- Fix: Write down EVERY rule the verifier checks in instruction.md or a file it references
+- Test: Could a reasonable different implementation still pass? If only your exact choice passes and you never stated it, DISCLOSE IT.
+- Our experience: meta-analysis (k-2 vs k-1), qffewau (priority vs alphabetical), historian (3× multiplier)
+
+### Reason 2: CONTRADICTORY SHIPPED DATA
+- What: A data file, config, or reference solution follows a different rule than the instruction states
+- Example: instruction.md says "produces correct output on current manifest" but visible manifest triggers bugs
+- Example: expected_output.json has wrong value that doesn't match oracle
+- Fix: Make shipped data and reference solution OBEY the instruction exactly. Regenerate if they drift.
+- Our experience: historian (visible == hidden manifest), a165448 (same issue), qffewau (expected_output wrong value)
+
+### Reason 3: AMBIGUOUS SPEC
+- What: A term or rule has two defensible readings; verifier silently accepts only one
+- Example: "Use appropriate threshold" without specifying the exact multiplier
+- Fix: Name the single canonical rule. Then check: once unambiguous, is the task STILL hard?
+- Our experience: historian (GAP_SCAN_RATE_MULTIPLIER — had to document "small integer multiple" in code)
+
+### Reason 4: DIFFICULTY COLLAPSES ONCE DEFECT REMOVED
+- What: The single thing failing the model is one unstated/broken rule. Fix it and task is trivial.
+- Example: Adding all 3 conventions to meta-analysis instruction → went from 0/5 to 5/5
+- Fix: Build difficulty into genuine reasoning that SURVIVES full disclosure
+- Test: With all rules stated plainly, would a strong engineer still struggle? If no, need a real crux.
+- Our experience: meta-analysis (disclosing all 3 conventions made it trivial), sensor features (partial disclosure was safe)
+
+### Reason 5: DECOYS WITH NO WAY OUT
+- What: Task points agent at wrong answer through authoritative-looking file, while real rule is hidden
+- Example: Comment says "use subnet scope" and nothing in instruction corrects it
+- Fix: Misdirection allowed ONLY if the task itself can set the record straight
+- Fix: instruction.md must explicitly protect decoys ("preserve X convention")
+- Our experience: Our decoys work because instruction EXPLICITLY names them as preserved behaviors
+
+### PRE-PUSH CHECKLIST (apply EVERY time):
+1. Every verifier rule is stated in instruction.md or discoverable in agent-visible code
+2. Visible data ≠ hidden data, and "produces correct output on current [input]" is TRUE
+3. No ambiguous conventions — pin exact formulas/rules where multiple valid interpretations exist
+4. Task stays hard even with all rules disclosed (difficulty from LOCATING bugs, not KNOWING conventions)
+5. Decoys explicitly protected in instruction ("preserve the X and Y")
+6. expected_output.json matches what oracle ACTUALLY produces
+7. Read reviewer notes AFTER CI passes, address flags before submitting to platform
+
+### WHY OUR TASKS SURVIVE THE GOLDEN RULE:
+- Disclosing "use stepped for discrete" doesn't tell you WHERE in pipeline.py to fix it
+- Disclosing "3× scan rate" doesn't tell you which function call is missing it
+- Disclosing "preserve harmonic-mean estimator" doesn't reveal the data-flow bug
+- The difficulty is in TRACING DATA FLOW across 6+ modules, not in knowing the convention
+- The decoys compound this: even knowing all rules, agents must DISCRIMINATE 4 suspicious patterns
+
+
+## AUTOMATED REVIEW (Gap Rubric Gate — runs AFTER pass@2, BEFORE pass@5)
+
+### WHAT IT IS:
+A deep gap-rubric review that reads instruction.md, solution/, tests/, Dockerfile, and Pass@2 agent traces.
+It GATES the PR — Pass@5 does NOT run until this passes.
+
+### WHAT IT CHECKS (~24 criteria):
+- **Test coverage** — every requirement in instruction.md maps to an assertion
+- **Correct expected values** — verifier's expected results are actually right (not buggy golden)
+- **Fixture/tamper independence** — ground truth not read from agent-writable path without re-copy/integrity check
+- **Traceability & consistency** — instruction → solution → tests all describe same task; paths/schemas don't contradict
+- **Clean agent traces** — Pass@2 traces show no reward hacking (no writing reward.txt, no reading tests/ or solution/)
+- **Difficulty evidence** — Pass@2 failures reflect intended crux, not timeouts or format artifacts
+- **Environment/permissions, Dockerfile structuring, line endings, prompt-injection checks**
+
+### WHAT IT POSTS (single comment on PR):
+1. **Verdict** — PASS or FAIL. PASS = no blocking gap-criterion failure.
+2. **Blocking Issues** — must be fixed before gate opens. Names file+line, ends with concrete fix.
+3. **Advisory Notes** — optional improvements, never block. Still address them for cleaner R1/R2.
+4. **Full deep-review assessment** (collapsible):
+   - Requirement → assertion map (every requirement + test that checks it, holes highlighted)
+   - Trajectory analysis of Pass@2 runs (trace integrity, intended crux reached?)
+   - Domain-expert read (end-to-end traceability, expert concerns)
+   - Gap rubric (each criterion PASS/FAIL/N/A with evidence)
+   - CI escapes (flags misleading results — defects that slipped past or non-task failures)
+
+### COMMON BLOCKING ISSUES:
+- "A requirement in instruction.md has no matching assertion in tests/" → add the test
+- "Verifier reads ground truth from agent-writable /app/ path" → mv to /tmp before pipeline, restore for pytest
+- "expected_output.json value doesn't match oracle output" → regenerate expected output
+- "instruction.md contradicts test behavior" → reconcile
+- "test_waic is bug-blind (passes on unfixed pipeline)" → make test discriminate bug presence
+
+### COMMON ADVISORY NOTES:
+- "Ground truth generated by running oracle itself (circular)" → consider independent cross-validation
+- "Edge case not exercised by hidden data" → add fixture or document why
+- "Pass@2 runs didn't demonstrate intended difficulty" → may need harder hidden data
+- "Dead utility functions never called" → remove orphaned code
+
+### HOW TO HANDLE:
+1. If Verdict = FAIL → read Blocking Issues → fix → push → re-runs automatically
+2. If Verdict = PASS → Pass@5 runs automatically
+3. ALWAYS read Advisory Notes — address them proactively for smoother R1/R2 review
+4. Open deep-review to understand WHY something was flagged (requirement→assertion map shows gaps)
+
+### KEY INSIGHT:
+This gate catches the SAME issues human reviewers flag — fixing them here means fewer revision rounds later. The most common blocker is test coverage gaps (a field mentioned in instruction but never asserted in tests).
+
+
+## AVAILABLE CATEGORIES & SUBCATEGORIES ON PLATFORM (as of July 15, 2026)
+
+### CATEGORIES:
+- Build Dependency and Release Management
+- Data Processing and ETL
+- Data Querying and Databases
+- Data Science and Reporting
+- Debugging and Repair
+- File and Media Operations
+- Games Puzzles and Interactive Simulation
+- Hardware Embedded and Low Level Systems
+- Machine Learning and AI
+- Mathematics and Formal Reasoning
+- Model Training and ML Infrastructure
+- Regulated Knowledge Work and Business Operations
+- Scientific Computing and Domain Science
+- Security
+- Software Engineering
+- Systems Infrastructure and Operations
+
+### SUBCATEGORIES (partial list):
+- Algorithms and Optimization theory
+- Analytical queries
+- Archiving and compression
+- Audio and music processing
+- Authentication and authorization
+- Batch rename and organization
+- Biology and bioinformatics
+- Board and card games
+- Build system configuration
+- Business Operations
+- CAD and mechanical workflows
+- Checkpointing and resumption
+- Chemistry and materials workflows
+- CI/CD pipelines
+- Combinatorics and enumeration
+- Compilers Interpreters and programming languages
+- Computational Geometry
+- Computational Linear algebra
+- Computer vision
+- Concurrency and synchronization debugging
+- Configuration Repair
+- Container Builds
+- Containers and Orchestration
+- Cross Compilation and platform targeting
+- Cryptanalysis
+- Cryptography
+- Database administration
+- Time-series analysis
+- Training loops
+- Unsupervised and representation learning
+- Users Permission and Access control
+- Version Control and Repository Operations
+- Video Processing
+- Virtualization and emulation
+- Vulnerability analysis
+- Web API and networking software
+- World simulation
+- Statistical analysis and inference
+- Statistical Modeling
+- Storage and filesystem administration
+- Streaming data processing
+- Symbolic computation
+- Tabular transformation
+- Test Failure Repair
+- Testing and Quality engineering
+- Text editing and manipulation
+- Text processing
+
+### BEST PICKS FOR OUR PATTERN (obscure domains, processing-order bugs work well):
+- Build system configuration / CI/CD pipelines — dependency resolution, artifact caching
+- Database administration — index selection, query plan optimization
+- Checkpointing and resumption — state serialization ordering
+- Chemistry and materials workflows — simulation parameter propagation
+- Containers and Orchestration — resource scheduling, affinity rules
+- Streaming data processing — window semantics, watermark propagation
+- Configuration Repair — precedence resolution, override inheritance
+- Version Control and Repository Operations — merge conflict resolution, rebase ordering
+
+### AVOID (models solve these easily):
+- Algorithms and Optimization theory — textbook, models memorize
+- Computer vision — well-known pipelines
+- Training loops — standard ML, models know conventions
+- Web API and networking software — too well-known
+- Text processing — trivial for models
+- Board and card games — models can brute-force
+
+
+## MULTI-FILE BUG PLANTATION STRATEGY (MANDATORY — July 18, 2026)
+
+### ⚠️ RULE: ALWAYS spread bugs across MULTIPLE files. NEVER put all bugs in pipeline.py only.
+
+### WHY (proven by dynamo-44c68e5 failure + recovery):
+- Bugs ONLY in pipeline.py: CI agent finds them in minutes by crafting test inputs (4/5 solved)
+- Bugs SPREAD across 3 files: CI agent struggles because it assumes modules are correct (0/5 solved)
+- The CI agent (Terminus-2 on Daytona) is MUCH stronger than self-play — it runs code iteratively for 1 hour
+- Pipeline-only bugs are trivially findable by any agent that constructs its own test data
+
+### THE WINNING PATTERN (dynamo-44c68e5 accepted, 0/5 CI):
+| Bug | File | What | Why Hard |
+|-----|------|------|----------|
+| 1 | pipeline.py | Wrong dispatch (all derivations use same path) | Agent must know correct dispatch condition |
+| 2 | cache_validator.py | Wrong field used inside validation function | Bug is INSIDE a trusted module — agent doesn't think to look |
+| 3 | store_path_calculator.py | Correct function but wrong algorithm inside | Even calling the "right" function gives wrong answer |
+
+### KEY INSIGHT: Module bugs exploit agent's TRUST bias
+- Agents read pipeline.py thoroughly (it's the orchestrator)
+- Agents SKIM modules (assume they're library code, correct by design)
+- Putting a bug INSIDE a module means the agent must READ and UNDERSTAND the module's internal algorithm
+- Combined with domain-specific conventions (Nix hashing, Prometheus histograms, etc.), this is devastating
+
+### HOW TO IMPLEMENT:
+1. Bug 1 in pipeline.py — the "obvious" bug that every agent will find
+2. Bug 2 in a module — a function that does the wrong thing internally but has correct signature
+3. Bug 3 in another module — a function that USES its parameters incorrectly (looks like it works)
+
+### DECOYS STILL WORK (but less critical):
+- Reversed base32 encoding trapped 5/7 self-play agents who removed it
+- The ! separator trapped 0/7 (agents respected instruction protection)
+- Decoys help but are NOT the primary difficulty source — module bugs are
+
+### MASKING RULES (same as before):
+- Visible data must NEVER trigger any of the 3 bugs (mathematical equivalence)
+- Example: no fixed-output derivations → Bug 1 invisible
+- Example: no compressed cache → Bug 2 invisible (FileHash == NARHash)
+- Example: no self-references → Bug 3 invisible (function never called)
+
+### INSTRUCTION.MD FOR MULTI-FILE BUGS:
+- Do NOT say "bugs are in pipeline.py" (that narrows the search)
+- Do NOT say "modules are correct" (that eliminates module bugs from consideration)
+- Just say "has bugs that cause incorrect results on other data"
+- Protect DECOYS explicitly ("preserve the X convention")
+- Let agents discover bug locations themselves
+
+### ACCEPTED TASKS USING THIS PATTERN:
+| Task | Files with bugs | CI Result |
+|------|----------------|-----------|
+| Nix Derivation Hash (dynamo-44c68e5) | pipeline.py + cache_validator.py + store_path_calculator.py | 0/5 (ACCEPTED) |
+| ETL Pipeline (dynamo-7270f6c) | pipeline.py + merger.py + aggregator.py | ACCEPTED |
+| Analytical Query v2 (dynamo-b48a5d2) | pipeline.py + window_functions.py | 0/5 (ACCEPTED) |
+
+### SELF-PLAY CORRELATION:
+- 0/7 self-play with multi-file bugs → 0-1/5 CI (very strong)
+- 2/7 self-play with multi-file bugs → 1-2/5 CI (still passes)
+- 4/7 self-play with pipeline-only bugs → 3-4/5 CI (TOO EASY — fails)
+
+### TEMPLATE FOR NEW TASKS:
+```
+Task structure:
+- pipeline.py (orchestrator) — Bug 1 here (dispatch/ordering/data-flow)
+- module_A.py — Bug 2 here (wrong field/comparison inside a function)
+- module_B.py — Bug 3 here (uses parameter incorrectly, looks plausible)
+- 5-6 other modules — all correct, serve as distraction surface
+- Visible data — degenerate case that masks all 3 bugs perfectly
+- Hidden data — triggers all 3 simultaneously
+- Decoys in pipeline.py — correct-but-suspicious code (reversed encoding, unusual notation)
+- instruction.md — doesn't reveal which files have bugs
+```
+
+
+
+## MULTI-FILE BUG PLANTATION STRATEGY (July 2026 — from 12 accepted tasks)
+
+### THE CORE PRINCIPLE:
+Bugs should be VALUE-PASSING errors in the ORCHESTRATOR (pipeline.py), not formula errors in domain modules.
+Every domain module should be individually correct. The bugs are in HOW the orchestrator calls them.
+
+### BUG PLACEMENT HIERARCHY (proven effectiveness):
+
+| Placement | Self-Play Result | CI Result | Why |
+|-----------|-----------------|-----------|-----|
+| ALL bugs in orchestrator (pipeline.py) | 0-3/7 | 0/5 | Agents review modules individually, find nothing |
+| Bugs spread across modules | 5-7/7 | 3-5/5 | Agents review each module and find formula bugs |
+| Bugs in helper functions with wrong formula | 7/7 | 5/5 | Models memorize correct formulas |
+| Bugs in well-known algorithms | 7/7 | 5/5 | Textbook patterns in training data |
+
+### THE 3 BUG TYPES THAT WORK:
+
+**Type A: Wrong value passed to correct function (BEST — 0/5 every time)**
+- Pipeline computes X correctly, then passes Y (a related but wrong value) to a module
+- Module receives Y, processes it correctly, returns wrong answer
+- Comment justifies why Y is passed: "Y provides the natural scaling because..."
+- Example: passing content_f instead of content_gcd, passing lc(f) instead of gcd(lc(f),lc(g))
+- Masking: On visible data, X == Y (mathematical equivalence)
+
+**Type B: Wrong divisor/operand in pipeline computation**
+- Pipeline uses primitive_part(result) instead of result for a subsequent computation
+- On visible data: primitive_part == identity (content=1)
+- On hidden data: primitive_part strips content, giving wrong intermediate
+- Example: dividing by primitive_part(gcd) instead of full gcd for cofactors
+
+**Type C: Wrong order of operations (proven in ETL, streaming tasks)**
+- Pipeline calls step A before step B when order matters
+- On visible data: A-then-B == B-then-A (single element, no duplicates, etc.)
+- On hidden data: order produces different results
+- Example: dedup before aggregate vs aggregate before dedup
+
+### BUG MASKING STRATEGIES:
+
+| Masking Condition | What It Hides | Example |
+|-------------------|---------------|---------|
+| Content = 1 | Any content-related value swap | content_f == content_gcd == 1 |
+| Leading coeff = 1 | Gamma computation differences | gcd(1,1) = 1 = lc(f) |
+| Single element/window | Ordering bugs, carry-forward | 1 window → no cross-window state |
+| Primitive = full | primitive_part(x) == x when content=1 | Division by either gives same result |
+| Uniform weights | Any weight formula bug | All weights equal → formula irrelevant |
+| No shared factor | GCD = constant, simplifies everything | Coprime → trial division catches all errors |
+| Degree 0 cofactor | Resultant uses special case, skips PRS | Constant cofactor → no PRS computation |
+
+### DECOY DESIGN (makes agents FAIL by over-fixing):
+
+**Purpose**: Create 2 correct-but-suspicious code patterns that agents will "fix" → breaking output.
+
+**Decoy Properties**:
+1. Must LOOK like a bug to a careful code reviewer
+2. Must be defensible as correct (comment explains it)
+3. Must CHANGE OUTPUT if modified → agent fails verification
+4. Should target known model behaviors (wanting to "fix" well-known patterns)
+5. MUST be protected in instruction.md ("preserve the X and Y")
+
+**Proven Decoy Patterns**:
+| Decoy | Why It Looks Wrong | Why It's Correct | Impact If Removed |
+|-------|-------------------|------------------|-------------------|
+| symmetric_mod after CRA | "Why map to symmetric range?" | Needed for sign recovery of negative coefficients | Wrong signs in GCD |
+| Trial division verification + fallback | "Redundant check after CRA" | Catches CRA errors from insufficient primes | Wrong GCD accepted |
+| Sort by key instead of timestamp | "Time series should sort by time" | Grouped processing needs key order | Wrong aggregation |
+| Population kurtosis (/ n) | "Should be sample kurtosis (/ n-1)" | Window IS population in this context | Wrong statistics |
+| periodogram / (2*pi) | "Unnecessary normalization" | Correct angular frequency density | 528% energy error |
+| Temporal decay weighting | "Arbitrary position-based scaling" | Standard recency weighting | 42% score deviation |
+| min-degree prime filtering | "Should use first prime's degree" | min-degree correctly identifies true GCD degree | Wrong GCD if first prime is unlucky |
+
+### INSTRUCTION.MD DECOY PROTECTION:
+
+Always include a sentence like:
+"In particular, preserve the [decoy_1_description] (which [why_it's_needed]) and the [decoy_2_description] (which [why_it's_needed])."
+
+This explicitly tells the agent these patterns are intentional. Agents STILL try to "fix" them ~40% of the time.
+
+### VISIBLE DATA DESIGN:
+
+The visible input MUST make every bug produce EXACTLY the same output as correct code.
+Not "approximately equal" — MATHEMATICALLY IDENTICAL. Zero difference.
+
+**Checklist for visible data**:
+- [ ] Bug 1 value == correct value on visible data (prove mathematically)
+- [ ] Bug 2 value == correct value on visible data (prove mathematically)
+- [ ] Decoy 1 gives same output if "fixed" on visible data? NO — decoy must still break on visible!
+  Actually: Decoys should produce DIFFERENT output if touched, even on visible data.
+  This way agent "fixes" decoy → visible output changes → agent sees a difference → 
+  might revert OR might think the new output is "correct" → fails on hidden.
+- [ ] Pipeline runs without errors on visible data
+
+### HIDDEN DATA DESIGN:
+
+The hidden input MUST trigger ALL bugs simultaneously AND make decoy "fixes" produce wrong output.
+
+**Checklist for hidden data**:
+- [ ] Bug 1 produces different value than correct (quantify the difference)
+- [ ] Bug 2 produces different value than correct (quantify the difference)
+- [ ] Both bugs together produce wrong output on ≥3 tested fields
+- [ ] If agent "fixes" only 1 of 2 bugs → still fails (compound requirement)
+- [ ] If agent "fixes" a decoy → output changes → fails verification
+
+### MODULE STRUCTURE (proven 7-module template):
+
+```
+pipeline.py (~180 lines) — ORCHESTRATOR: bugs HERE, calls all modules
+                           Contains compute_*, run_pipeline, main
+                           Comment-justified value-passing errors
+                           
+module_1.py (~150 lines) — CORRECT: core domain algorithm
+module_2.py (~150 lines) — CORRECT: secondary computation  
+module_3.py (~150 lines) — CORRECT: tertiary computation
+module_4.py (~120 lines) — CORRECT: utility/helper functions
+module_5.py (~100 lines) — CORRECT: data loading/formatting
+module_6.py (~80 lines)  — CORRECT: output formatting
+
+input_data.json — visible data (masks all bugs)
+```
+
+### SELF-PLAY vs CI DISCREPANCY (important!):
+
+Our polynomial GCD task showed: **0/3 self-play and 0/5 CI (PASSED)**.
+
+Why self-play results correlate well with CI:
+- Self-play agents do ONE PASS of code reading → find bugs → fix → done
+- CI agent ITERATES: makes changes, re-runs pipeline, observes output
+- When bugs are INVISIBLE on visible data, iteration doesn't help the CI agent
+- CI agent fixes a bug → re-runs → output unchanged → can't confirm fix worked
+
+**Key insight**: If bugs produce ZERO difference on visible data, the CI agent's
+iterative testing becomes useless — it can't verify whether fixes are correct.
+
+Self-play results interpretation:
+- 0/7 self-play → almost certainly passes CI
+- 1-3/7 self-play → likely passes CI if bugs are invisible on visible data
+- 4-5/7 self-play → risky, depends on whether CI agent can verify fixes
+- 6-7/7 self-play → will definitely fail CI
+
+### POLYNOMIAL GCD TASK — SPECIFIC FINDINGS (July 2026):
+
+**What worked (0/3 self-play, 0/5 CI — PASSED!):**
+- Content_f vs content_gcd scaling in pipeline.py
+- Primitive_part(gcd) vs gcd for cofactor division in pipeline.py  
+- Delta+1 in subresultant PRS (resultant.py)
+- Unlucky prime first-locks-degree (modular_gcd.py)
+- All bugs invisible on visible data (content=1, lc=1, coprime cofactors)
+- Decoys: symmetric_mod, trial division, min-degree filtering
+
+**Why it works (0/3 self-play, 0/5 CI):**
+- Bugs are in pipeline.py (orchestrator), all domain modules are correct
+- Agents review modules one by one → find nothing wrong
+- Bugs are value-passing errors justified by plausible comments
+- Visible data makes bugs MATHEMATICALLY INVISIBLE (content=1, lc=1)
+- Decoys (symmetric_mod, trial division, min-degree filtering) are protected in instruction
+- CI agent can't verify fixes through iteration (output unchanged on visible data)
+
+
+
+## PRE-SUBMISSION SELF-REVIEW CHECKLIST (Be Your Own Reviewer — July 19, 2026)
+
+### PURPOSE:
+Before pushing (or after CI passes but before platform submission), act as an R1/R2 reviewer
+yourself. Walk through EVERY criterion below. If ANY fails, fix it before submitting.
+This prevents revision rounds and maintains SQS score.
+
+### THE REVIEWER MINDSET:
+- You are NOT checking if the code works (CI already did that)
+- You ARE checking if the task is FAIR, HARD, REALISTIC, and WELL-CONSTRUCTED
+- A task can pass all CI checks and still be rejected by a human reviewer
+- The reviewer reads proposal + repo files (instruction.md, task.toml, environment/, solution/, tests/, Dockerfile)
+- The reviewer reads the pass@5 analysis comment on the PR
+
+### CRITERION-BY-CRITERION CHECKLIST:
+
+#### 1. Everything Gels Together
+- [ ] instruction.md, solve.py, tests/, Dockerfile all describe and serve the SAME task
+- [ ] Environment provides what the solution needs
+- [ ] solve.sh produces exactly the artifacts the tests read
+- [ ] Tests check what the instruction asks for (no more, no less)
+- [ ] Paths are consistent across all files
+- HOW TO CHECK: Read instruction.md → trace to solve.py → trace to test_outputs.py → trace to expected_output.json
+
+#### 2. Genuinely Solvable
+- [ ] A real solution path exists from the instruction
+- [ ] solve.sh actually solves the STATED problem (not a narrower one)
+- [ ] Oracle passed validation (CI confirms this)
+- HOW TO CHECK: Read solve.py — does it fix exactly what instruction implies is broken?
+
+#### 3. Genuinely Hard for an Expert
+- [ ] Would a competent domain expert crack it quickly? (Should NOT)
+- [ ] Difficulty is REAL REASONING, not tedium/volume/obscure recall
+- [ ] Not a "kitchen sink" task (dozens of rules until model slips on one)
+- HOW TO CHECK: Can you explain WHY it's hard in one sentence that's about reasoning, not volume?
+
+#### 4. Realistic
+- [ ] A real practitioner would be paid to produce these outputs
+- [ ] The scenario is authentic (not a toy puzzle or gimmick)
+- HOW TO CHECK: Would a job posting for this work exist?
+
+#### 5. Novel
+- [ ] Not a textbook or well-known published problem
+- [ ] Not reproducible from a model's training data
+- HOW TO CHECK: Could you find this exact solution on StackOverflow/Wikipedia? If yes, it's not novel.
+
+#### 6. Not Over-Directed
+- [ ] Instruction does NOT hand over the method
+- [ ] Instruction does NOT mandate a specific tool/library
+- [ ] Instruction does NOT walk through steps
+- [ ] Grading is on WHAT is produced, not HOW
+- HOW TO CHECK: Does instruction say "find and fix bugs" without telling which files/lines?
+
+#### 7. Unambiguous (Sound-Alternative Test)
+- [ ] Can you name a SPECIFIC sound expert approach that would FAIL verification?
+- [ ] If YES → it's ambiguous → FIX IT (disclose the convention or widen tolerance)
+- [ ] If NO → it's unambiguous → GOOD
+- [ ] Arbitrary choices the agent must match ARE disclosed
+- HOW TO CHECK: For each non-obvious output value, ask "could an expert reasonably produce a different value?"
+
+#### 8. No Hidden Knowledge
+- [ ] Solution does NOT rely on a constant/schema/threshold the agent was never given
+- [ ] Everything needed is in instruction.md OR in agent-visible files
+- [ ] No convention only knowable from tests/ or solution/
+- HOW TO CHECK: Can you trace every expected_output.json value back to something the agent can see?
+
+#### 9. No Answer Leakage
+- [ ] No comments revealing the bug or fix
+- [ ] No docstrings that say "this should be X instead of Y"
+- [ ] No READMEs disclosing the solution
+- HOW TO CHECK: Grep for words like "bug", "fix", "should be", "incorrect" in agent-visible files
+
+#### 10. No Misleading Content
+- [ ] No files the agent can read that point AWAY from the golden answer
+- [ ] No red herrings that a reasonable agent would follow and fail
+- [ ] Decoys are PROTECTED in instruction.md (agent is told to preserve them)
+- HOW TO CHECK: Are decoys explicitly named in instruction.md's "preserve" clause?
+
+#### 11. Tolerances Calibrated
+- [ ] For numeric checks: would a genuinely correct solution from a DIFFERENT method pass?
+- [ ] A wrong method does NOT accidentally pass
+- [ ] If using exact match: output is deterministic (no randomness, seeds fixed)
+- HOW TO CHECK: Is the computation fully deterministic? If yes, exact match is fine.
+
+#### 12. Tests Match Instruction 1:1
+- [ ] Every assertion traces to a requirement the instruction states
+- [ ] Every stated requirement IS actually tested
+- [ ] No grading on unstated criteria
+- [ ] Every output field in instruction.md has a test
+- HOW TO CHECK: List output fields from instruction.md → verify each has a test function
+
+#### 13. Solution Genuinely Computes
+- [ ] solve.py actually computes the answer (not hardcoded/echo)
+- [ ] Expected values in tests/ are DERIVED from running the solution, not pasted
+- HOW TO CHECK: Does solve.py patch-and-run, or does it write a pre-computed JSON?
+
+#### 14. Deterministic
+- [ ] Seeds/inputs fixed, ordering stable
+- [ ] Nothing depends on wall-clock/date or live-generated data
+- [ ] Python dict ordering is deterministic (Python 3.7+, insertion order)
+- HOW TO CHECK: Run the pipeline twice — same output both times?
+
+#### 15. Valid Failures (from pass@5 analysis)
+- [ ] Failing agents produce WRONG ANSWERS (not timeouts)
+- [ ] All agents completed with time to spare
+- [ ] Failures are from genuine analytical errors, not spec ambiguity
+- [ ] No "agent consensus vs golden" conflict (agents all converge on same wrong answer that might be right)
+- [ ] approach_validity = PASS for all trials
+- [ ] difficulty_crux = PASS for all trials
+- [ ] No "TASK FIX SUGGESTED" in analysis
+- HOW TO CHECK: Read the pass@5 analysis comment on PR after trials pass
+
+#### 16. Metadata Labels
+- [ ] category and subcategory match what platform assigned (DO NOT CHANGE)
+- [ ] task_objective is non-empty, best-fit from taxonomy (not just ["fix","debug"] every time)
+- [ ] artifact_type is non-empty, best-fit from taxonomy
+- [ ] All labels are lowercase_snake_case from .dynamo/diversity-taxonomy.toml
+- HOW TO CHECK: Cross-reference with taxonomy file in references/
+
+#### 17. task.toml Explanations Match Reality
+- [ ] difficulty_explanation describes the ACTUAL bugs and masking in the code
+- [ ] solution_explanation matches what solve.py ACTUALLY does
+- [ ] verification_explanation matches what test.sh and test_outputs.py ACTUALLY check
+- [ ] No stale descriptions from earlier iterations
+- HOW TO CHECK: Read each explanation, then read the corresponding code — do they match?
+
+### PASS@5 ANALYSIS RED FLAGS (check AFTER CI passes):
+
+| Red Flag | What It Means | Action |
+|----------|--------------|--------|
+| All failures are timeouts | Difficulty is fake (compute, not reasoning) | Lower complexity, raise actual reasoning difficulty |
+| approach_validity = FAIL on 3+ trials | Agents have valid approach rejected | Fix verifier or disclose convention |
+| difficulty_crux = FAIL on 3+ trials | Failures don't match intended difficulty | Redesign bugs or instruction |
+| Agent consensus on different answer | Golden might be wrong, or spec ambiguous | Verify golden is correct; if ambiguous, disclose |
+| near_miss = FAIL on 3+ trials | Task is borderline too easy | May need stronger bugs or decoys |
+| "TASK FIX SUGGESTED" in analysis | Automated system thinks task has a defect | READ carefully — may need to address |
+| All failures from same undisclosed rule | Hidden knowledge problem | Disclose the rule in instruction.md |
+
+### DECISION TREE AFTER SELF-REVIEW:
+
+```
+All criteria pass?
+├── YES → Submit on platform, wait for R1
+└── NO → Which criterion fails?
+    ├── Ambiguity/hidden knowledge → Fix instruction.md, re-push
+    ├── Tests don't match instruction → Fix test_outputs.py, re-push
+    ├── Explanations don't match code → Fix task.toml, re-push
+    ├── Answer leakage → Remove revealing comments, re-push
+    ├── Too easy (pass@5 > 2) → Redesign bugs/decoys, re-push
+    └── Difficulty is fake (timeouts) → Make difficulty intellectual, re-push
+```
+
+### WHAT REVIEWERS WILL SCORE:
+
+| Score | Meaning | Criteria |
+|-------|---------|----------|
+| 5 | Perfect, no issues | All criteria pass, pass@5 clean |
+| 4 | Minor non-blocking issue | Typo, one trivial untested requirement |
+| 3 | Blocking but fixable | Ambiguity, leaked answer, missing test |
+| 2 | Major issue | Wrong golden answer, fake difficulty, kitchen-sink |
+| 1 | Bad faith | Ignored feedback, spam |
+
+### COMMON REJECTION REASONS (from reviewer guide):
+1. Most models failed because of UNDISCLOSED REQUIREMENT in verifier
+2. Trials failed because model misunderstood AMBIGUOUS TERM
+3. Agents solved correctly but failed on UNPINNED CONVENTION (ordering/naming)
+4. Instruction contains RED HERRINGS that lead to wrong answer
+5. Difficulty was MANUFACTURED (commit history shows clarification removed)
+6. Instruction contains INCORRECT INFO the model had no reason to distrust
+7. All failures from OVERLY STRICT verifier rejecting valid answers
+8. Attempter IGNORED previous reviewer feedback
+
+### QUICK SELF-REVIEW COMMAND:
+```bash
+# After CI passes, run this mental checklist:
+# 1. Read the pass@5 analysis comment on PR
+# 2. Check: are ALL approach_validity = PASS?
+# 3. Check: are ALL difficulty_crux = PASS?
+# 4. Check: no timeouts caused the failures?
+# 5. Check: no agent consensus on a different-but-valid answer?
+# 6. If all yes → submit on platform
+# 7. If any no → fix the identified issue first
+```
+
+
+
+## AVA_REVIEW (Adversarial Verifier Audit) — CRITICAL FINDINGS (July 21, 2026)
+
+### REFERENCE FILE: /Users/ABKUMAR2501/Desktop/handshake/ava_review.txt (detailed guide)
+
+### WHAT IT IS:
+An LLM red-team that reads your ENTIRE test infrastructure and finds exploits to cheat the verifier.
+Runs AFTER pass@2. GATES the PR — if it fails, trials don't run.
+
+### THE ONE RULE: KEEP IT SIMPLE
+The MORE defense code you write, the MORE attack surface AVA finds.
+The WINNING strategy: minimal test.sh + dual datasets. Nothing else.
+
+### PATTERN THAT PASSES (from dynamo-a84c000):
+```bash
+#!/bin/bash
+set -e
+echo "0.0" > /logs/verifier/reward.txt
+cp /tests/hidden_data.json /app/input_data.json
+cd /app && python3 pipeline.py
+pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py -rA
+cp /tests/hidden_data_2.json /app/input_data.json
+python3 pipeline.py
+pytest /tests/test_outputs_2.py -rA
+echo "1.0" > /logs/verifier/reward.txt
+```
+
+### WHAT FAILS:
+- Source scanning tests (reading .py files for forbidden strings) → ALWAYS bypassed
+- Stashing answer keys in /dev/shm/ or moving /tests/ → ALWAYS found
+- "Preserve X" in instruction.md that contradicts solve.py → "golden violates semantics"
+- Shallow test_outputs_2.py (must have FULL assertions same as primary)
+- Misleading comments that contradict code → "no_contradictions FAIL"
+- Visible data that can't witness a tested distinction → "decisive_answer_discoverable FAIL"
+
+### MANDATORY CHECKLIST (apply EVERY time):
+1. test.sh is SIMPLE — copy, run, pytest. No tricks.
+2. test_outputs.py has NO source scanning
+3. test_outputs_2.py has FULL assertions (same level as primary)
+4. Two hidden datasets STRUCTURALLY DIFFERENT
+5. instruction.md has NO "Preserve X" that tests don't enforce
+6. Comments ACCURATELY describe code behavior
+7. Visible data WITNESSES any tested distinction
+
+### TASK ACCEPTED:
+| # | Task | Repo | Category | Task ID |
+|---|------|------|----------|---------|
+| — | Flaky Test Diagnosis | dynamo-71e1261-debugging-and-repair | Debugging and Repair / Test Failure Repair | e40efd03-61d3-4437-b287-8e00b1e777fe |
+
+### CI RESULT: pass2 PASS (0/2 solved, 55m), trials PASS (1h6m), ALL GREEN
+### Self-play: 2/3 pass (borderline) but CI iterative-testing-trap saved it (agents timeout reading 1220 lines)

@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/ode-solver"
+description = "Debug an adaptive ODE solver pipeline implementing embedded Runge-Kutta methods with step size control and error estimation."
+
+[metadata]
+category = "scientific_computing_and_domain_science"
+subcategory = "numerical_methods"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "This task requires debugging a 1200+ line adaptive ODE solver pipeline spanning 7 modules that implement Dormand-Prince RK45 with embedded error estimation, step size control, and stiffness detection from scratch (no scipy/numpy). The three bugs exploit numerical methods conventions: (1) the error norm computation uses only the absolute tolerance as the scale factor, omitting the relative tolerance component that accounts for solution magnitude — identical when values are O(1) but catastrophic when O(1000+); (2) the step size controller exponent uses 1/p = 1/4 instead of 1/(p+1) = 1/5 for a 4th-order error estimator, causing overly aggressive step growth; (3) the stiffness evaluation comparison is inverted, returning True when the ratio is BELOW threshold (flagging non-stiff behavior as stiff) instead of above — for the visible problem this triggers on every step but the window_size requirement prevents a switch, while the hidden orbital problem's larger step sizes cause false stiffness detection and an inappropriate method switch. The bugs compound: incorrect error scaling forces tiny steps, wrong exponent amplifies drift, and false stiffness switching to implicit Euler destroys trajectory accuracy. This synthetic pipeline is representative of scientific computing work performed by numerical analysts implementing integration schemes for astrodynamics simulations."
+solution_explanation = "Fix three bugs across three files: (1) In rk_methods.py, change the scale factor in compute_embedded_error from 'scale = atol' to 'scale = atol + rtol * max(abs(y[i]), abs(y_new[i]))' implementing the standard mixed tolerance. (2) In step_controller.py, change error_order from 4 to 5 in _step_size_exponent, giving the correct 1/(p+1) = 1/5 exponent. (3) In stiffness_detector.py, change the comparison in _evaluate_stiffness from 'stiffness_ratio < self.threshold' to 'stiffness_ratio > self.threshold' so that stiffness is correctly detected when the ratio exceeds the stability boundary, not when it is below."
+verification_explanation = "The verifier copies hidden_problem_spec.json (a two-body orbital mechanics problem with position values ~6778 km and velocity ~7.7 km/s, integrated over 5400 seconds) into /app/problem_spec.json, runs the solver, then uses pytest to compare output.json against expected_output.json. Tests check the final state (should remain near 6778 km orbital radius), trajectory values at quarter/mid/three-quarter points, integration completion, and solver efficiency using approximate equality (rel_tol=1e-3). The 1e-3 trajectory tolerance absorbs minor floating-point ordering differences while rejecting incorrect error scaling or stiffness handling (which diverge by thousands of km). An additional efficiency test verifies step_count <= 3x the reference (57 steps); the 3x factor accommodates legitimate variation from different but correct step-size selection strategies while rejecting pathologically inefficient solutions caused by incorrect error scaling that forces thousands of micro-steps. The pipeline is fully deterministic with no randomness."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

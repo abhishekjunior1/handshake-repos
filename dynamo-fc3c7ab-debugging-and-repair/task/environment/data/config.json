@@ -1,0 +1,197 @@
+{
+  "flags": [
+    {
+      "name": "adaptive_bitrate",
+      "enabled": true,
+      "description": "Enable adaptive bitrate streaming for media playback",
+      "rollout_percentage": 100,
+      "targeting_rules": [
+        {
+          "attribute": "device_type",
+          "operator": "in_list",
+          "value": ["smart_tv", "streaming_box", "mobile"]
+        }
+      ],
+      "dependencies": [],
+      "tags": ["media", "streaming"],
+      "priority": 2
+    },
+    {
+      "name": "battery_optimization",
+      "enabled": true,
+      "description": "Advanced battery optimization for portable devices",
+      "rollout_percentage": 100,
+      "targeting_rules": [
+        {
+          "attribute": "device_type",
+          "operator": "in_list",
+          "value": ["mobile", "tablet", "wearable"]
+        }
+      ],
+      "dependencies": [],
+      "tags": ["power", "optimization"],
+      "priority": 1
+    },
+    {
+      "name": "cloud_sync",
+      "enabled": true,
+      "description": "Real-time cloud synchronization of device state",
+      "rollout_percentage": 100,
+      "targeting_rules": [],
+      "dependencies": [],
+      "tags": ["connectivity", "sync"],
+      "priority": 3
+    },
+    {
+      "name": "dark_mode",
+      "enabled": true,
+      "description": "System-wide dark mode theme",
+      "rollout_percentage": 100,
+      "targeting_rules": [
+        {
+          "attribute": "firmware_version",
+          "operator": "version_gte",
+          "value": "2.0.0"
+        }
+      ],
+      "dependencies": [],
+      "tags": ["ui", "theme"],
+      "priority": 1
+    },
+    {
+      "name": "edge_compute",
+      "enabled": false,
+      "description": "Local edge computing for latency-sensitive operations",
+      "rollout_percentage": 100,
+      "targeting_rules": [
+        {
+          "attribute": "region",
+          "operator": "in_list",
+          "value": ["us-west-2", "eu-west-1"]
+        }
+      ],
+      "dependencies": [],
+      "tags": ["compute", "edge"],
+      "priority": 4
+    }
+  ],
+  "devices": [
+    {
+      "device_id": "dev-001",
+      "device_type": "smart_tv",
+      "region": "us-west-2",
+      "firmware_version": "3.1.0",
+      "last_seen": "2026-07-16T08:00:00Z",
+      "attributes": {
+        "model": "XR-500",
+        "memory_gb": 4
+      }
+    },
+    {
+      "device_id": "dev-002",
+      "device_type": "mobile",
+      "region": "us-east-1",
+      "firmware_version": "2.5.0",
+      "last_seen": "2026-07-16T07:30:00Z",
+      "attributes": {
+        "model": "Phone-Pro",
+        "memory_gb": 8
+      }
+    },
+    {
+      "device_id": "dev-003",
+      "device_type": "streaming_box",
+      "region": "eu-west-1",
+      "firmware_version": "2.0.0",
+      "last_seen": "2026-07-16T09:15:00Z",
+      "attributes": {
+        "model": "StreamX",
+        "memory_gb": 2
+      }
+    },
+    {
+      "device_id": "dev-004",
+      "device_type": "tablet",
+      "region": "us-west-2",
+      "firmware_version": "3.0.0",
+      "last_seen": "2026-07-16T06:45:00Z",
+      "attributes": {
+        "model": "Tab-Ultra",
+        "memory_gb": 6
+      }
+    },
+    {
+      "device_id": "dev-005",
+      "device_type": "wearable",
+      "region": "ap-southeast-1",
+      "firmware_version": "1.5.0",
+      "last_seen": "2026-07-16T10:00:00Z",
+      "attributes": {
+        "model": "Watch-3",
+        "memory_gb": 1
+      }
+    },
+    {
+      "device_id": "dev-006",
+      "device_type": "smart_tv",
+      "region": "eu-west-1",
+      "firmware_version": "2.8.0",
+      "last_seen": "2026-07-16T05:00:00Z",
+      "attributes": {
+        "model": "XR-700",
+        "memory_gb": 4
+      }
+    },
+    {
+      "device_id": "dev-007",
+      "device_type": "mobile",
+      "region": "us-west-2",
+      "firmware_version": "3.2.1",
+      "last_seen": "2026-07-16T08:30:00Z",
+      "attributes": {
+        "model": "Phone-Lite",
+        "memory_gb": 4
+      }
+    },
+    {
+      "device_id": "dev-008",
+      "device_type": "smart_tv",
+      "region": "us-east-1",
+      "firmware_version": "1.9.0",
+      "last_seen": "2026-07-16T07:00:00Z",
+      "attributes": {
+        "model": "XR-300",
+        "memory_gb": 2
+      }
+    },
+    {
+      "device_id": "dev-009",
+      "device_type": "streaming_box",
+      "region": "ap-southeast-1",
+      "firmware_version": "2.1.0",
+      "last_seen": "2026-07-13T10:00:00Z",
+      "attributes": {
+        "model": "StreamY",
+        "memory_gb": 2
+      }
+    },
+    {
+      "device_id": "dev-010",
+      "device_type": "tablet",
+      "region": "eu-west-1",
+      "firmware_version": "2.3.0",
+      "last_seen": "2026-07-12T15:00:00Z",
+      "attributes": {
+        "model": "Tab-Mini",
+        "memory_gb": 3
+      }
+    }
+  ],
+  "mutex_groups": [
+    {
+      "name": "streaming_mode",
+      "flags": ["adaptive_bitrate", "edge_compute"],
+      "priority_order": ["adaptive_bitrate", "edge_compute"]
+    }
+  ]
+}

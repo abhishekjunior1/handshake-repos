@@ -1,0 +1,54 @@
+{
+  "source_architecture": {
+    "architecture_name": "ARM_PL080",
+    "bus_width": 4,
+    "word_size": 4,
+    "max_burst_length": 16,
+    "address_bits": 32
+  },
+  "target_architecture": {
+    "architecture_name": "ARM_PL330",
+    "bus_width": 4,
+    "alignment_boundary": 64,
+    "descriptor_data_size": 32,
+    "metadata_overhead": 16,
+    "max_transfer_per_descriptor": 16777215,
+    "max_total_bytes": 268435456,
+    "alignment": 4,
+    "max_burst_length": 16
+  },
+  "migration_options": {
+    "base_address": 0,
+    "address_offset": 0
+  },
+  "descriptor_chain": [
+    {
+      "source_address": 1024,
+      "transfer_length": 256,
+      "control_flags": 5,
+      "chain_next": 1,
+      "priority_level": 1
+    },
+    {
+      "source_address": 2048,
+      "transfer_length": 512,
+      "control_flags": 5,
+      "chain_next": 2,
+      "priority_level": 1
+    },
+    {
+      "source_address": 4096,
+      "transfer_length": 1024,
+      "control_flags": 5,
+      "chain_next": 3,
+      "priority_level": 0
+    },
+    {
+      "source_address": 8192,
+      "transfer_length": 64,
+      "control_flags": 3,
+      "chain_next": 0,
+      "priority_level": 0
+    }
+  ]
+}

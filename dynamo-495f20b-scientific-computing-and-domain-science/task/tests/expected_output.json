@@ -1,0 +1,129 @@
+{
+  "model_summary": {
+    "n_groups": 8,
+    "total_observations": 52,
+    "estimation_method": "empirical_bayes",
+    "shrinkage_type": "james_stein",
+    "credible_level": 0.95,
+    "grand_mean": 50.21500655769228,
+    "effective_parameters": 7.666700672237408
+  },
+  "group_estimates": [
+    {
+      "group_id": "cohort_1",
+      "n": 5,
+      "sample_mean": 46.086881,
+      "sample_variance": 1.000001,
+      "shrinkage_factor": 0.063764,
+      "shrunken_mean": 46.350109,
+      "posterior_se": 0.432721,
+      "ci_lower": 45.148631,
+      "ci_upper": 47.551586,
+      "ci_width": 2.402954
+    },
+    {
+      "group_id": "cohort_2",
+      "n": 6,
+      "sample_mean": 47.204915,
+      "sample_variance": 1.0,
+      "shrinkage_factor": 0.043433,
+      "shrunken_mean": 47.335652,
+      "posterior_se": 0.399284,
+      "ci_lower": 46.309037,
+      "ci_upper": 48.362267,
+      "ci_width": 2.05323
+    },
+    {
+      "group_id": "cohort_3",
+      "n": 7,
+      "sample_mean": 48.322949,
+      "sample_variance": 1.0,
+      "shrinkage_factor": 0.032932,
+      "shrunken_mean": 48.385259,
+      "posterior_se": 0.371689,
+      "ci_lower": 47.475533,
+      "ci_upper": 49.294984,
+      "ci_width": 1.819451
+    },
+    {
+      "group_id": "cohort_4",
+      "n": 8,
+      "sample_mean": 49.440983,
+      "sample_variance": 1.0,
+      "shrinkage_factor": 0.02652,
+      "shrunken_mean": 49.46151,
+      "posterior_se": 0.348834,
+      "ci_lower": 48.636428,
+      "ci_upper": 50.286593,
+      "ci_width": 1.650165
+    },
+    {
+      "group_id": "cohort_5",
+      "n": 5,
+      "sample_mean": 50.559017,
+      "sample_variance": 1.0,
+      "shrinkage_factor": 0.063764,
+      "shrunken_mean": 50.537081,
+      "posterior_se": 0.432721,
+      "ci_lower": 49.335604,
+      "ci_upper": 51.738559,
+      "ci_width": 2.402954
+    },
+    {
+      "group_id": "cohort_6",
+      "n": 6,
+      "sample_mean": 51.677051,
+      "sample_variance": 1.0,
+      "shrinkage_factor": 0.043433,
+      "shrunken_mean": 51.61355,
+      "posterior_se": 0.399284,
+      "ci_lower": 50.586936,
+      "ci_upper": 52.640165,
+      "ci_width": 2.05323
+    },
+    {
+      "group_id": "cohort_7",
+      "n": 7,
+      "sample_mean": 52.795085,
+      "sample_variance": 1.0,
+      "shrinkage_factor": 0.032932,
+      "shrunken_mean": 52.710117,
+      "posterior_se": 0.371689,
+      "ci_lower": 51.800392,
+      "ci_upper": 53.619843,
+      "ci_width": 1.819451
+    },
+    {
+      "group_id": "cohort_8",
+      "n": 8,
+      "sample_mean": 53.913119,
+      "sample_variance": 1.0,
+      "shrinkage_factor": 0.02652,
+      "shrunken_mean": 53.815044,
+      "posterior_se": 0.348834,
+      "ci_lower": 52.989961,
+      "ci_upper": 54.640126,
+      "ci_width": 1.650165
+    }
+  ],
+  "variance_components": {
+    "within_group_variance": 1.0,
+    "between_group_variance": 7.341369,
+    "total_variance": 8.341369,
+    "intraclass_correlation": 0.880116
+  },
+  "model_comparison": {
+    "dic": 155.53664762190186,
+    "waic": 139.56961613626717,
+    "effective_params_dic": 7.666700672237408,
+    "effective_params_waic": 0.0,
+    "model_complexity_ratio": 7666.700672237407
+  },
+  "diagnostics": {
+    "mean_shrinkage_factor": 0.041662,
+    "min_shrinkage_factor": 0.02652,
+    "max_shrinkage_factor": 0.063764,
+    "mean_interval_width": 1.98145,
+    "effective_parameters": 7.666701
+  }
+}

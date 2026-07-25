@@ -1,0 +1,32 @@
+{
+  "layers": [
+    {
+      "name": "base",
+      "priority": 10,
+      "content": "# Base configuration\nAPP_NAME=platform-api\nAPP_ENV=production\nSERVICE_URL=https://${APP_DOMAIN}/api/v2\nAPP_DOMAIN=api.example.com\nLOG_LEVEL=warn\nDB_HOST=db-prod.internal\nDB_PORT=5432\nDB_NAME=platform_db\nDB_URL=\"postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}\"\nAPI_KEY=\"sk-prod-abc123\"\nSSL_CERT_PATH=/etc/ssl/certs/app.pem\ninternal_note=this-should-export"
+    },
+    {
+      "name": "deployment",
+      "priority": 50,
+      "content": "# Deployment overrides\nAPP_DOMAIN=prod.platform.io\nREPLICAS=3\nMEMORY_LIMIT=2048\nHEALTH_CHECK_PATH=\"/healthz\"\nDEPLOY_NOTES=\"canary release v2.8.1\"\nSSH_BANNER=\"Welcome to production server.\nAuthorized access only.\nAll sessions are monitored and recorded.\nDisconnect immediately if unauthorized.\"\nHEALTH_ENDPOINT=${SERVICE_URL}/health"
+    },
+    {
+      "name": "secrets",
+      "priority": 90,
+      "content": "# Secret values\nDB_PASSWORD=s3cr3t-pr0d-pw!\nJWT_SECRET=\"\"\"hs256-hmac-prod-key\"\"\"\nAPI_KEY=\"\"sk-prod-xyz789-final\"\"\n_INTERNAL_TOKEN=internal-only"
+    }
+  ],
+  "settings": {
+    "strict_mode": true
+  },
+  "export_rules": {
+    "include_prefixes": [],
+    "exclude_prefixes": [
+      "_",
+      "INTERNAL_"
+    ],
+    "exclude_names": [
+      "DB_PASSWORD"
+    ]
+  }
+}

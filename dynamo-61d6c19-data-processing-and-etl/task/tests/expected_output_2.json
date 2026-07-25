@@ -1,0 +1,258 @@
+{
+  "warehouse_snapshot": {
+    "rows": [
+      {
+        "owner": "Martinez Corp",
+        "balance": 45000.0,
+        "currency": "USD",
+        "status": "review",
+        "account_id": null,
+        "amount": null,
+        "type": null,
+        "memo": null,
+        "_primary_key": "acc-X1",
+        "_source_table": "accounts",
+        "_last_modified": "2024-09-05T18:00:00.000Z",
+        "_operation": "UPDATE",
+        "_deleted": false
+      },
+      {
+        "owner": "Nakamura LLC",
+        "balance": 130000.0,
+        "currency": "EUR",
+        "status": "active",
+        "account_id": null,
+        "amount": null,
+        "type": null,
+        "memo": null,
+        "_primary_key": "acc-Y2",
+        "_source_table": "accounts",
+        "_last_modified": "2024-09-05T15:00:00.000Z",
+        "_operation": "UPDATE",
+        "_deleted": false
+      },
+      {
+        "account_id": "acc-X1",
+        "amount": -2500.0,
+        "type": "withdrawal",
+        "memo": "Wire transfer",
+        "owner": null,
+        "balance": null,
+        "currency": null,
+        "status": null,
+        "_primary_key": "txn-001",
+        "_source_table": "transactions",
+        "_last_modified": "2024-09-05T08:30:05.000Z",
+        "_operation": "DELETE",
+        "_deleted": true,
+        "_deleted_at": "2024-09-05T20:00:00.000Z"
+      },
+      {
+        "account_id": "acc-Y2",
+        "amount": 5000.0,
+        "type": "deposit",
+        "memo": "Client payment",
+        "owner": null,
+        "balance": null,
+        "currency": null,
+        "status": null,
+        "_primary_key": "txn-002",
+        "_source_table": "transactions",
+        "_last_modified": "2024-09-05T16:00:00.000Z",
+        "_operation": "UPDATE",
+        "_deleted": false
+      }
+    ],
+    "row_count": 4,
+    "active_count": 3,
+    "deleted_count": 1
+  },
+  "scd_history": {
+    "records": [
+      {
+        "version": 1,
+        "effective_from": "2024-09-05T06:00:07.000Z",
+        "effective_to": "2024-09-05T12:00:00.000Z",
+        "is_current": false,
+        "operation": "INSERT",
+        "attributes": {
+          "owner": "Martinez Corp",
+          "balance": 50000.0,
+          "currency": "USD",
+          "status": "active",
+          "account_id": null,
+          "amount": null,
+          "type": null,
+          "memo": null
+        },
+        "source_event_id": "evt-302",
+        "entity_key": "acc-X1"
+      },
+      {
+        "version": 2,
+        "effective_from": "2024-09-05T12:00:00.000Z",
+        "effective_to": "2024-09-05T18:00:00.000Z",
+        "is_current": false,
+        "operation": "UPDATE",
+        "attributes": {
+          "owner": "Martinez Corp",
+          "balance": 47500.0,
+          "currency": null,
+          "status": null,
+          "account_id": null,
+          "amount": null,
+          "type": null,
+          "memo": null
+        },
+        "source_event_id": "evt-303",
+        "entity_key": "acc-X1"
+      },
+      {
+        "version": 3,
+        "effective_from": "2024-09-05T18:00:00.000Z",
+        "effective_to": null,
+        "is_current": true,
+        "operation": "UPDATE",
+        "attributes": {
+          "owner": null,
+          "balance": 45000.0,
+          "currency": null,
+          "status": "review",
+          "account_id": null,
+          "amount": null,
+          "type": null,
+          "memo": null
+        },
+        "source_event_id": "evt-304",
+        "entity_key": "acc-X1"
+      },
+      {
+        "version": 1,
+        "effective_from": "2024-09-05T07:00:00.000Z",
+        "effective_to": "2024-09-05T15:00:00.000Z",
+        "is_current": false,
+        "operation": "INSERT",
+        "attributes": {
+          "owner": "Nakamura LLC",
+          "balance": 125000.0,
+          "currency": "EUR",
+          "status": "active",
+          "account_id": null,
+          "amount": null,
+          "type": null,
+          "memo": null
+        },
+        "source_event_id": "evt-305",
+        "entity_key": "acc-Y2"
+      },
+      {
+        "version": 2,
+        "effective_from": "2024-09-05T15:00:00.000Z",
+        "effective_to": null,
+        "is_current": true,
+        "operation": "UPDATE",
+        "attributes": {
+          "owner": "Nakamura LLC",
+          "balance": 130000.0,
+          "currency": null,
+          "status": null,
+          "account_id": null,
+          "amount": null,
+          "type": null,
+          "memo": null
+        },
+        "source_event_id": "evt-306",
+        "entity_key": "acc-Y2"
+      },
+      {
+        "version": 1,
+        "effective_from": "2024-09-05T08:30:05.000Z",
+        "effective_to": "2024-09-05T20:00:00.000Z",
+        "is_current": false,
+        "operation": "INSERT",
+        "attributes": {
+          "account_id": "acc-X1",
+          "amount": -2500.0,
+          "type": "withdrawal",
+          "memo": "Wire transfer",
+          "owner": null,
+          "balance": null,
+          "currency": null,
+          "status": null
+        },
+        "source_event_id": "evt-308",
+        "entity_key": "txn-001"
+      },
+      {
+        "version": 1,
+        "effective_from": "2024-09-05T09:00:00.000Z",
+        "effective_to": "2024-09-05T16:00:00.000Z",
+        "is_current": false,
+        "operation": "INSERT",
+        "attributes": {
+          "account_id": "acc-Y2",
+          "amount": 5000.0,
+          "type": "deposit",
+          "memo": "Client payment",
+          "owner": null,
+          "balance": null,
+          "currency": null,
+          "status": null
+        },
+        "source_event_id": "evt-309",
+        "entity_key": "txn-002"
+      },
+      {
+        "version": 2,
+        "effective_from": "2024-09-05T16:00:00.000Z",
+        "effective_to": null,
+        "is_current": true,
+        "operation": "UPDATE",
+        "attributes": {
+          "account_id": "acc-Y2",
+          "amount": 5000.0,
+          "type": null,
+          "memo": null,
+          "owner": null,
+          "balance": null,
+          "currency": null,
+          "status": null
+        },
+        "source_event_id": "evt-310",
+        "entity_key": "txn-002"
+      }
+    ],
+    "total_versions": 8,
+    "entities_tracked": 4,
+    "entities_with_changes": 3
+  },
+  "pipeline_metrics": {
+    "deduplication": {
+      "total_input_events": 11,
+      "deduplicated_count": 9,
+      "duplicates_removed": 2,
+      "dedup_ratio": 0.1818
+    },
+    "schema_evolution": {
+      "versions_detected": 2,
+      "unified_columns": [
+        "owner",
+        "balance",
+        "currency",
+        "status",
+        "account_id",
+        "amount",
+        "type",
+        "memo"
+      ],
+      "backfill_applied": false
+    },
+    "merge_operations": {
+      "inserts": 4,
+      "updates": 4,
+      "deletes": 1,
+      "conflicts": 0,
+      "final_row_count": 4
+    }
+  }
+}

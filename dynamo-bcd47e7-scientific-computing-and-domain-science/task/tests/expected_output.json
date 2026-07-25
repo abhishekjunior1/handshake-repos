@@ -1,0 +1,43 @@
+{
+  "analysis_parameters": {
+    "window_type": "hamming",
+    "segment_length": 256,
+    "overlap_ratio": 0.5,
+    "filter_type": "bandpass",
+    "filter_order": 2,
+    "cutoff_low": 50.0,
+    "cutoff_high": 300.0,
+    "signal_band": [
+      80.0,
+      250.0
+    ]
+  },
+  "spectral_analysis": {
+    "total_power": 6.2655047113,
+    "peak_frequency": 101.5625,
+    "peak_power": 0.7033702959,
+    "spectral_centroid": 122.073019,
+    "spectral_bandwidth": 47.993484,
+    "spectral_flatness": 0.0332951
+  },
+  "signal_quality": {
+    "snr_db": 21.124519,
+    "signal_power": 6.1249685091,
+    "noise_power": 0.0472772216,
+    "band_power": 6.1722457307,
+    "effective_band_power": 12.3444914614
+  },
+  "filter_characteristics": {
+    "passband_ripple_db": 38.494496,
+    "stopband_attenuation_db": 300.0,
+    "bandwidth_3db": 464.775,
+    "max_gain_db": 35.793168
+  },
+  "segment_info": {
+    "n_segments": 8,
+    "segment_length": 256,
+    "overlap_ratio": 0.5,
+    "window_coherent_gain": 0.53820313,
+    "total_signal_length": 1024
+  }
+}

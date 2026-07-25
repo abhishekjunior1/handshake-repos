@@ -1,0 +1,99 @@
+{
+  "config": {
+    "reference_time": 1700000001,
+    "decay_half_life": 3600,
+    "correlation_window": 300,
+    "score_normalization_max": 100,
+    "version": "2.3.0"
+  },
+  "events": [
+    {
+      "event_id": "evt-001",
+      "timestamp": 1700000001,
+      "src_ip": "10.0.1.50",
+      "dest_ip": "172.16.0.10",
+      "rule_id": "RULE-1001",
+      "severity": 7,
+      "payload_signature": "sig-alpha-001",
+      "sensor_id": "sensor-A",
+      "event_type": "intrusion_attempt"
+    },
+    {
+      "event_id": "evt-002",
+      "timestamp": 1700000008,
+      "src_ip": "10.0.1.50",
+      "dest_ip": "172.16.0.20",
+      "rule_id": "RULE-1002",
+      "severity": 5,
+      "payload_signature": "sig-beta-002",
+      "sensor_id": "sensor-A",
+      "event_type": "port_scan"
+    },
+    {
+      "event_id": "evt-003",
+      "timestamp": 1700000015,
+      "src_ip": "10.0.1.50",
+      "dest_ip": "172.16.0.30",
+      "rule_id": "RULE-1003",
+      "severity": 8,
+      "payload_signature": "sig-gamma-003",
+      "sensor_id": "sensor-B",
+      "event_type": "malware_detected"
+    },
+    {
+      "event_id": "evt-004",
+      "timestamp": 1700000022,
+      "src_ip": "10.0.2.100",
+      "dest_ip": "172.16.0.10",
+      "rule_id": "RULE-2001",
+      "severity": 6,
+      "payload_signature": "sig-delta-004",
+      "sensor_id": "sensor-B",
+      "event_type": "brute_force"
+    },
+    {
+      "event_id": "evt-005",
+      "timestamp": 1700000030,
+      "src_ip": "10.0.2.100",
+      "dest_ip": "172.16.0.40",
+      "rule_id": "RULE-2002",
+      "severity": 4,
+      "payload_signature": "sig-epsilon-005",
+      "sensor_id": "sensor-A",
+      "event_type": "data_exfiltration"
+    },
+    {
+      "event_id": "evt-006",
+      "timestamp": 1700000038,
+      "src_ip": "192.168.1.10",
+      "dest_ip": "172.16.0.50",
+      "rule_id": "RULE-3001",
+      "severity": 3,
+      "payload_signature": "sig-zeta-006",
+      "sensor_id": "sensor-C",
+      "event_type": "policy_violation"
+    },
+    {
+      "event_id": "evt-007",
+      "timestamp": 1700000045,
+      "src_ip": "192.168.1.10",
+      "dest_ip": "172.16.0.60",
+      "rule_id": "RULE-3002",
+      "severity": 5,
+      "payload_signature": "sig-eta-007",
+      "sensor_id": "sensor-C",
+      "event_type": "lateral_movement"
+    },
+    {
+      "event_id": "evt-008",
+      "timestamp": 1700000058,
+      "src_ip": "10.0.2.100",
+      "dest_ip": "172.16.0.70",
+      "rule_id": "RULE-2003",
+      "severity": 7,
+      "payload_signature": "sig-theta-008",
+      "sensor_id": "sensor-B",
+      "event_type": "privilege_escalation"
+    }
+  ]
+}

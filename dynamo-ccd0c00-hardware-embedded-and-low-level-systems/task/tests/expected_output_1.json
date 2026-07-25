@@ -1,0 +1,102 @@
+{
+  "summary": {
+    "total_bytes_transferred": 17408,
+    "total_transfer_operations": 3,
+    "total_preemptions": 0,
+    "total_cycles_used": 3,
+    "completed_transfers": 3,
+    "average_burst_size": 12.0
+  },
+  "transfers": [
+    {
+      "cycle": 0,
+      "channel_id": 2,
+      "source_bus_addr": 5238784,
+      "dest_bus_addr": 6287360,
+      "burst_size": 16,
+      "total_transfers": 1,
+      "bytes_transferred": 1024,
+      "chain_length": 1,
+      "preempted": false,
+      "complete": true
+    },
+    {
+      "cycle": 1,
+      "channel_id": 0,
+      "source_bus_addr": 1044484,
+      "dest_bus_addr": 2093060,
+      "burst_size": 4,
+      "total_transfers": 3,
+      "bytes_transferred": 12288,
+      "chain_length": 3,
+      "preempted": false,
+      "complete": true
+    },
+    {
+      "cycle": 2,
+      "channel_id": 1,
+      "source_bus_addr": 3141632,
+      "dest_bus_addr": 4190208,
+      "burst_size": 16,
+      "total_transfers": 2,
+      "bytes_transferred": 4096,
+      "chain_length": 2,
+      "preempted": false,
+      "complete": true
+    }
+  ],
+  "channel_statistics": [
+    {
+      "channel_id": 0,
+      "priority": 1,
+      "total_bytes": 12288,
+      "transfer_count": 1,
+      "preemption_count": 0,
+      "efficiency": 3.0
+    },
+    {
+      "channel_id": 1,
+      "priority": 3,
+      "total_bytes": 4096,
+      "transfer_count": 1,
+      "preemption_count": 0,
+      "efficiency": 2.0
+    },
+    {
+      "channel_id": 2,
+      "priority": 0,
+      "total_bytes": 1024,
+      "transfer_count": 1,
+      "preemption_count": 0,
+      "efficiency": 1.0
+    }
+  ],
+  "interrupt_log": [
+    {
+      "channel_id": 2,
+      "cycle": 0,
+      "status_hex": "0x00000004",
+      "completion_pending": true,
+      "error_pending": false
+    },
+    {
+      "channel_id": 0,
+      "cycle": 1,
+      "status_hex": "0x00010005",
+      "completion_pending": true,
+      "error_pending": true
+    },
+    {
+      "channel_id": 1,
+      "cycle": 2,
+      "status_hex": "0x00030007",
+      "completion_pending": true,
+      "error_pending": true
+    }
+  ],
+  "performance": {
+    "bus_utilization": 1.0,
+    "average_latency_cycles": 1.0,
+    "throughput_bytes_per_cycle": 5802.67
+  }
+}

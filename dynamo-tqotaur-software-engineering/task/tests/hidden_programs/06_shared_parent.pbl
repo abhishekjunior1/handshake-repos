@@ -1,0 +1,10 @@
+mut x = 0;
+let make = fn() {
+    let get = fn() { return x; };
+    x = x + 1;
+    return get;
+};
+let a = make();
+let b = make();
+print a();
+print b();

@@ -1,0 +1,112 @@
+{
+  "feature_vector": {
+    "vibration_x_rms": 0.113863,
+    "vibration_x_crest_factor": 0.683249,
+    "vibration_x_kurtosis": -0.7903,
+    "vibration_x_spectral_centroid": 84.873026,
+    "vibration_x_spectral_bandwidth": 62.759703,
+    "vibration_x_spectral_rolloff": 134.75,
+    "vibration_y_rms": 0.024881,
+    "vibration_y_crest_factor": 0.553972,
+    "vibration_y_kurtosis": -1.084133,
+    "vibration_y_spectral_centroid": 98.671685,
+    "vibration_y_spectral_bandwidth": 59.704347,
+    "vibration_y_spectral_rolloff": 174.75,
+    "temperature_rms": 10.487628,
+    "temperature_crest_factor": 0.263015,
+    "temperature_kurtosis": -0.596957,
+    "temperature_spectral_centroid": 54.121229,
+    "temperature_spectral_bandwidth": 45.653368,
+    "temperature_spectral_rolloff": 94.75,
+    "corr_vibration_x-vibration_y_mean": -0.289158,
+    "corr_vibration_x-temperature_mean": -0.253589,
+    "corr_vibration_y-temperature_mean": -0.248524
+  },
+  "raw_features": {
+    "vibration_x_rms": 0.727726,
+    "vibration_x_crest_factor": 1.866499,
+    "vibration_x_kurtosis": -1.0806,
+    "vibration_x_spectral_centroid": 170.246052,
+    "vibration_x_spectral_bandwidth": 126.019406,
+    "vibration_x_spectral_rolloff": 270.0,
+    "vibration_y_rms": 0.549761,
+    "vibration_y_crest_factor": 1.607944,
+    "vibration_y_kurtosis": -1.668265,
+    "vibration_y_spectral_centroid": 197.843369,
+    "vibration_y_spectral_bandwidth": 119.908694,
+    "vibration_y_spectral_rolloff": 350.0,
+    "temperature_rms": 21.475256,
+    "temperature_crest_factor": 1.026031,
+    "temperature_kurtosis": -0.693914,
+    "temperature_spectral_centroid": 108.742459,
+    "temperature_spectral_bandwidth": 91.806736,
+    "temperature_spectral_rolloff": 190.0,
+    "corr_vibration_x-vibration_y_mean": -0.078316,
+    "corr_vibration_x-temperature_mean": -0.007178,
+    "corr_vibration_y-temperature_mean": 0.002951
+  },
+  "time_domain_summary": {
+    "vibration_x": {
+      "rms": 0.727726,
+      "crest_factor": 1.866499,
+      "kurtosis": -1.0806
+    },
+    "vibration_y": {
+      "rms": 0.549761,
+      "crest_factor": 1.607944,
+      "kurtosis": -1.668265
+    },
+    "temperature": {
+      "rms": 21.475256,
+      "crest_factor": 1.026031,
+      "kurtosis": -0.693914
+    }
+  },
+  "spectral_summary": {
+    "vibration_x": {
+      "spectral_centroid": 170.246052,
+      "spectral_bandwidth": 126.019406,
+      "spectral_rolloff": 270.0
+    },
+    "vibration_y": {
+      "spectral_centroid": 197.843369,
+      "spectral_bandwidth": 119.908694,
+      "spectral_rolloff": 350.0
+    },
+    "temperature": {
+      "spectral_centroid": 108.742459,
+      "spectral_bandwidth": 91.806736,
+      "spectral_rolloff": 190.0
+    }
+  },
+  "cross_channel": [
+    {
+      "channel_pair": "vibration_x-vibration_y",
+      "mean_correlation": -0.078316,
+      "max_correlation": 0.107219,
+      "min_correlation": -0.247531
+    },
+    {
+      "channel_pair": "vibration_x-temperature",
+      "mean_correlation": -0.007178,
+      "max_correlation": 0.098824,
+      "min_correlation": -0.104436
+    },
+    {
+      "channel_pair": "vibration_y-temperature",
+      "mean_correlation": 0.002951,
+      "max_correlation": 0.060462,
+      "min_correlation": -0.069758
+    }
+  ],
+  "metadata": {
+    "n_channels": 3,
+    "n_samples": 60,
+    "n_windows": 5,
+    "window_size": 20,
+    "overlap": 0.5,
+    "sample_rate": 1000,
+    "rolloff_threshold": 0.85,
+    "n_features": 21
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "dimension": 2,
+  "matrix": {
+    "rows": [
+      0,
+      1
+    ],
+    "cols": [
+      0,
+      1
+    ],
+    "values": [
+      4.0,
+      9.0
+    ]
+  },
+  "rhs": [
+    8.0,
+    27.0
+  ],
+  "solver_params": {
+    "max_iterations": 100,
+    "tolerance": 1e-10,
+    "preconditioner": "jacobi"
+  }
+}

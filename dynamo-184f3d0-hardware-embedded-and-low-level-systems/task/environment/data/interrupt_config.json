@@ -1,0 +1,36 @@
+{
+  "controller_settings": {
+    "prigroup": 7,
+    "basepri": 0,
+    "vector_table_base": 0
+  },
+  "interrupts": [
+    {
+      "vector_number": 16,
+      "configured_priority": 48,
+      "sub_priority": 48,
+      "handler_address": 134529024,
+      "uses_fpu": false
+    },
+    {
+      "vector_number": 17,
+      "configured_priority": 80,
+      "sub_priority": 80,
+      "handler_address": 134529280,
+      "uses_fpu": false
+    },
+    {
+      "vector_number": 18,
+      "configured_priority": 112,
+      "sub_priority": 112,
+      "handler_address": 134529536,
+      "uses_fpu": false
+    }
+  ],
+  "events": [
+    {
+      "vector_number": 16,
+      "arrival_cycle": 100
+    }
+  ]
+}

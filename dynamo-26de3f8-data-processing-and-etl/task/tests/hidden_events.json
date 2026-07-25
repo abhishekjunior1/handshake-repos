@@ -1,0 +1,27 @@
+{
+  "stream_name": "payment_transactions",
+  "window_config": {
+    "window_size_sec": 10
+  },
+  "processing_config": {
+    "decay_factor": 0.8
+  },
+  "events": [
+    {"timestamp": 2, "value": 100.0, "key": "merchant_A", "event_id": "tx01"},
+    {"timestamp": 4, "value": 250.0, "key": "merchant_B", "event_id": "tx02"},
+    {"timestamp": 6, "value": 75.0, "key": "merchant_A", "event_id": "tx03"},
+    {"timestamp": 8, "value": 180.0, "key": "merchant_B", "event_id": "tx04"},
+    {"timestamp": 8, "value": 180.0, "key": "merchant_B", "event_id": "tx04"},
+    {"timestamp": 9, "value": 320.0, "key": "merchant_A", "event_id": "tx05"},
+    {"timestamp": 12, "value": 155.0, "key": "merchant_A", "event_id": "tx01"},
+    {"timestamp": 14, "value": 88.0, "key": "merchant_B", "event_id": "tx06"},
+    {"timestamp": 16, "value": 420.0, "key": "merchant_A", "event_id": "tx07"},
+    {"timestamp": 18, "value": 195.0, "key": "merchant_B", "event_id": "tx02"},
+    {"timestamp": 19, "value": 310.0, "key": "merchant_A", "event_id": "tx08"},
+    {"timestamp": 22, "value": 275.0, "key": "merchant_A", "event_id": "tx09"},
+    {"timestamp": 24, "value": 165.0, "key": "merchant_B", "event_id": "tx10"},
+    {"timestamp": 26, "value": 92.0, "key": "merchant_A", "event_id": "tx11"},
+    {"timestamp": 28, "value": 340.0, "key": "merchant_B", "event_id": "tx04"},
+    {"timestamp": 29, "value": 118.0, "key": "merchant_A", "event_id": "tx12"}
+  ]
+}

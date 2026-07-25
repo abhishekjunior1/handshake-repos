@@ -1,0 +1,70 @@
+{
+  "config": {
+    "Environment": {
+      "root_dir": "C:\\Projects\\webapp",
+      "data_dir": "D:\\Data\\storage",
+      "temp_path": "C:\\Users\\admin\\temp",
+      "platform": "windows"
+    },
+    "DatabaseSettings": {
+      "host": "db-prod-01.internal",
+      "port": "5432",
+      "name": "analytics_prod",
+      "connection_prefix": "postgresql://"
+    },
+    "Paths": {
+      "base_dir": "C:\\Projects\\webapp",
+      "data_store": "D:\\Data\\storage",
+      "temp": "C:\\Users\\admin\\temp"
+    },
+    "AppConfig": {
+      "title": "Production Analytics",
+      "version": "3.2.1",
+      "install_path": "C:\\Projects\\webapp",
+      "data_path": "D:\\Data\\storage",
+      "db_host": "db-prod-01.internal",
+      "db_port": "5432",
+      "db_name": "analytics_prod",
+      "db_prefix": "postgresql://",
+      "temp_dir": "C:\\Users\\admin\\temp"
+    },
+    "Logging": {
+      "level": "warning",
+      "output_dir": "C:\\Projects\\webapp",
+      "max_size_mb": "50",
+      "rotate_count": "5"
+    }
+  },
+  "resolution_info": {
+    "total_references": 24,
+    "resolved_count": 24,
+    "unresolved": [],
+    "circular": []
+  },
+  "document_info": {
+    "section_count": 5,
+    "total_keys": 24,
+    "has_references": false,
+    "sections_order": [
+      "Environment",
+      "DatabaseSettings",
+      "Paths",
+      "AppConfig",
+      "Logging"
+    ],
+    "dependencies": {
+      "environment": [],
+      "databasesettings": [],
+      "paths": [
+        "environment"
+      ],
+      "appconfig": [
+        "databasesettings",
+        "paths"
+      ],
+      "logging": [
+        "appconfig"
+      ]
+    }
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "stream_name": "datacenter_spine",
+  "config": {
+    "bin_duration_sec": 30,
+    "smoothing_alpha": 0.7
+  },
+  "bins": [
+    {
+      "total_bytes": 27900,
+      "flow_count": 8,
+      "per_flow_avg": 3487.5,
+      "smoothed_utilization": 19530.0,
+      "prefix_stats": {
+        "192.168.1.0/24": {
+          "count": 3,
+          "total_bytes": 10700,
+          "min_bytes": 2100,
+          "max_bytes": 4500,
+          "avg_bytes": 3566.666667
+        },
+        "192.168.2.0/24": {
+          "count": 3,
+          "total_bytes": 8700,
+          "min_bytes": 1900,
+          "max_bytes": 3600,
+          "avg_bytes": 2900.0
+        },
+        "192.168.3.0/24": {
+          "count": 2,
+          "total_bytes": 8500,
+          "min_bytes": 2700,
+          "max_bytes": 5800,
+          "avg_bytes": 4250.0
+        }
+      },
+      "inter_prefix_jitter": 303765.432099,
+      "variance": 1488593.75
+    },
+    {
+      "total_bytes": 30900,
+      "flow_count": 8,
+      "per_flow_avg": 3862.5,
+      "smoothed_utilization": 30000.0,
+      "prefix_stats": {
+        "192.168.1.0/24": {
+          "count": 3,
+          "total_bytes": 9500,
+          "min_bytes": 1800,
+          "max_bytes": 5200,
+          "avg_bytes": 3166.666667
+        },
+        "192.168.2.0/24": {
+          "count": 3,
+          "total_bytes": 12500,
+          "min_bytes": 3300,
+          "max_bytes": 4800,
+          "avg_bytes": 4166.666667
+        },
+        "192.168.3.0/24": {
+          "count": 2,
+          "total_bytes": 8900,
+          "min_bytes": 2800,
+          "max_bytes": 6100,
+          "avg_bytes": 4450.0
+        }
+      },
+      "inter_prefix_jitter": 303024.691358,
+      "variance": 1939843.75
+    },
+    {
+      "total_bytes": 32300,
+      "flow_count": 9,
+      "per_flow_avg": 3588.888889,
+      "smoothed_utilization": 40250.0,
+      "prefix_stats": {
+        "192.168.1.0/24": {
+          "count": 3,
+          "total_bytes": 13000,
+          "min_bytes": 3700,
+          "max_bytes": 5100,
+          "avg_bytes": 4333.333333
+        },
+        "192.168.2.0/24": {
+          "count": 3,
+          "total_bytes": 8400,
+          "min_bytes": 1600,
+          "max_bytes": 3900,
+          "avg_bytes": 2800.0
+        },
+        "192.168.3.0/24": {
+          "count": 3,
+          "total_bytes": 10900,
+          "min_bytes": 2300,
+          "max_bytes": 5500,
+          "avg_bytes": 3633.333333
+        }
+      },
+      "inter_prefix_jitter": 392839.506173,
+      "variance": 1416543.209877
+    },
+    {
+      "total_bytes": 6600,
+      "flow_count": 2,
+      "per_flow_avg": 3300.0,
+      "smoothed_utilization": 31950.0,
+      "prefix_stats": {
+        "192.168.1.0/24": {
+          "count": 1,
+          "total_bytes": 4600,
+          "min_bytes": 4600,
+          "max_bytes": 4600,
+          "avg_bytes": 4600.0
+        },
+        "192.168.3.0/24": {
+          "count": 1,
+          "total_bytes": 2000,
+          "min_bytes": 2000,
+          "max_bytes": 2000,
+          "avg_bytes": 2000.0
+        }
+      },
+      "inter_prefix_jitter": 1690000.0,
+      "variance": 1690000.0
+    }
+  ],
+  "summary": {
+    "total_flows": 35,
+    "flows_after_dedup": 27,
+    "duplicates_removed": 8,
+    "bins_produced": 4
+  }
+}

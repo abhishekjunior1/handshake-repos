@@ -1,0 +1,27 @@
+{
+  "rsa_key_bits": 3072,
+  "cipher_suite": {
+    "algorithm": "AES-192-GCM",
+    "key_length_bytes": 24,
+    "nonce_bits": 96
+  },
+  "kdf_params": {
+    "hash_algorithm": "SHA-256",
+    "salt": "financial-kdf-extraction-salt-q4",
+    "info": "aes192-transaction-encryption-key"
+  },
+  "mac_params": {
+    "algorithm": "HMAC-SHA-256",
+    "mac_key_length": 32,
+    "mac_salt": "financial-mac-extraction-salt-q4",
+    "mac_info": "hmac-transaction-auth-key"
+  },
+  "envelope_params": {
+    "format": "hybrid-kem-dem",
+    "sender_id": "payment-processor-eu",
+    "recipient_id": "settlement-engine-us",
+    "timestamp": 1720200000
+  },
+  "aad": "txn:PAY-2024-88391;amount:45000.00;currency:EUR;merchant:ACM-Corp",
+  "plaintext": "Wire transfer authorization: Route payment through SWIFT intermediary BIC-DEUTDEFF."
+}

@@ -1,0 +1,96 @@
+{
+  "metadata": {
+    "collection_interval_sec": 15,
+    "sources": ["app-server-01"],
+    "retention_policy": {
+      "raw_retention_days": 7,
+      "rollup_retention_days": 90
+    }
+  },
+  "metrics": [
+    {
+      "name": "http_requests_total",
+      "type": "counter",
+      "source": "app-server-01",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 5000},
+        {"timestamp": 1700000015, "value": 5450}
+      ]
+    },
+    {
+      "name": "node_cpu_seconds_total",
+      "type": "counter",
+      "source": "app-server-01",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 120000},
+        {"timestamp": 1700000015, "value": 120225}
+      ]
+    },
+    {
+      "name": "memory_usage_bytes",
+      "type": "gauge",
+      "source": "app-server-01",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 4294967296},
+        {"timestamp": 1700000015, "value": 4350000000},
+        {"timestamp": 1700000030, "value": 4280000000},
+        {"timestamp": 1700000045, "value": 4400000000}
+      ]
+    },
+    {
+      "name": "disk_io_utilization",
+      "type": "gauge",
+      "source": "app-server-01",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 0.35},
+        {"timestamp": 1700000015, "value": 0.42},
+        {"timestamp": 1700000030, "value": 0.55},
+        {"timestamp": 1700000045, "value": 0.48}
+      ]
+    },
+    {
+      "name": "http_request_duration_seconds",
+      "type": "histogram",
+      "source": "app-server-01",
+      "datapoints": [
+        {
+          "timestamp": 1700000045,
+          "buckets": {
+            "0.005": 100,
+            "0.01": 250,
+            "0.025": 500,
+            "0.05": 700,
+            "0.1": 850,
+            "0.25": 930,
+            "0.5": 970,
+            "1.0": 990,
+            "2.5": 998,
+            "5.0": 1000,
+            "+Inf": 1000
+          }
+        }
+      ]
+    },
+    {
+      "name": "grpc_server_handling_seconds",
+      "type": "histogram",
+      "source": "app-server-01",
+      "datapoints": [
+        {
+          "timestamp": 1700000045,
+          "buckets": {
+            "0.001": 80,
+            "0.005": 200,
+            "0.01": 400,
+            "0.05": 650,
+            "0.1": 800,
+            "0.5": 920,
+            "1.0": 970,
+            "5.0": 995,
+            "+Inf": 1000
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "max_retries": 3,
+  "rate_limit": 2,
+  "rate_refill": 2,
+  "base_backoff_ms": 100,
+  "backoff_multiplier": 2.0,
+  "ack_timeout": 5,
+  "max_ticks": 100,
+  "max_dispatch_per_tick": 50
+}

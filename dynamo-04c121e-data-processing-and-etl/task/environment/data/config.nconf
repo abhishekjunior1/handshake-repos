@@ -1,0 +1,15 @@
+# Application configuration
+# Simple flat configuration for the web service
+
+[settings]
+app_name = "mywebapp"
+version = "2.1.0"
+debug = false
+port = 8080
+host = "localhost"
+log_level = "info"
+max_connections = 100
+timeout_ms = 3000
+database_url = "postgres://localhost:5432/mydb"
+cache_enabled = true
+session_ttl = 3600

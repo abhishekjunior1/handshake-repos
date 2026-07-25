@@ -1,0 +1,344 @@
+{
+  "test_suite": "payment_integration",
+  "runs": [
+    {
+      "run_id": "run_001",
+      "timestamp": "2024-06-10T08:00:00",
+      "environment": "ci_east_01",
+      "results": [
+        {
+          "test_id": "checkout.test_ch_payment",
+          "status": "failed",
+          "duration_ms": 48.2,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_receipt",
+          "status": "passed",
+          "duration_ms": 55.3,
+          "error_type": null
+        },
+        {
+          "test_id": "checkout.test_ch_validate",
+          "status": "failed",
+          "duration_ms": 42.1,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "inventory.test_inv_reserve",
+          "status": "passed",
+          "duration_ms": 180.5,
+          "error_type": null
+        },
+        {
+          "test_id": "inventory.test_inv_stock",
+          "status": "failed",
+          "duration_ms": 195.2,
+          "error_type": "timeout"
+        },
+        {
+          "test_id": "shipping.test_sh_calculate",
+          "status": "passed",
+          "duration_ms": 480.2,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_notify",
+          "status": "passed",
+          "duration_ms": 460.3,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_track",
+          "status": "passed",
+          "duration_ms": 450.1,
+          "error_type": null
+        }
+      ]
+    },
+    {
+      "run_id": "run_002",
+      "timestamp": "2024-06-11T08:00:00",
+      "environment": "ci_east_02",
+      "results": [
+        {
+          "test_id": "checkout.test_ch_payment",
+          "status": "failed",
+          "duration_ms": 51.3,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_receipt",
+          "status": "passed",
+          "duration_ms": 54.8,
+          "error_type": null
+        },
+        {
+          "test_id": "checkout.test_ch_validate",
+          "status": "failed",
+          "duration_ms": 43.8,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "inventory.test_inv_reserve",
+          "status": "passed",
+          "duration_ms": 185.2,
+          "error_type": null
+        },
+        {
+          "test_id": "inventory.test_inv_stock",
+          "status": "passed",
+          "duration_ms": 210.8,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_calculate",
+          "status": "failed",
+          "duration_ms": 520.1,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "shipping.test_sh_notify",
+          "status": "passed",
+          "duration_ms": 458.7,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_track",
+          "status": "passed",
+          "duration_ms": 455.8,
+          "error_type": null
+        }
+      ]
+    },
+    {
+      "run_id": "run_003",
+      "timestamp": "2024-06-12T08:00:00",
+      "environment": "ci_west_01",
+      "results": [
+        {
+          "test_id": "checkout.test_ch_payment",
+          "status": "failed",
+          "duration_ms": 49.7,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_receipt",
+          "status": "passed",
+          "duration_ms": 56.1,
+          "error_type": null
+        },
+        {
+          "test_id": "checkout.test_ch_validate",
+          "status": "failed",
+          "duration_ms": 41.5,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "inventory.test_inv_reserve",
+          "status": "passed",
+          "duration_ms": 182.1,
+          "error_type": null
+        },
+        {
+          "test_id": "inventory.test_inv_stock",
+          "status": "failed",
+          "duration_ms": 198.4,
+          "error_type": "timeout"
+        },
+        {
+          "test_id": "shipping.test_sh_calculate",
+          "status": "passed",
+          "duration_ms": 495.7,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_notify",
+          "status": "failed",
+          "duration_ms": 890.2,
+          "error_type": "resource"
+        },
+        {
+          "test_id": "shipping.test_sh_track",
+          "status": "passed",
+          "duration_ms": 448.3,
+          "error_type": null
+        }
+      ]
+    },
+    {
+      "run_id": "run_004",
+      "timestamp": "2024-06-13T08:00:00",
+      "environment": "ci_east_01",
+      "results": [
+        {
+          "test_id": "checkout.test_ch_payment",
+          "status": "failed",
+          "duration_ms": 50.1,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_receipt",
+          "status": "failed",
+          "duration_ms": 53.2,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_validate",
+          "status": "failed",
+          "duration_ms": 44.2,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "inventory.test_inv_reserve",
+          "status": "passed",
+          "duration_ms": 179.8,
+          "error_type": null
+        },
+        {
+          "test_id": "inventory.test_inv_stock",
+          "status": "passed",
+          "duration_ms": 205.1,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_calculate",
+          "status": "failed",
+          "duration_ms": 510.3,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "shipping.test_sh_notify",
+          "status": "passed",
+          "duration_ms": 462.1,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_track",
+          "status": "passed",
+          "duration_ms": 452.9,
+          "error_type": null
+        }
+      ]
+    },
+    {
+      "run_id": "run_005",
+      "timestamp": "2024-06-14T08:00:00",
+      "environment": "ci_west_01",
+      "results": [
+        {
+          "test_id": "checkout.test_ch_payment",
+          "status": "failed",
+          "duration_ms": 48.9,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_receipt",
+          "status": "failed",
+          "duration_ms": 57.4,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_validate",
+          "status": "failed",
+          "duration_ms": 42.9,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "inventory.test_inv_reserve",
+          "status": "passed",
+          "duration_ms": 184.6,
+          "error_type": null
+        },
+        {
+          "test_id": "inventory.test_inv_stock",
+          "status": "failed",
+          "duration_ms": 192.7,
+          "error_type": "timeout"
+        },
+        {
+          "test_id": "shipping.test_sh_calculate",
+          "status": "passed",
+          "duration_ms": 488.9,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_notify",
+          "status": "passed",
+          "duration_ms": 459.8,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_track",
+          "status": "passed",
+          "duration_ms": 451.2,
+          "error_type": null
+        }
+      ]
+    },
+    {
+      "run_id": "run_006",
+      "timestamp": "2024-06-15T08:00:00",
+      "environment": "ci_east_02",
+      "results": [
+        {
+          "test_id": "checkout.test_ch_payment",
+          "status": "failed",
+          "duration_ms": 51.8,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_receipt",
+          "status": "failed",
+          "duration_ms": 55.9,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "checkout.test_ch_validate",
+          "status": "failed",
+          "duration_ms": 43.1,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "inventory.test_inv_reserve",
+          "status": "passed",
+          "duration_ms": 181.3,
+          "error_type": null
+        },
+        {
+          "test_id": "inventory.test_inv_stock",
+          "status": "passed",
+          "duration_ms": 208.3,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_calculate",
+          "status": "passed",
+          "duration_ms": 505.4,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_notify",
+          "status": "passed",
+          "duration_ms": 461.5,
+          "error_type": null
+        },
+        {
+          "test_id": "shipping.test_sh_track",
+          "status": "passed",
+          "duration_ms": 449.7,
+          "error_type": null
+        }
+      ]
+    }
+  ],
+  "config": {
+    "decay_factor": 0.7,
+    "window_size": 2,
+    "correlation_threshold": 0.6,
+    "flip_rate_threshold": 0.3,
+    "timing_cv_threshold": 0.4,
+    "deterministic_threshold": 0.8,
+    "confidence_method": "harmonic"
+  }
+}

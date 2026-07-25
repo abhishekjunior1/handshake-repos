@@ -1,0 +1,282 @@
+{
+  "metadata": {
+    "collection_interval_sec": 15,
+    "sources": ["web-prod-01", "web-prod-02", "web-prod-03"],
+    "retention_policy": {
+      "raw_retention_days": 7,
+      "rollup_retention_days": 90
+    }
+  },
+  "metrics": [
+    {
+      "name": "http_requests_total",
+      "type": "counter",
+      "source": "web-prod-01",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 10000},
+        {"timestamp": 1700000010, "value": 10350},
+        {"timestamp": 1700000030, "value": 11100},
+        {"timestamp": 1700000060, "value": 12000},
+        {"timestamp": 1700000090, "value": 12900}
+      ]
+    },
+    {
+      "name": "http_requests_total",
+      "type": "counter",
+      "source": "web-prod-02",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 8000},
+        {"timestamp": 1700000020, "value": 8500},
+        {"timestamp": 1700000045, "value": 9200},
+        {"timestamp": 1700000070, "value": 9800},
+        {"timestamp": 1700000095, "value": 10500}
+      ]
+    },
+    {
+      "name": "node_cpu_seconds_total",
+      "type": "counter",
+      "source": "web-prod-01",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 50000},
+        {"timestamp": 1700000025, "value": 50500},
+        {"timestamp": 1700000050, "value": 51100},
+        {"timestamp": 1700000080, "value": 51800}
+      ]
+    },
+    {
+      "name": "node_cpu_seconds_total",
+      "type": "counter",
+      "source": "web-prod-03",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 30000},
+        {"timestamp": 1700000012, "value": 30200},
+        {"timestamp": 1700000040, "value": 30750},
+        {"timestamp": 1700000065, "value": 31200}
+      ]
+    },
+    {
+      "name": "memory_usage_bytes",
+      "type": "gauge",
+      "source": "web-prod-01",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 4294967296},
+        {"timestamp": 1700000015, "value": 4400000000},
+        {"timestamp": 1700000030, "value": 4350000000},
+        {"timestamp": 1700000045, "value": 4500000000},
+        {"timestamp": 1700000060, "value": 4450000000},
+        {"timestamp": 1700000075, "value": 4600000000}
+      ]
+    },
+    {
+      "name": "memory_usage_bytes",
+      "type": "gauge",
+      "source": "web-prod-02",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 2147483648},
+        {"timestamp": 1700000015, "value": 2200000000},
+        {"timestamp": 1700000180, "value": 2250000000},
+        {"timestamp": 1700000195, "value": 2300000000}
+      ]
+    },
+    {
+      "name": "disk_io_utilization",
+      "type": "gauge",
+      "source": "web-prod-01",
+      "datapoints": [
+        {"timestamp": 1700000000, "value": 0.35},
+        {"timestamp": 1700000015, "value": 0.42},
+        {"timestamp": 1700000030, "value": 0.58},
+        {"timestamp": 1700000045, "value": 0.71},
+        {"timestamp": 1700000200, "value": 0.63},
+        {"timestamp": 1700000215, "value": 0.55}
+      ]
+    },
+    {
+      "name": "http_request_duration_seconds",
+      "type": "histogram",
+      "source": "web-prod-01",
+      "datapoints": [
+        {
+          "timestamp": 1700000030,
+          "buckets": {
+            "0.005": 40,
+            "0.01": 120,
+            "0.025": 280,
+            "0.05": 450,
+            "0.1": 620,
+            "0.25": 750,
+            "0.5": 850,
+            "1.0": 930,
+            "2.5": 980,
+            "5.0": 995,
+            "+Inf": 1000
+          }
+        },
+        {
+          "timestamp": 1700000060,
+          "buckets": {
+            "0.005": 100,
+            "0.01": 280,
+            "0.025": 520,
+            "0.05": 700,
+            "0.1": 850,
+            "0.25": 940,
+            "0.5": 975,
+            "1.0": 990,
+            "2.5": 998,
+            "5.0": 1000,
+            "+Inf": 1000
+          }
+        }
+      ]
+    },
+    {
+      "name": "http_request_duration_seconds",
+      "type": "histogram",
+      "source": "web-prod-02",
+      "datapoints": [
+        {
+          "timestamp": 1700000030,
+          "buckets": {
+            "0.005": 10,
+            "0.01": 40,
+            "0.025": 100,
+            "0.05": 250,
+            "0.1": 500,
+            "0.25": 700,
+            "0.5": 850,
+            "1.0": 940,
+            "2.5": 985,
+            "5.0": 998,
+            "+Inf": 1000
+          }
+        },
+        {
+          "timestamp": 1700000060,
+          "buckets": {
+            "0.005": 30,
+            "0.01": 100,
+            "0.025": 250,
+            "0.05": 450,
+            "0.1": 680,
+            "0.25": 820,
+            "0.5": 910,
+            "1.0": 960,
+            "2.5": 990,
+            "5.0": 999,
+            "+Inf": 1000
+          }
+        }
+      ]
+    },
+    {
+      "name": "http_request_duration_seconds",
+      "type": "histogram",
+      "source": "web-prod-03",
+      "datapoints": [
+        {
+          "timestamp": 1700000030,
+          "buckets": {
+            "0.005": 5,
+            "0.01": 20,
+            "0.025": 60,
+            "0.05": 180,
+            "0.1": 400,
+            "0.25": 620,
+            "0.5": 780,
+            "1.0": 900,
+            "2.5": 965,
+            "5.0": 990,
+            "+Inf": 1000
+          }
+        },
+        {
+          "timestamp": 1700000060,
+          "buckets": {
+            "0.005": 80,
+            "0.01": 220,
+            "0.025": 450,
+            "0.05": 650,
+            "0.1": 820,
+            "0.25": 920,
+            "0.5": 965,
+            "1.0": 985,
+            "2.5": 997,
+            "5.0": 1000,
+            "+Inf": 1000
+          }
+        }
+      ]
+    },
+    {
+      "name": "grpc_server_handling_seconds",
+      "type": "histogram",
+      "source": "web-prod-01",
+      "datapoints": [
+        {
+          "timestamp": 1700000030,
+          "buckets": {
+            "0.001": 60,
+            "0.005": 180,
+            "0.01": 350,
+            "0.05": 550,
+            "0.1": 720,
+            "0.5": 880,
+            "1.0": 950,
+            "5.0": 990,
+            "+Inf": 1000
+          }
+        },
+        {
+          "timestamp": 1700000060,
+          "buckets": {
+            "0.001": 120,
+            "0.005": 320,
+            "0.01": 550,
+            "0.05": 750,
+            "0.1": 880,
+            "0.5": 960,
+            "1.0": 985,
+            "5.0": 998,
+            "+Inf": 1000
+          }
+        }
+      ]
+    },
+    {
+      "name": "grpc_server_handling_seconds",
+      "type": "histogram",
+      "source": "web-prod-02",
+      "datapoints": [
+        {
+          "timestamp": 1700000030,
+          "buckets": {
+            "0.001": 20,
+            "0.005": 80,
+            "0.01": 200,
+            "0.05": 400,
+            "0.1": 600,
+            "0.5": 800,
+            "1.0": 920,
+            "5.0": 975,
+            "+Inf": 1000
+          }
+        },
+        {
+          "timestamp": 1700000060,
+          "buckets": {
+            "0.001": 50,
+            "0.005": 150,
+            "0.01": 320,
+            "0.05": 550,
+            "0.1": 730,
+            "0.5": 890,
+            "1.0": 960,
+            "5.0": 992,
+            "+Inf": 1000
+          }
+        }
+      ]
+    }
+  ]
+}

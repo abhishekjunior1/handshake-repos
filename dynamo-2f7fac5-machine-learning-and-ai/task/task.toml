@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/eval-pipeline"
+description = "Fix data-flow bugs in a multiclass model evaluation pipeline."
+
+[metadata]
+category = "Machine Learning and AI"
+subcategory = "Model evaluation and benchmarking"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "The pipeline spans 7 modules (~810 lines) implementing classification evaluation without external ML libraries. Three bugs are cross-module data-flow issues in the orchestrator — each passes the wrong value to a correct receiving function. The bugs are masked on the visible configuration (binary balanced single-split) because: (1) single-split mode makes train and test labels identical references, (2) balanced 50/50 classes make overall distribution weights equal to any per-fold weights, and (3) two equal-prevalence classes make alphabetical ordering identical to prevalence ordering. The hidden configuration uses 3-class imbalanced data with separate train/test splits, exposing all three simultaneously. A senior ML engineer building evaluation frameworks would encounter these issues — the data is synthetic, shaped like a clinical trial classifier assessment. Decoy patterns (ROC-AUC on probabilities rather than binary predictions, equal-width calibration bins) appear suspicious but are correct, drawing attention away from the actual data-flow issues."
+solution_explanation = "Fix 1: In pipeline.py, change the calibration call from passing train_labels to eval_labels — the calibration module needs ground truth matching the predictions being assessed, not the training set labels. Fix 2: In the _run_cross_validation function, replace the overall class_weights argument with per-fold weights computed from each fold's actual label distribution using metrics.compute_class_weights(fold_labels, classes). Fix 3: Change the weighted F1 computation to gather per-class F1 scores in prevalence order (matching the prevalence-ordered weights) instead of alphabetical order — the scores and weights vectors must be aligned."
+verification_explanation = "The verifier substitutes a hidden 3-class imbalanced configuration (60/25/15 distribution, separate train/test split, 80 test samples) into /app/eval_config.json, runs the pipeline, and compares the resulting output.json against expected values computed from the fixed pipeline. Tests check 17 specific fields including weighted F1 (29% deviation when buggy), ECE (35% deviation), MCE (51% deviation), and per-fold CV scores (0.3-3.2% deviations). Relative tolerance of 1e-4 absorbs floating-point variation while rejecting all buggy outputs. All three bugs must be fixed simultaneously — partial fixes still fail multiple test assertions."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

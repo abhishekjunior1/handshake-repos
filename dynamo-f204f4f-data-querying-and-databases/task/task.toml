@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/query-planner"
+description = "Fix a query execution plan optimizer that produces suboptimal plans due to bugs in transitive join predicate inference and join selectivity estimation."
+
+[metadata]
+category = "Data Querying and Databases"
+subcategory = "Database administration"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1400 lines) implementing a query execution plan optimizer without external libraries. Two bugs are cross-module data-flow issues: Bug 1 (pipeline.py) disables transitive join predicate inference via a no-op method — on visible 2-table queries no transitivity is possible, but on hidden 3-table chains sharing the same join column (dept_id) the DP enumerator misses the inferred edge, producing orders-of-magnitude overestimated intermediate cardinalities. Bug 2 (join_optimizer.py) uses min(n_distinct) instead of max(n_distinct) for equi-join selectivity — on visible data where both sides have identical n_distinct the values are equal, but on hidden data with asymmetric column domains it overestimates selectivity by 2-4x. Two correct-but-suspicious patterns (max-correlation for composite indexes, always-sort merge join) trap agents who over-fix by modifying working cost model code. Data is synthetic, shaped like a production PostgreSQL catalog. A database internals engineer working on query optimizer cost models would do this work."
+solution_explanation = "Two bugs must be fixed: (1) pipeline.py's _augment_join_predicates must compute transitive closure of equi-join predicates using equivalence classes — if e.dept_id=p.dept_id and p.dept_id=d.dept_id, infer e.dept_id=d.dept_id and add it to the join graph so the DP enumerator applies selectivity for the inferred pair; (2) join_optimizer.py's _compute_join_selectivity must use max(left_ndistinct, right_ndistinct) instead of min — the standard equi-join selectivity formula bounds by the larger domain. The composite index max-correlation and explicit merge-join sort costs must be preserved unchanged."
+verification_explanation = "The hidden config has 4 tables with a transitive join chain sharing dept_id (employees→projects→departments) and asymmetric n_distinct values (employees.dept_id=25 vs departments.dept_id=100). Bug 1 causes the optimizer to miss the employees-departments join edge, not applying selectivity for that pair and producing estimated_output_rows=250000 instead of 625 for the 3-table query. Bug 2 uses min(25,100)=25 instead of max(25,100)=100, overestimating selectivity by 4x. Tests compare the full output JSON against expected_output.json checking estimated costs, output rows, join selectivity values, and access strategies. Both bugs must be fixed simultaneously for correct output."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

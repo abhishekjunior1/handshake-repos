@@ -1,0 +1,83 @@
+{
+  "flow_results": [
+    {
+      "packet_id": 1,
+      "source_zone": "dmz",
+      "dest_zone": "core",
+      "action": "permit",
+      "nat_applied": false,
+      "connection_state": "new",
+      "matched_rule": "allow-web-to-internal"
+    },
+    {
+      "packet_id": 2,
+      "source_zone": "dmz",
+      "dest_zone": "core",
+      "action": "permit",
+      "nat_applied": false,
+      "connection_state": "new",
+      "matched_rule": "allow-app-to-internal"
+    },
+    {
+      "packet_id": 3,
+      "source_zone": "edge",
+      "dest_zone": "dmz",
+      "action": "permit",
+      "nat_applied": true,
+      "connection_state": "new",
+      "matched_rule": "allow-inbound-http"
+    },
+    {
+      "packet_id": 4,
+      "source_zone": "edge",
+      "dest_zone": "dmz",
+      "action": "permit",
+      "nat_applied": true,
+      "connection_state": "new",
+      "matched_rule": "allow-inbound-https"
+    },
+    {
+      "packet_id": 5,
+      "source_zone": "core",
+      "dest_zone": "dmz",
+      "action": "permit",
+      "nat_applied": false,
+      "connection_state": "established",
+      "matched_rule": "allow-web-to-internal"
+    },
+    {
+      "packet_id": 6,
+      "source_zone": "core",
+      "dest_zone": "edge",
+      "action": "permit",
+      "nat_applied": false,
+      "connection_state": "established",
+      "matched_rule": "allow-inbound-http"
+    },
+    {
+      "packet_id": 7,
+      "source_zone": "mgmt",
+      "dest_zone": "core",
+      "action": "permit",
+      "nat_applied": false,
+      "connection_state": "new",
+      "matched_rule": "allow-mgmt-ssh"
+    },
+    {
+      "packet_id": 8,
+      "source_zone": "dmz",
+      "dest_zone": "core",
+      "action": "deny",
+      "nat_applied": false,
+      "connection_state": "new",
+      "matched_rule": "deny-all-dmz-core"
+    }
+  ],
+  "summary": {
+    "total_packets": 8,
+    "permitted": 7,
+    "denied": 1,
+    "nat_translations": 2,
+    "stateful_matches": 2
+  }
+}

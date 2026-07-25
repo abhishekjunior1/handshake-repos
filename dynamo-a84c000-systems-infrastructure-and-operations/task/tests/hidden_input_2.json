@@ -1,0 +1,81 @@
+{
+  "device": {
+    "device_id": "virtio-blk-pci-0",
+    "device_type": "virtio-blk",
+    "vendor_id": 6900,
+    "properties": {
+      "capacity_sectors": 2097152,
+      "block_size": 512,
+      "num_queues": 4
+    }
+  },
+  "host": {
+    "features": [
+      24,
+      27,
+      28,
+      29,
+      32,
+      33,
+      36
+    ],
+    "page_size": 4096,
+    "hypervisor": "kvm",
+    "cpu_model": "host"
+  },
+  "guest": {
+    "features": [
+      24,
+      27,
+      29,
+      32,
+      33
+    ],
+    "page_size": 65536,
+    "os": "linux",
+    "kernel_version": "6.6.0"
+  },
+  "queue": {
+    "num_queues": 1,
+    "base_depth": 16,
+    "submit_descriptors": 20
+  },
+  "dma": {
+    "iommu_enabled": true,
+    "regions": [
+      {
+        "guest_phys_addr": 1073741824,
+        "size": 131072,
+        "permissions": 3
+      },
+      {
+        "guest_phys_addr": 1073872896,
+        "size": 65536,
+        "permissions": 1
+      }
+    ],
+    "scatter_gather": [
+      {
+        "addr": 3221225472,
+        "size": 65536,
+        "write": true
+      },
+      {
+        "addr": 3221291008,
+        "size": 32768,
+        "write": false
+      }
+    ]
+  },
+  "migration": {
+    "memory_size_mb": 512,
+    "active": true,
+    "dirty_pages": [
+      100,
+      200,
+      300,
+      400,
+      500
+    ]
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "events": [
+    {
+      "event_id": "evt-301",
+      "table_name": "accounts",
+      "operation": "INSERT",
+      "primary_key": "acc-X1",
+      "timestamp": "2024-09-05T06:00:00.000Z",
+      "payload": {
+        "owner": "Martinez Corp",
+        "balance": 50000.00,
+        "currency": "USD",
+        "status": "active"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-302",
+      "table_name": "accounts",
+      "operation": "INSERT",
+      "primary_key": "acc-X1",
+      "timestamp": "2024-09-05T06:00:07.000Z",
+      "payload": {
+        "owner": "Martinez Corp",
+        "balance": 50000.00,
+        "currency": "USD",
+        "status": "active"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-303",
+      "table_name": "accounts",
+      "operation": "UPDATE",
+      "primary_key": "acc-X1",
+      "timestamp": "2024-09-05T12:00:00.000Z",
+      "payload": {
+        "owner": "Martinez Corp",
+        "balance": 47500.00,
+        "currency": null,
+        "status": null
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-304",
+      "table_name": "accounts",
+      "operation": "UPDATE",
+      "primary_key": "acc-X1",
+      "timestamp": "2024-09-05T18:00:00.000Z",
+      "payload": {
+        "owner": null,
+        "balance": 45000.00,
+        "currency": null,
+        "status": "review"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-305",
+      "table_name": "accounts",
+      "operation": "INSERT",
+      "primary_key": "acc-Y2",
+      "timestamp": "2024-09-05T07:00:00.000Z",
+      "payload": {
+        "owner": "Nakamura LLC",
+        "balance": 125000.00,
+        "currency": "EUR",
+        "status": "active"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-306",
+      "table_name": "accounts",
+      "operation": "UPDATE",
+      "primary_key": "acc-Y2",
+      "timestamp": "2024-09-05T15:00:00.000Z",
+      "payload": {
+        "owner": "Nakamura LLC",
+        "balance": 130000.00,
+        "currency": null,
+        "status": null
+      },
+      "schema_version": 2
+    },
+    {
+      "event_id": "evt-307",
+      "table_name": "transactions",
+      "operation": "INSERT",
+      "primary_key": "txn-001",
+      "timestamp": "2024-09-05T08:30:00.000Z",
+      "payload": {
+        "account_id": "acc-X1",
+        "amount": -2500.00,
+        "type": "withdrawal",
+        "memo": "Wire transfer"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-308",
+      "table_name": "transactions",
+      "operation": "INSERT",
+      "primary_key": "txn-001",
+      "timestamp": "2024-09-05T08:30:05.000Z",
+      "payload": {
+        "account_id": "acc-X1",
+        "amount": -2500.00,
+        "type": "withdrawal",
+        "memo": "Wire transfer"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-309",
+      "table_name": "transactions",
+      "operation": "INSERT",
+      "primary_key": "txn-002",
+      "timestamp": "2024-09-05T09:00:00.000Z",
+      "payload": {
+        "account_id": "acc-Y2",
+        "amount": 5000.00,
+        "type": "deposit",
+        "memo": "Client payment"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-310",
+      "table_name": "transactions",
+      "operation": "UPDATE",
+      "primary_key": "txn-002",
+      "timestamp": "2024-09-05T16:00:00.000Z",
+      "payload": {
+        "account_id": "acc-Y2",
+        "amount": 5000.00,
+        "type": null,
+        "memo": null
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-311",
+      "table_name": "transactions",
+      "operation": "DELETE",
+      "primary_key": "txn-001",
+      "timestamp": "2024-09-05T20:00:00.000Z",
+      "payload": {},
+      "schema_version": 1
+    }
+  ]
+}

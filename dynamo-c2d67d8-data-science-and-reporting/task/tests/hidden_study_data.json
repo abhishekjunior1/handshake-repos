@@ -1,0 +1,32 @@
+{
+  "study_config": {
+    "study_name": "Pharmacological Intervention Dose-Response Trial",
+    "comparisons": [
+      {"group_a": "placebo", "group_b": "low_dose"},
+      {"group_a": "placebo", "group_b": "high_dose"},
+      {"group_a": "low_dose", "group_b": "high_dose"}
+    ]
+  },
+  "groups": {
+    "placebo": {
+      "measurements": [4.2, 5.1, 4.8, 5.5, 4.0, 5.3, 4.6, 5.0]
+    },
+    "low_dose": {
+      "measurements": [5.8, 6.5, 6.1, 7.2, 5.5, 6.8, 6.3, 5.0]
+    },
+    "high_dose": {
+      "measurements": [7.5, 8.2, 7.8, 9.5, 7.0, 8.8, 8.1, 7.5]
+    }
+  },
+  "analysis_params": {
+    "alpha": 0.05,
+    "test_type": "welch_t",
+    "correction_method": "holm",
+    "winsorize": true,
+    "winsorize_percentile": 12.5,
+    "outlier_method": "iqr",
+    "outlier_threshold": 1.5,
+    "normalize": false,
+    "center": false
+  }
+}

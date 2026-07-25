@@ -1,0 +1,16 @@
+{
+  "tables": {
+    "employee_directory": {
+      "columns": [
+        {"name": "emp_id", "type": "string", "required": true, "constraints": {"unique": true, "pattern": "^EMP-\\d{3}$"}},
+        {"name": "first_name", "type": "string", "required": true, "constraints": {}},
+        {"name": "last_name", "type": "string", "required": true, "constraints": {}},
+        {"name": "department", "type": "string", "required": true, "constraints": {}},
+        {"name": "email", "type": "string", "required": true, "constraints": {"pattern": "^[a-z.]+@company\\.com$"}},
+        {"name": "status", "type": "string", "required": true, "constraints": {}}
+      ],
+      "conditional_rules": [],
+      "foreign_keys": []
+    }
+  }
+}

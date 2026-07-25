@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/survival-analysis"
+description = "Debug a multi-file clinical survival analysis pipeline implementing Kaplan-Meier estimation, log-rank tests, and Cox proportional hazards with tied event handling."
+
+[metadata]
+category = "data_science_and_reporting"
+subcategory = "statistical_analysis_and_inference"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "This task requires debugging a 1600+ line survival analysis pipeline spanning 6 modules that implement Kaplan-Meier, log-rank, and Cox PH from scratch (no lifelines/scipy). The three bugs exploit domain-specific conventions for handling tied event times: (1) the Kaplan-Meier estimator incorrectly subtracts censorings from the at-risk count before computing the hazard step, which only produces wrong results when events and censorings co-occur at the same time point; (2) the log-rank test variance formula uses n^3 in the denominator instead of n^2*(n-1), which converges to the correct value for large risk sets but diverges with small ones; (3) the Cox partial likelihood processes tied events sequentially instead of batching them with the same risk set (Breslow approximation), which is only incorrect when multiple events share a time point. The bugs compound: incorrect KM estimates affect model interpretation, wrong variance inflates/deflates the log-rank chi-square, and incorrect Cox coefficients change hazard ratios. This synthetic pipeline is representative of clinical biostatistics work performed by data scientists analyzing oncology trial data."
+solution_explanation = "Fix three bugs across three files: (1) In kaplan_meier.py, change the _effective_at_risk helper to return n_total instead of n_total - n_censored, since the standard Kaplan-Meier convention is that censorings at time t leave the risk set AFTER events at that time are processed. (2) In log_rank.py, change population_correction in _hypergeometric_variance from n to (n - 1), restoring the correct finite-population correction factor for hypergeometric variance. (3) In cox_model.py, restructure _compute_likelihood_components to batch all patients at the same time point into the risk set before computing any event contributions, implementing the proper Breslow approximation for tied events."
+verification_explanation = "The verifier copies hidden_cohort_data.json (a 20-patient oncology dataset with tied event times, co-occurring events and censorings, and small risk sets at later time points) into /app/cohort_data.json, runs the pipeline, then uses pytest to compare output.json against expected_output.json. Tests check KM survival values at each event time per group, median survival, log-rank chi-square and p-value, expected events, Cox concordance index, and hazard ratio coefficients using approximate equality (rel_tol=1e-4, abs_tol=1e-6). The pipeline is fully deterministic with no randomness; the tolerance band absorbs only floating-point associativity differences in the pure-Python arithmetic — it is tight enough that no incorrect tied-event handling or variance formula can produce values within the band."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

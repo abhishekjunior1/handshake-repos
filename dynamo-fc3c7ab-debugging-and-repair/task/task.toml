@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/flag-evaluator"
+description = "Feature flag evaluation pipeline with dependency ordering and rollout hash bugs."
+
+[metadata]
+category = "debugging_and_repair"
+subcategory = "configuration_repair"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1200 lines) implementing feature flag evaluation for a device fleet without external libraries. Two data-flow bugs in the orchestrator (pipeline.py) involve incorrect evaluation ordering and wrong function arguments. Bug 1 evaluates rollout cohort assignment BEFORE dependency resolution (should be after — dependencies determine eligibility before rollout bucketing). Bug 2 passes (device_id, device_id) to the rollout hash function instead of (device_id, flag_name), causing all flags for a device to land in the same rollout bucket (correlated instead of independent). Both bugs are justified by plausible engineering comments. The visible configuration has 100% rollout for all flags and no dependencies defined, making both bugs mathematically invisible. Two correct-but-suspicious patterns (alphabetical sort before evaluation, stale device inclusion) attract over-correction — modifying either changes output significantly. A platform engineer familiar with feature flag systems (LaunchDarkly, Split, Flagsmith) would do this work. Data is synthetic, shaped like a production IoT device fleet configuration."
+solution_explanation = "The solution applies two patches to pipeline.py: (1) swaps Phase 2 (rollout) and Phase 3 (dependencies) so that dependency constraints are resolved before rollout bucketing — this ensures that flags disabled by dependencies never enter the rollout calculation, and (2) changes compute_hash(device_id, device_id) to compute_hash(device_id, flag_name) so each flag gets an independent rollout bucket per device. The solution then re-executes the pipeline."
+verification_explanation = "The verifier substitutes a hidden configuration with 8 flags (partial rollouts at 30-100%), 15 devices, dependency chains, and mutex groups into /app/config.json, runs the fixed pipeline, and compares output.json against expected_output.json. Bug 1 causes 11 flags to be incorrectly enabled/disabled (dependencies applied after rollout instead of before). Bug 2 causes correlated rollout decisions (same hash for all flags per device). Combined, 21 of 120 evaluations differ between buggy and correct output. Tests assert exact match on all per-device flag states, reasons, summary counts, and metadata fields."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

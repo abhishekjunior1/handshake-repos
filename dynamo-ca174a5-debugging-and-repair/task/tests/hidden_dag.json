@@ -1,0 +1,10 @@
+{
+  "stages": [
+    {"name": "extract", "depends_on": [], "transform": "passthrough", "output_key": "raw"},
+    {"name": "transform", "depends_on": ["extract"], "transform": "passthrough", "output_key": "transformed", "validate": true, "fail_on_attempt": 1},
+    {"name": "analyze", "depends_on": ["extract"], "transform": "compute", "output_key": "analyzed"},
+    {"name": "enrich", "depends_on": ["transform"], "transform": "passthrough", "output_key": "enriched", "validate": true, "fail_on_attempt": 5},
+    {"name": "merge", "depends_on": ["enrich", "analyze"], "transform": "merge", "output_key": "merged"},
+    {"name": "export", "depends_on": ["merge"], "transform": "passthrough", "output_key": "exported"}
+  ]
+}

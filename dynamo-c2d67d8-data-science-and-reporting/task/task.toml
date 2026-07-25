@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/biostatistics-pipeline"
+description = "Debug a multi-file biostatistics analysis pipeline that performs group comparisons with preprocessing, hypothesis testing, multiple comparison correction, and effect size computation."
+
+[metadata]
+category = "data_science_and_reporting"
+subcategory = "statistical_analysis_and_inference"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "This task requires debugging a 1500+ line biostatistics pipeline spanning 6 modules that implement statistical inference from scratch (no scipy/numpy). The three bugs are domain-specific: (1) a percentile interpolation convention error in the winsorization function that uses array-length-based positions instead of the standard (n-1)-based linear interpolation method, producing incorrect clipping bounds only with small sample sizes; (2) a sort-order inversion in the Holm-Bonferroni step-down procedure that applies the most stringent threshold to the largest p-value instead of the smallest, producing identical results with a single comparison but wrong corrections with multiple; (3) a degrees-of-freedom error in the pooled standard deviation for Cohen's d that omits Bessel's correction, negligible with large samples but biasing effect sizes ~7% with n=8 per group. The bugs compound: incorrect winsorization changes group statistics, which cascades through test statistics, p-values, and effect sizes. This synthetic pipeline is representative of clinical biostatistics work performed by data scientists analyzing pharmaceutical trial data."
+solution_explanation = "Fix three bugs across three files: (1) In preprocessor.py, change winsorize_data to compute percentile positions as (n-1)*(percentile/100) instead of n*(percentile/100), adopting the linear interpolation convention for quantile computation. (2) In statistical_tests.py, change the Holm-Bonferroni sort from reverse=True (descending) to reverse=False (ascending) so the smallest p-value is tested against the strictest threshold. (3) In effect_size.py, change the pooled variance denominator in compute_cohens_d from (n_a + n_b) to (n_a + n_b - 2) to apply Bessel's correction for unbiased variance estimation."
+verification_explanation = "The verifier copies hidden_study_data.json (a 3-group, 8-observations-per-group pharmacological trial dataset with 3 pairwise comparisons and 12.5% winsorization) into /app/study_data.json, runs the pipeline, then uses pytest to compare the resulting output.json against expected_output.json. Tests check summary statistics (means, standard deviations), test statistics, raw and adjusted p-values, significance decisions, Cohen's d effect sizes, confidence intervals, and aggregated findings using approximate equality (rel_tol=1e-4, abs_tol=1e-6). The pipeline is fully deterministic with no randomness or external dependencies; the tolerance band exists solely to absorb floating-point associativity differences and the 6-decimal rounding already applied in report_generator.py — it is tight enough that no incorrect algorithm (e.g. wrong denominator or sort order) can produce values within the band, while any implementation computing the same formulas will match regardless of evaluation order. All three bugs must be fixed for the hidden data to produce correct results."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

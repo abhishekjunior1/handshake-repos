@@ -1,0 +1,46 @@
+{
+  "routes": [
+    {"network": "10.0.1.0/24", "next_hop": "gw-lan", "interface": "eth0", "priority": 10, "metric": 5},
+    {"network": "10.0.0.0/8", "next_hop": "gw-internal", "interface": "eth1", "priority": 20, "metric": 10},
+    {"network": "0.0.0.0/0", "next_hop": "gw-default", "interface": "eth0", "priority": 100, "metric": 200}
+  ],
+  "firewall_rules": [
+    {"rule_id": 1, "source": "10.0.1.0/24", "destination": "any", "port": 443, "protocol": "tcp", "action": "allow"},
+    {"rule_id": 2, "source": "10.0.1.0/24", "destination": "any", "port": 80, "protocol": "tcp", "action": "allow"},
+    {"rule_id": 3, "source": "any", "destination": "any", "port": null, "protocol": "any", "action": "deny"}
+  ],
+  "firewall_default_action": "deny",
+  "nat_rules": [],
+  "dns_records": {
+    "web.internal.corp": "10.0.1.100"
+  },
+  "qos": {
+    "priority_ports": [443, 22],
+    "bulk_ports": [8080, 8443],
+    "next_hop_policies": {}
+  },
+  "load_balancer": {
+    "backends": [
+      {"address": "10.0.1.101", "port": 8080, "healthy": true},
+      {"address": "10.0.1.102", "port": 8080, "healthy": true}
+    ]
+  },
+  "packets": [
+    {
+      "source_ip": "10.0.1.10",
+      "destination_ip": "10.0.1.100",
+      "port": 443,
+      "protocol": "tcp",
+      "ttl": 64,
+      "use_lb": true
+    },
+    {
+      "source_ip": "10.0.1.20",
+      "destination_ip": "10.0.1.50",
+      "port": 80,
+      "protocol": "tcp",
+      "ttl": 32,
+      "use_lb": false
+    }
+  ]
+}

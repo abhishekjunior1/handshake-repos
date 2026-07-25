@@ -1,0 +1,492 @@
+{
+  "format_version": "2.1.0",
+  "pipeline": {
+    "pipeline_name": "weighted_hierarchical_rollup",
+    "version": "2.1.0",
+    "parameters": {
+      "half_life_days": 30.0,
+      "outlier_threshold": 3.5,
+      "dampening_factor": 0.03,
+      "reference_date": "2024-01-15",
+      "hierarchy_levels": [
+        "product",
+        "category",
+        "department"
+      ],
+      "value_columns": [
+        "revenue"
+      ]
+    }
+  },
+  "input_summary": {
+    "record_count": 12,
+    "date_range": {
+      "min": "2023-11-16",
+      "max": "2024-01-15"
+    },
+    "hierarchy_validation": {
+      "is_valid": true,
+      "levels": {
+        "product": {
+          "present": 12,
+          "total": 12,
+          "completeness": 1.0
+        },
+        "category": {
+          "present": 12,
+          "total": 12,
+          "completeness": 1.0
+        },
+        "department": {
+          "present": 12,
+          "total": 12,
+          "completeness": 1.0
+        }
+      }
+    },
+    "recency_score": 0.537527,
+    "weight_statistics": {
+      "mean": 0.676881,
+      "median": 0.767125,
+      "std": 0.268703,
+      "min": 0.25,
+      "max": 1.0,
+      "cv": 0.396973
+    }
+  },
+  "results": {
+    "product": {
+      "record_count": 12,
+      "records": [
+        {
+          "transaction_id": "TXN-2024-H001",
+          "transaction_date": "2024-01-15",
+          "product": "gaming_laptop",
+          "category": "electronics",
+          "department": "technology",
+          "revenue": 373.180133,
+          "quantity": 1,
+          "customer_segment": "enterprise",
+          "region": "north",
+          "base_weight": 1.0,
+          "effective_weight": 1.0,
+          "age_days": 0,
+          "contribution_score": 0.953246,
+          "group_total_weighted_value": 1258.856538,
+          "normalized_score": 1.0,
+          "is_outlier": true,
+          "modified_z_score": 13.370619,
+          "adjusted_revenue": 373.180133,
+          "share_pct": 21.551916,
+          "normalized_value": 0.215519,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 10.26203
+        },
+        {
+          "transaction_id": "TXN-2024-H002",
+          "transaction_date": "2024-01-10",
+          "product": "phone_case",
+          "category": "electronics",
+          "department": "technology",
+          "revenue": 25.0,
+          "quantity": 1,
+          "customer_segment": "consumer",
+          "region": "south",
+          "base_weight": 1.0,
+          "effective_weight": 0.890899,
+          "age_days": 5,
+          "contribution_score": 0.017693,
+          "group_total_weighted_value": 1258.856538,
+          "normalized_score": 0.008726,
+          "is_outlier": false,
+          "modified_z_score": -0.656593,
+          "adjusted_revenue": 25.0,
+          "share_pct": 1.443801,
+          "normalized_value": 0.014438,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 0.061202
+        },
+        {
+          "transaction_id": "TXN-2024-H003",
+          "transaction_date": "2024-01-05",
+          "product": "hdmi_cable",
+          "category": "electronics",
+          "department": "technology",
+          "revenue": 15.0,
+          "quantity": 1,
+          "customer_segment": "consumer",
+          "region": "east",
+          "base_weight": 1.0,
+          "effective_weight": 0.793701,
+          "age_days": 10,
+          "contribution_score": 0.009457,
+          "group_total_weighted_value": 1258.856538,
+          "normalized_score": 0.0,
+          "is_outlier": false,
+          "modified_z_score": -0.775973,
+          "adjusted_revenue": 15.0,
+          "share_pct": 0.866281,
+          "normalized_value": 0.008663,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 0.022223
+        },
+        {
+          "transaction_id": "TXN-2024-H004",
+          "transaction_date": "2023-12-20",
+          "product": "keyboard_basic",
+          "category": "electronics",
+          "department": "technology",
+          "revenue": 45.0,
+          "quantity": 1,
+          "customer_segment": "consumer",
+          "region": "west",
+          "base_weight": 1.0,
+          "effective_weight": 0.548412,
+          "age_days": 26,
+          "contribution_score": 0.019604,
+          "group_total_weighted_value": 1258.856538,
+          "normalized_score": 0.010751,
+          "is_outlier": false,
+          "modified_z_score": -0.417832,
+          "adjusted_revenue": 45.0,
+          "share_pct": 2.598842,
+          "normalized_value": 0.025988,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 0.194922
+        },
+        {
+          "transaction_id": "TXN-2024-H005",
+          "transaction_date": "2024-01-14",
+          "product": "winter_jacket",
+          "category": "clothing",
+          "department": "apparel",
+          "revenue": 180.0,
+          "quantity": 1,
+          "customer_segment": "consumer",
+          "region": "north",
+          "base_weight": 1.0,
+          "effective_weight": 0.97716,
+          "age_days": 1,
+          "contribution_score": 0.179394,
+          "group_total_weighted_value": 980.460963,
+          "normalized_score": 0.191036,
+          "is_outlier": false,
+          "modified_z_score": 1.193805,
+          "adjusted_revenue": 180.0,
+          "share_pct": 10.395368,
+          "normalized_value": 0.103954,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 2.785093
+        },
+        {
+          "transaction_id": "TXN-2024-H006",
+          "transaction_date": "2024-01-02",
+          "product": "silk_scarf",
+          "category": "clothing",
+          "department": "apparel",
+          "revenue": 75.0,
+          "quantity": 1,
+          "customer_segment": "enterprise",
+          "region": "south",
+          "base_weight": 1.0,
+          "effective_weight": 0.740549,
+          "age_days": 13,
+          "contribution_score": 0.056648,
+          "group_total_weighted_value": 980.460963,
+          "normalized_score": 0.0,
+          "is_outlier": false,
+          "modified_z_score": -0.05969,
+          "adjusted_revenue": 75.0,
+          "share_pct": 4.331403,
+          "normalized_value": 0.043314,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 0.527798
+        },
+        {
+          "transaction_id": "TXN-2024-H007",
+          "transaction_date": "2023-12-15",
+          "product": "running_shoes",
+          "category": "clothing",
+          "department": "apparel",
+          "revenue": 130.0,
+          "quantity": 1,
+          "customer_segment": "consumer",
+          "region": "east",
+          "base_weight": 1.0,
+          "effective_weight": 0.48858,
+          "age_days": 31,
+          "contribution_score": 0.064781,
+          "group_total_weighted_value": 980.460963,
+          "normalized_score": 0.012658,
+          "is_outlier": false,
+          "modified_z_score": 0.596903,
+          "adjusted_revenue": 130.0,
+          "share_pct": 7.507766,
+          "normalized_value": 0.075078,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 1.51409
+        },
+        {
+          "transaction_id": "TXN-2024-H008",
+          "transaction_date": "2023-11-20",
+          "product": "designer_bag",
+          "category": "clothing",
+          "department": "apparel",
+          "revenue": 373.180133,
+          "quantity": 1,
+          "customer_segment": "enterprise",
+          "region": "west",
+          "base_weight": 1.0,
+          "effective_weight": 0.274206,
+          "age_days": 56,
+          "contribution_score": 0.699177,
+          "group_total_weighted_value": 980.460963,
+          "normalized_score": 1.0,
+          "is_outlier": true,
+          "modified_z_score": 28.890088,
+          "adjusted_revenue": 373.180133,
+          "share_pct": 21.551916,
+          "normalized_value": 0.215519,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 10.26203
+        },
+        {
+          "transaction_id": "TXN-2024-H009",
+          "transaction_date": "2024-01-13",
+          "product": "organic_coffee",
+          "category": "food",
+          "department": "grocery",
+          "revenue": 22.0,
+          "quantity": 1,
+          "customer_segment": "consumer",
+          "region": "north",
+          "base_weight": 1.0,
+          "effective_weight": 0.954842,
+          "age_days": 2,
+          "contribution_score": 0.017421,
+          "group_total_weighted_value": 1205.831904,
+          "normalized_score": 0.0,
+          "is_outlier": false,
+          "modified_z_score": -0.692407,
+          "adjusted_revenue": 22.0,
+          "share_pct": 1.270545,
+          "normalized_value": 0.012705,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 0.047517
+        },
+        {
+          "transaction_id": "TXN-2024-H010",
+          "transaction_date": "2024-01-08",
+          "product": "protein_bars",
+          "category": "food",
+          "department": "grocery",
+          "revenue": 35.0,
+          "quantity": 1,
+          "customer_segment": "consumer",
+          "region": "south",
+          "base_weight": 1.0,
+          "effective_weight": 0.850667,
+          "age_days": 7,
+          "contribution_score": 0.024691,
+          "group_total_weighted_value": 1205.831904,
+          "normalized_score": 0.007941,
+          "is_outlier": false,
+          "modified_z_score": -0.537212,
+          "adjusted_revenue": 35.0,
+          "share_pct": 2.021322,
+          "normalized_value": 0.020213,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 0.11893
+        },
+        {
+          "transaction_id": "TXN-2024-H011",
+          "transaction_date": "2023-12-01",
+          "product": "truffle_oil",
+          "category": "food",
+          "department": "grocery",
+          "revenue": 85.0,
+          "quantity": 1,
+          "customer_segment": "enterprise",
+          "region": "east",
+          "base_weight": 1.0,
+          "effective_weight": 0.353553,
+          "age_days": 45,
+          "contribution_score": 0.024922,
+          "group_total_weighted_value": 1205.831904,
+          "normalized_score": 0.008193,
+          "is_outlier": false,
+          "modified_z_score": 0.05969,
+          "adjusted_revenue": 85.0,
+          "share_pct": 4.908924,
+          "normalized_value": 0.049089,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 0.672214
+        },
+        {
+          "transaction_id": "TXN-2024-H012",
+          "transaction_date": "2023-11-16",
+          "product": "wagyu_beef",
+          "category": "food",
+          "department": "grocery",
+          "revenue": 373.180133,
+          "quantity": 1,
+          "customer_segment": "enterprise",
+          "region": "west",
+          "base_weight": 1.0,
+          "effective_weight": 0.25,
+          "age_days": 60,
+          "contribution_score": 0.932966,
+          "group_total_weighted_value": 1205.831904,
+          "normalized_score": 1.0,
+          "is_outlier": true,
+          "modified_z_score": 52.766195,
+          "adjusted_revenue": 373.180133,
+          "share_pct": 21.551916,
+          "normalized_value": 0.215519,
+          "total_basis": 1731.5404,
+          "revenue_dampened_share": 10.26203
+        }
+      ]
+    },
+    "category": {
+      "record_count": 3,
+      "records": [
+        {
+          "category": "electronics",
+          "revenue": 133.632881,
+          "group_weight_sum": 3.233012,
+          "group_weight_mean": 0.808253,
+          "group_count": 4,
+          "effective_weight": 0.808253,
+          "share_pct": 36.504547,
+          "normalized_value": 0.365045,
+          "total_basis": 366.071881,
+          "revenue_dampened_share": 24.293996
+        },
+        {
+          "category": "clothing",
+          "revenue": 160.159032,
+          "group_weight_sum": 2.480495,
+          "group_weight_mean": 0.620124,
+          "group_count": 4,
+          "effective_weight": 0.620124,
+          "share_pct": 43.750706,
+          "normalized_value": 0.437507,
+          "total_basis": 366.071881,
+          "revenue_dampened_share": 31.975612
+        },
+        {
+          "category": "food",
+          "revenue": 72.279969,
+          "group_weight_sum": 2.409062,
+          "group_weight_mean": 0.602266,
+          "group_count": 4,
+          "effective_weight": 0.602266,
+          "share_pct": 19.744748,
+          "normalized_value": 0.197447,
+          "total_basis": 366.071881,
+          "revenue_dampened_share": 8.825303
+        }
+      ]
+    },
+    "department": {
+      "record_count": 3,
+      "records": [
+        {
+          "department": "electronics",
+          "revenue": 133.632881,
+          "group_weight_sum": 0.808253,
+          "group_weight_mean": 0.808253,
+          "group_count": 1,
+          "effective_weight": 0.808253,
+          "share_pct": 36.504547,
+          "normalized_value": 0.365045,
+          "total_basis": 366.071881,
+          "revenue_dampened_share": 24.293996
+        },
+        {
+          "department": "clothing",
+          "revenue": 160.159032,
+          "group_weight_sum": 0.620124,
+          "group_weight_mean": 0.620124,
+          "group_count": 1,
+          "effective_weight": 0.620124,
+          "share_pct": 43.750706,
+          "normalized_value": 0.437507,
+          "total_basis": 366.071881,
+          "revenue_dampened_share": 31.975612
+        },
+        {
+          "department": "food",
+          "revenue": 72.279969,
+          "group_weight_sum": 0.602266,
+          "group_weight_mean": 0.602266,
+          "group_count": 1,
+          "effective_weight": 0.602266,
+          "share_pct": 19.744748,
+          "normalized_value": 0.197447,
+          "total_basis": 366.071881,
+          "revenue_dampened_share": 8.825303
+        }
+      ]
+    }
+  },
+  "diagnostics": {
+    "outlier_detection": {
+      "total_records": 12,
+      "outlier_count": 3,
+      "outlier_rate": 0.25,
+      "threshold_used": 3.5,
+      "median": 80.0,
+      "mad": 56.5
+    },
+    "contribution_statistics": {
+      "count": 12,
+      "mean": 0.25,
+      "max": 0.953246,
+      "min": 0.009457,
+      "gini_coefficient": 0.676192,
+      "top_concentration": 0.317749
+    },
+    "rollup_summary": {
+      "product": {
+        "record_count": 12,
+        "revenue_mean": 144.295033,
+        "revenue_sum": 1731.5404,
+        "revenue_min": 15.0,
+        "revenue_max": 373.180133
+      },
+      "category": {
+        "record_count": 3,
+        "revenue_mean": 122.02396,
+        "revenue_sum": 366.071881,
+        "revenue_min": 72.279969,
+        "revenue_max": 160.159032
+      },
+      "department": {
+        "record_count": 3,
+        "revenue_mean": 122.02396,
+        "revenue_sum": 366.071881,
+        "revenue_min": 72.279969,
+        "revenue_max": 160.159032
+      }
+    },
+    "normalization": {
+      "product": {
+        "share_total_pct": 100.0,
+        "share_valid": true,
+        "revenue_dampening_impact": 0.632699
+      },
+      "category": {
+        "share_total_pct": 100.0,
+        "share_valid": true,
+        "revenue_dampening_impact": 0.349051
+      },
+      "department": {
+        "share_total_pct": 100.0,
+        "share_valid": true,
+        "revenue_dampening_impact": 0.349051
+      }
+    }
+  }
+}

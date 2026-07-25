@@ -1,0 +1,45 @@
+{
+  "device": {
+    "device_id": "virtio-net-pci-0",
+    "device_type": "virtio-net",
+    "vendor_id": 6900,
+    "properties": {
+      "mac_address": "52:54:00:12:34:56",
+      "mtu": 1500,
+      "multiqueue": false
+    }
+  },
+  "host": {
+    "features": [24, 27, 28, 29, 32, 33],
+    "page_size": 4096,
+    "hypervisor": "kvm",
+    "cpu_model": "host"
+  },
+  "guest": {
+    "features": [24, 27, 28, 29, 32, 33],
+    "page_size": 4096,
+    "os": "linux",
+    "kernel_version": "6.1.0"
+  },
+  "queue": {
+    "num_queues": 1,
+    "base_depth": 256,
+    "submit_descriptors": 1
+  },
+  "dma": {
+    "iommu_enabled": true,
+    "regions": [
+      {
+        "guest_phys_addr": 1073741824,
+        "size": 4096,
+        "permissions": 3
+      }
+    ],
+    "scatter_gather": []
+  },
+  "migration": {
+    "memory_size_mb": 1024,
+    "active": false,
+    "dirty_pages": []
+  }
+}

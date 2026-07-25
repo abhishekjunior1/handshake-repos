@@ -1,0 +1,22 @@
+{
+  "master_secret_hex": "a3f2c1d4e5b6a7980102030405060708091a1b1c1d1e1f2021222324252627",
+  "salt_hex": "deadbeefcafebabe0011223344556677",
+  "key_length": 32,
+  "kdf_iterations": 2,
+  "session_context": "session-alpha-001",
+  "enc_info": "channel-key",
+  "mac_info": "channel-key",
+  "block_size": 16,
+  "cipher_rounds": 12,
+  "envelope_version": 2,
+  "messages": [
+    {
+      "message_id": "msg_001",
+      "sender": "alice",
+      "recipient": "bob",
+      "payload": "Hello Bob, this is a test message for the envelope system.",
+      "nonce_hex": "00112233445566778899aabbccddeeff",
+      "metadata": {"priority": "high", "timestamp": "2026-01-15T10:30:00Z"}
+    }
+  ]
+}

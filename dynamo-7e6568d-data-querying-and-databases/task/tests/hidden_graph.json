@@ -1,0 +1,154 @@
+{
+  "graph": {
+    "nodes": [
+      {
+        "id": "c1",
+        "type": "compute",
+        "weight": 2.0,
+        "properties": {}
+      },
+      {
+        "id": "c2",
+        "type": "compute",
+        "weight": 1.5,
+        "properties": {}
+      },
+      {
+        "id": "c3",
+        "type": "compute",
+        "weight": 1.0,
+        "properties": {}
+      },
+      {
+        "id": "s1",
+        "type": "storage",
+        "weight": 3.0,
+        "properties": {}
+      },
+      {
+        "id": "s2",
+        "type": "storage",
+        "weight": 2.5,
+        "properties": {}
+      },
+      {
+        "id": "k1",
+        "type": "network",
+        "weight": 1.0,
+        "properties": {}
+      },
+      {
+        "id": "k2",
+        "type": "network",
+        "weight": 1.5,
+        "properties": {}
+      },
+      {
+        "id": "k3",
+        "type": "network",
+        "weight": 2.0,
+        "properties": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "c1",
+        "target": "c2",
+        "type": "link",
+        "weight": 0.8,
+        "properties": {}
+      },
+      {
+        "source": "c2",
+        "target": "c3",
+        "type": "link",
+        "weight": 0.7,
+        "properties": {}
+      },
+      {
+        "source": "c3",
+        "target": "c1",
+        "type": "link",
+        "weight": 0.6,
+        "properties": {}
+      },
+      {
+        "source": "s1",
+        "target": "s2",
+        "type": "link",
+        "weight": 0.9,
+        "properties": {}
+      },
+      {
+        "source": "s2",
+        "target": "s1",
+        "type": "link",
+        "weight": 0.4,
+        "properties": {}
+      },
+      {
+        "source": "k1",
+        "target": "k2",
+        "type": "link",
+        "weight": 0.8,
+        "properties": {}
+      },
+      {
+        "source": "k2",
+        "target": "k3",
+        "type": "link",
+        "weight": 0.7,
+        "properties": {}
+      },
+      {
+        "source": "k3",
+        "target": "k1",
+        "type": "link",
+        "weight": 0.9,
+        "properties": {}
+      },
+      {
+        "source": "c1",
+        "target": "s1",
+        "type": "link",
+        "weight": 0.3,
+        "properties": {}
+      },
+      {
+        "source": "c2",
+        "target": "k1",
+        "type": "link",
+        "weight": 0.5,
+        "properties": {}
+      },
+      {
+        "source": "s2",
+        "target": "k3",
+        "type": "link",
+        "weight": 0.4,
+        "properties": {}
+      }
+    ]
+  },
+  "queries": {
+    "centrality": {
+      "top_k": 3
+    },
+    "pagerank": {
+      "damping": 0.85,
+      "max_iterations": 100,
+      "top_k": 3
+    },
+    "clustering": {
+      "enabled": true
+    },
+    "influence_spread": {
+      "seeds": [
+        "c1"
+      ],
+      "steps": 3,
+      "decay": 0.5,
+      "top_k": 5
+    }
+  }
+}

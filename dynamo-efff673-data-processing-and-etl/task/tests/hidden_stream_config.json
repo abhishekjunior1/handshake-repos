@@ -1,0 +1,114 @@
+{
+  "stream_config": {
+    "window_size_sec": 30.0,
+    "stream_start": 2000.0,
+    "allowed_lateness_sec": 25.0
+  },
+  "events": [
+    {
+      "event_id": "h-001",
+      "timestamp": 2003.0,
+      "partition_key": "zone-north",
+      "value": 85.0,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-002",
+      "timestamp": 2008.0,
+      "partition_key": "zone-south",
+      "value": 12.5,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-003",
+      "timestamp": 2012.0,
+      "partition_key": "zone-south",
+      "value": 13.2,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-004",
+      "timestamp": 2017.0,
+      "partition_key": "zone-south",
+      "value": 11.8,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-005",
+      "timestamp": 2021.0,
+      "partition_key": "zone-south",
+      "value": 14.1,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-006",
+      "timestamp": 2026.0,
+      "partition_key": "zone-south",
+      "value": 12.9,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-007",
+      "timestamp": 2034.0,
+      "partition_key": "zone-north",
+      "value": 78.0,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-008",
+      "timestamp": 2039.0,
+      "partition_key": "zone-south",
+      "value": 10.3,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-009",
+      "timestamp": 2044.0,
+      "partition_key": "zone-south",
+      "value": 11.7,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-010",
+      "timestamp": 2048.0,
+      "partition_key": "zone-south",
+      "value": 9.8,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-011",
+      "timestamp": 2052.0,
+      "partition_key": "zone-south",
+      "value": 13.5,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-012",
+      "timestamp": 2056.0,
+      "partition_key": "zone-north",
+      "value": 92.0,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-013",
+      "timestamp": 2063.0,
+      "partition_key": "zone-north",
+      "value": 88.5,
+      "event_type": "measurement"
+    },
+    {
+      "event_id": "h-014",
+      "timestamp": 2090.0,
+      "partition_key": "zone-north",
+      "value": 0.0,
+      "event_type": "heartbeat"
+    },
+    {
+      "event_id": "h-015",
+      "timestamp": 2085.0,
+      "partition_key": "zone-south",
+      "value": 0.0,
+      "event_type": "control"
+    }
+  ]
+}

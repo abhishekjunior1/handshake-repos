@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/dsp-pipeline"
+description = "Welch-method DSP pipeline with segmented spectral analysis, noise floor estimation, and SNR computation."
+
+[metadata]
+category = "Scientific Computing and Domain Science"
+subcategory = "Signal processing"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "analyze"]
+artifact_type = ["codebase", "mathematical_or_scientific_model"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (850+ lines) implementing Welch-method spectral analysis with configurable segmentation, IIR filter design via bilinear transform with pre-warping, and noise-floor-based SNR estimation. The orchestrator contains a bug where spectral features are extracted from a single segment's PSD (the last) rather than the properly averaged PSD, justified by a plausible comment about capturing 'current spectral state.' This is invisible on the sample data because only one segment exists (segment_length equals signal length), making last-segment and average identical. The pipeline also contains four correct-but-suspicious patterns that produce large output changes if modified: one-sided PSD doubling, bilinear pre-warping, coherent gain amplitude correction (3.5x impact), and overlap processing gain normalization (2x impact). A signal processing engineer working on spectrum monitoring would perform this type of segmented analysis routinely. Data is synthetic, shaped like non-stationary vibration or communications signals."
+solution_explanation = "Replace the spectral feature computation that uses psd_list[-1] (last segment only) with psd_corrected (the full Welch average with amplitude correction). The comment 'capture current spectral state rather than time-averaged behavior' sounds plausible for streaming applications but is incorrect for a batch analysis pipeline that should report the averaged spectral characteristics. The fix changes two lines: remove the current_psd computation from psd_list[-1] and pass psd_corrected to compute_spectral_features instead. Crucially, the agent must NOT modify the coherent gain correction (used correctly for SNR) or the overlap normalization (used correctly for effective_band_power) — both are protected by the instruction."
+verification_explanation = "The verifier substitutes a hidden test signal (1024 samples, Hamming window, 256-sample segments with 50% overlap yielding 8 segments, non-stationary amplitude envelope making last segment 70% weaker than average). Tests compare spectral features (total_power, peak_power, centroid, bandwidth, flatness) at rel_tol=1e-2 to 1e-3. The buggy pipeline computes features from the attenuated last segment, giving total_power 91% below expected and spectral_flatness 293% above expected. SNR values are unaffected (they use the correct averaged PSD). The tolerance band rejects the large deviations from single-segment features while absorbing legitimate floating-point variation."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

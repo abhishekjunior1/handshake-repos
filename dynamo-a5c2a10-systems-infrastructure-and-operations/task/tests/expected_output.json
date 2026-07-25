@@ -1,0 +1,597 @@
+{
+  "processing_log": [
+    {
+      "tick": 1,
+      "event": "dispatched",
+      "task_id": "task-a",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 1,
+      "event": "failed",
+      "task_id": "task-a",
+      "consumer_id": "consumer-1",
+      "details": "attempt 1 failed"
+    },
+    {
+      "tick": 1,
+      "event": "retry_scheduled",
+      "task_id": "task-a",
+      "consumer_id": "consumer-1",
+      "details": "retry 1 queued"
+    },
+    {
+      "tick": 1,
+      "event": "dispatched",
+      "task_id": "task-b",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 1,
+      "event": "failed",
+      "task_id": "task-b",
+      "consumer_id": "consumer-2",
+      "details": "attempt 1 failed"
+    },
+    {
+      "tick": 1,
+      "event": "retry_scheduled",
+      "task_id": "task-b",
+      "consumer_id": "consumer-2",
+      "details": "retry 1 queued"
+    },
+    {
+      "tick": 1,
+      "event": "dispatched",
+      "task_id": "task-g",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 1,
+      "event": "failed",
+      "task_id": "task-g",
+      "consumer_id": "consumer-3",
+      "details": "attempt 1 failed"
+    },
+    {
+      "tick": 1,
+      "event": "retry_scheduled",
+      "task_id": "task-g",
+      "consumer_id": "consumer-3",
+      "details": "retry 1 queued"
+    },
+    {
+      "tick": 1,
+      "event": "dispatched",
+      "task_id": "task-j",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 1,
+      "event": "failed",
+      "task_id": "task-j",
+      "consumer_id": "consumer-1",
+      "details": "attempt 1 failed"
+    },
+    {
+      "tick": 1,
+      "event": "retry_scheduled",
+      "task_id": "task-j",
+      "consumer_id": "consumer-1",
+      "details": "retry 1 queued"
+    },
+    {
+      "tick": 1,
+      "event": "dispatched",
+      "task_id": "task-a",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 1,
+      "event": "failed",
+      "task_id": "task-a",
+      "consumer_id": "consumer-2",
+      "details": "attempt 2 failed"
+    },
+    {
+      "tick": 1,
+      "event": "retry_scheduled",
+      "task_id": "task-a",
+      "consumer_id": "consumer-2",
+      "details": "retry 2 queued"
+    },
+    {
+      "tick": 1,
+      "event": "dispatched",
+      "task_id": "task-b",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 1,
+      "event": "completed",
+      "task_id": "task-b",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 1,
+      "event": "rate_limited",
+      "task_id": "task-g",
+      "consumer_id": "consumer-1",
+      "details": "consumer throttled"
+    },
+    {
+      "tick": 2,
+      "event": "dispatched",
+      "task_id": "task-g",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 2,
+      "event": "failed",
+      "task_id": "task-g",
+      "consumer_id": "consumer-2",
+      "details": "attempt 2 failed"
+    },
+    {
+      "tick": 2,
+      "event": "retry_scheduled",
+      "task_id": "task-g",
+      "consumer_id": "consumer-2",
+      "details": "retry 2 queued"
+    },
+    {
+      "tick": 2,
+      "event": "dispatched",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 2,
+      "event": "failed",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": "attempt 2 failed"
+    },
+    {
+      "tick": 2,
+      "event": "retry_scheduled",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": "retry 2 queued"
+    },
+    {
+      "tick": 2,
+      "event": "dispatched",
+      "task_id": "task-a",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 2,
+      "event": "completed",
+      "task_id": "task-a",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 2,
+      "event": "dispatched",
+      "task_id": "task-g",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 2,
+      "event": "failed",
+      "task_id": "task-g",
+      "consumer_id": "consumer-2",
+      "details": "attempt 3 failed"
+    },
+    {
+      "tick": 2,
+      "event": "retry_scheduled",
+      "task_id": "task-g",
+      "consumer_id": "consumer-2",
+      "details": "retry 3 queued"
+    },
+    {
+      "tick": 2,
+      "event": "dispatched",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 2,
+      "event": "failed",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": "attempt 3 failed"
+    },
+    {
+      "tick": 2,
+      "event": "retry_scheduled",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": "retry 3 queued"
+    },
+    {
+      "tick": 2,
+      "event": "dispatched",
+      "task_id": "task-g",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 2,
+      "event": "failed",
+      "task_id": "task-g",
+      "consumer_id": "consumer-1",
+      "details": "attempt 4 failed"
+    },
+    {
+      "tick": 2,
+      "event": "dead_lettered",
+      "task_id": "task-g",
+      "consumer_id": "consumer-1",
+      "details": "exhausted after 3 attempts"
+    },
+    {
+      "tick": 2,
+      "event": "rate_limited",
+      "task_id": "task-j",
+      "consumer_id": "consumer-2",
+      "details": "consumer throttled"
+    },
+    {
+      "tick": 3,
+      "event": "dispatched",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 3,
+      "event": "failed",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": "attempt 4 failed"
+    },
+    {
+      "tick": 3,
+      "event": "dead_lettered",
+      "task_id": "task-j",
+      "consumer_id": "consumer-3",
+      "details": "exhausted after 3 attempts"
+    },
+    {
+      "tick": 3,
+      "event": "dispatched",
+      "task_id": "task-c",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 3,
+      "event": "completed",
+      "task_id": "task-c",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 3,
+      "event": "dispatched",
+      "task_id": "task-d",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 3,
+      "event": "failed",
+      "task_id": "task-d",
+      "consumer_id": "consumer-2",
+      "details": "attempt 1 failed"
+    },
+    {
+      "tick": 3,
+      "event": "retry_scheduled",
+      "task_id": "task-d",
+      "consumer_id": "consumer-2",
+      "details": "retry 1 queued"
+    },
+    {
+      "tick": 3,
+      "event": "dispatched",
+      "task_id": "task-h",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 3,
+      "event": "failed",
+      "task_id": "task-h",
+      "consumer_id": "consumer-3",
+      "details": "attempt 1 failed"
+    },
+    {
+      "tick": 3,
+      "event": "retry_scheduled",
+      "task_id": "task-h",
+      "consumer_id": "consumer-3",
+      "details": "retry 1 queued"
+    },
+    {
+      "tick": 3,
+      "event": "dispatched",
+      "task_id": "task-d",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 3,
+      "event": "failed",
+      "task_id": "task-d",
+      "consumer_id": "consumer-1",
+      "details": "attempt 2 failed"
+    },
+    {
+      "tick": 3,
+      "event": "retry_scheduled",
+      "task_id": "task-d",
+      "consumer_id": "consumer-1",
+      "details": "retry 2 queued"
+    },
+    {
+      "tick": 3,
+      "event": "dispatched",
+      "task_id": "task-h",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 3,
+      "event": "completed",
+      "task_id": "task-h",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 3,
+      "event": "rate_limited",
+      "task_id": "task-d",
+      "consumer_id": "consumer-3",
+      "details": "consumer throttled"
+    },
+    {
+      "tick": 4,
+      "event": "dispatched",
+      "task_id": "task-d",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "failed",
+      "task_id": "task-d",
+      "consumer_id": "consumer-1",
+      "details": "attempt 3 failed"
+    },
+    {
+      "tick": 4,
+      "event": "retry_scheduled",
+      "task_id": "task-d",
+      "consumer_id": "consumer-1",
+      "details": "retry 3 queued"
+    },
+    {
+      "tick": 4,
+      "event": "dispatched",
+      "task_id": "task-d",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "completed",
+      "task_id": "task-d",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "dispatched",
+      "task_id": "task-e",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "failed",
+      "task_id": "task-e",
+      "consumer_id": "consumer-3",
+      "details": "attempt 1 failed"
+    },
+    {
+      "tick": 4,
+      "event": "retry_scheduled",
+      "task_id": "task-e",
+      "consumer_id": "consumer-3",
+      "details": "retry 1 queued"
+    },
+    {
+      "tick": 4,
+      "event": "dispatched",
+      "task_id": "task-f",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "completed",
+      "task_id": "task-f",
+      "consumer_id": "consumer-1",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "dispatched",
+      "task_id": "task-i",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "completed",
+      "task_id": "task-i",
+      "consumer_id": "consumer-2",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "dispatched",
+      "task_id": "task-e",
+      "consumer_id": "consumer-3",
+      "details": ""
+    },
+    {
+      "tick": 4,
+      "event": "completed",
+      "task_id": "task-e",
+      "consumer_id": "consumer-3",
+      "details": ""
+    }
+  ],
+  "task_outcomes": {
+    "task-b": {
+      "task_id": "task-b",
+      "status": "completed",
+      "retries_used": 1,
+      "final_consumer": "consumer-3",
+      "completed_at_tick": 1
+    },
+    "task-a": {
+      "task_id": "task-a",
+      "status": "completed",
+      "retries_used": 2,
+      "final_consumer": "consumer-1",
+      "completed_at_tick": 2
+    },
+    "task-g": {
+      "task_id": "task-g",
+      "status": "dead_lettered",
+      "retries_used": 3,
+      "final_consumer": "consumer-1",
+      "completed_at_tick": 2
+    },
+    "task-j": {
+      "task_id": "task-j",
+      "status": "dead_lettered",
+      "retries_used": 3,
+      "final_consumer": "consumer-3",
+      "completed_at_tick": 3
+    },
+    "task-c": {
+      "task_id": "task-c",
+      "status": "completed",
+      "retries_used": 0,
+      "final_consumer": "consumer-1",
+      "completed_at_tick": 3
+    },
+    "task-h": {
+      "task_id": "task-h",
+      "status": "completed",
+      "retries_used": 1,
+      "final_consumer": "consumer-2",
+      "completed_at_tick": 3
+    },
+    "task-d": {
+      "task_id": "task-d",
+      "status": "completed",
+      "retries_used": 3,
+      "final_consumer": "consumer-2",
+      "completed_at_tick": 4
+    },
+    "task-f": {
+      "task_id": "task-f",
+      "status": "completed",
+      "retries_used": 0,
+      "final_consumer": "consumer-1",
+      "completed_at_tick": 4
+    },
+    "task-i": {
+      "task_id": "task-i",
+      "status": "completed",
+      "retries_used": 0,
+      "final_consumer": "consumer-2",
+      "completed_at_tick": 4
+    },
+    "task-e": {
+      "task_id": "task-e",
+      "status": "completed",
+      "retries_used": 1,
+      "final_consumer": "consumer-3",
+      "completed_at_tick": 4
+    }
+  },
+  "dlq_contents": [
+    {
+      "task_id": "task-g",
+      "final_retry_count": 3,
+      "failure_reason": "max_retries_exceeded",
+      "routed_at_tick": 2,
+      "original_priority": 1
+    },
+    {
+      "task_id": "task-j",
+      "final_retry_count": 3,
+      "failure_reason": "max_retries_exceeded",
+      "routed_at_tick": 3,
+      "original_priority": 1
+    }
+  ],
+  "consumer_stats": {
+    "consumer-1": {
+      "consumer_id": "consumer-1",
+      "rate_limit": 2,
+      "tasks_assigned": 8,
+      "tasks_completed": 3,
+      "tasks_failed": 5,
+      "last_heartbeat_tick": 0,
+      "is_active": true
+    },
+    "consumer-2": {
+      "consumer_id": "consumer-2",
+      "rate_limit": 2,
+      "tasks_assigned": 8,
+      "tasks_completed": 3,
+      "tasks_failed": 5,
+      "last_heartbeat_tick": 0,
+      "is_active": true
+    },
+    "consumer-3": {
+      "consumer_id": "consumer-3",
+      "rate_limit": 2,
+      "tasks_assigned": 8,
+      "tasks_completed": 2,
+      "tasks_failed": 6,
+      "last_heartbeat_tick": 0,
+      "is_active": true
+    }
+  },
+  "summary": {
+    "total_tasks": 10,
+    "completed": 8,
+    "failed": 2,
+    "dead_lettered": 2,
+    "total_ticks": 4
+  }
+}

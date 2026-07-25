@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/virtio-hotplug"
+description = "Debug a virtio device hotplug controller with capability negotiation, DMA mapping, and queue management bugs."
+
+[metadata]
+category = "Systems Infrastructure and Operations"
+subcategory = "Virtualization and emulation"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1100 lines) implementing virtio device hotplug lifecycle without external libraries. Three bugs are spread across 3 different files — pipeline.py, dma_mapper.py, and queue_manager.py. Bug 1 hardcodes the queue depth multiplier instead of computing it from negotiated features — invisible when the visible config's features produce the same multiplier value. Bug 2 uses guest page size for IOMMU mapping granularity instead of host page size — invisible when host and guest share the same page size. Bug 3 wraps the virtqueue available index at ring_size instead of 16-bit boundary (65536) — invisible when only 1 descriptor is submitted. Two correct-but-suspicious patterns (reverse state history ordering and inverted dirty page bitmap) attract over-fixing that breaks output. The data is synthetic, representative of hypervisor device hotplug debugging that a virtualization engineer would perform during KVM/QEMU development."
+solution_explanation = "Fix Bug 1 (pipeline.py): replace hardcoded depth_multiplier=3 with dynamic computation via get_queue_depth_multiplier(negotiated_features). Fix Bug 2 (dma_mapper.py): change mapping_page_size from self._guest_page_size to self._host_page_size since IOMMU operates in host physical address space. Fix Bug 3 (queue_manager.py): change avail_idx wrap from % queue.ring_size to % 65536 per virtio spec section 2.7.13 (16-bit free-running counter). Each fix is 1-2 lines in its respective file."
+verification_explanation = "The verifier substitutes a hidden configuration with: guest lacking INDIRECT_DESC and EVENT_IDX features (multiplier should be 1 not 3), host_page_size=2097152 (2MB hugepages vs guest 4KB), and 12 descriptors submitted to a queue of depth 8 (causing ring wrap). Bug 1 produces effective_depth=24 instead of correct 8. Bug 2 produces 2048+ fragmented mappings instead of correct 6 large-page mappings. Bug 3 produces avail_idx wrapping at 8 instead of continuing to 12. Output is compared using exact JSON field matching — the computation is fully deterministic."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

@@ -1,0 +1,27 @@
+{
+  "rsa_key_bits": 2048,
+  "cipher_suite": {
+    "algorithm": "AES-256-GCM",
+    "key_length_bytes": 32,
+    "nonce_bits": 96
+  },
+  "kdf_params": {
+    "hash_algorithm": "SHA-256",
+    "salt": "hybrid-encryption-context-v1",
+    "info": "hybrid-encryption-context-v1"
+  },
+  "mac_params": {
+    "algorithm": "HMAC-SHA-256",
+    "mac_key_length": 32,
+    "mac_salt": "hybrid-encryption-context-v1",
+    "mac_info": "hybrid-encryption-context-v1"
+  },
+  "envelope_params": {
+    "format": "hybrid-kem-dem",
+    "sender_id": "alice-workstation",
+    "recipient_id": "alice-workstation",
+    "timestamp": 1720000000
+  },
+  "aad": "",
+  "plaintext": "This is a confidential message for the hybrid encryption pipeline test."
+}

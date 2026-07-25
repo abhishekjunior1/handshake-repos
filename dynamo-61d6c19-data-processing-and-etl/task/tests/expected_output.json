@@ -1,0 +1,271 @@
+{
+  "warehouse_snapshot": {
+    "rows": [
+      {
+        "name": "Quantum Drive",
+        "category": "storage",
+        "price": 249.99,
+        "stock": 150,
+        "supplier": "TechCorp",
+        "product_id": null,
+        "destination": null,
+        "quantity": null,
+        "carrier": null,
+        "_primary_key": "prod-A1",
+        "_source_table": "products",
+        "_last_modified": "2024-06-10T14:00:00.000Z",
+        "_operation": "UPDATE",
+        "_deleted": false
+      },
+      {
+        "name": "Neural Chip v2",
+        "category": "processors",
+        "price": 619.99,
+        "stock": 60,
+        "supplier": "SiliconMax",
+        "product_id": null,
+        "destination": null,
+        "quantity": null,
+        "carrier": null,
+        "_primary_key": "prod-B2",
+        "_source_table": "products",
+        "_last_modified": "2024-06-10T21:00:00.000Z",
+        "_operation": "UPDATE",
+        "_deleted": false
+      },
+      {
+        "product_id": "prod-A1",
+        "destination": "warehouse-east",
+        "quantity": 48,
+        "carrier": "FastFreight",
+        "name": null,
+        "category": null,
+        "price": null,
+        "stock": null,
+        "supplier": null,
+        "_primary_key": "shp-001",
+        "_source_table": "shipments",
+        "_last_modified": "2024-06-10T17:00:00.000Z",
+        "_operation": "UPDATE",
+        "_deleted": false
+      },
+      {
+        "product_id": "prod-B2",
+        "destination": "warehouse-west",
+        "quantity": 30,
+        "carrier": "QuickShip",
+        "name": null,
+        "category": null,
+        "price": null,
+        "stock": null,
+        "supplier": null,
+        "_primary_key": "shp-002",
+        "_source_table": "shipments",
+        "_last_modified": "2024-06-10T10:00:00.000Z",
+        "_operation": "DELETE",
+        "_deleted": true,
+        "_deleted_at": "2024-06-10T22:00:00.000Z"
+      }
+    ],
+    "row_count": 4,
+    "active_count": 3,
+    "deleted_count": 1
+  },
+  "scd_history": {
+    "records": [
+      {
+        "version": 1,
+        "effective_from": "2024-06-10T08:00:03.000Z",
+        "effective_to": "2024-06-10T14:00:00.000Z",
+        "is_current": false,
+        "operation": "INSERT",
+        "attributes": {
+          "name": "Quantum Drive",
+          "category": "storage",
+          "price": 299.99,
+          "stock": 150,
+          "supplier": "TechCorp",
+          "product_id": null,
+          "destination": null,
+          "quantity": null,
+          "carrier": null
+        },
+        "source_event_id": "evt-202",
+        "entity_key": "prod-A1"
+      },
+      {
+        "version": 2,
+        "effective_from": "2024-06-10T14:00:00.000Z",
+        "effective_to": null,
+        "is_current": true,
+        "operation": "UPDATE",
+        "attributes": {
+          "name": "Quantum Drive",
+          "category": "storage",
+          "price": 249.99,
+          "stock": null,
+          "supplier": null,
+          "product_id": null,
+          "destination": null,
+          "quantity": null,
+          "carrier": null
+        },
+        "source_event_id": "evt-203",
+        "entity_key": "prod-A1"
+      },
+      {
+        "version": 1,
+        "effective_from": "2024-06-10T08:30:00.000Z",
+        "effective_to": "2024-06-10T16:00:00.000Z",
+        "is_current": false,
+        "operation": "INSERT",
+        "attributes": {
+          "name": "Neural Chip",
+          "category": "processors",
+          "price": 599.99,
+          "stock": 75,
+          "supplier": "SiliconMax",
+          "product_id": null,
+          "destination": null,
+          "quantity": null,
+          "carrier": null
+        },
+        "source_event_id": "evt-204",
+        "entity_key": "prod-B2"
+      },
+      {
+        "version": 2,
+        "effective_from": "2024-06-10T16:00:00.000Z",
+        "effective_to": "2024-06-10T21:00:00.000Z",
+        "is_current": false,
+        "operation": "UPDATE",
+        "attributes": {
+          "name": "Neural Chip v2",
+          "category": "processors",
+          "price": 649.99,
+          "stock": null,
+          "supplier": null,
+          "product_id": null,
+          "destination": null,
+          "quantity": null,
+          "carrier": null
+        },
+        "source_event_id": "evt-205",
+        "entity_key": "prod-B2"
+      },
+      {
+        "version": 3,
+        "effective_from": "2024-06-10T21:00:00.000Z",
+        "effective_to": null,
+        "is_current": true,
+        "operation": "UPDATE",
+        "attributes": {
+          "name": "Neural Chip v2",
+          "category": null,
+          "price": 619.99,
+          "stock": 60,
+          "supplier": null,
+          "product_id": null,
+          "destination": null,
+          "quantity": null,
+          "carrier": null
+        },
+        "source_event_id": "evt-206",
+        "entity_key": "prod-B2"
+      },
+      {
+        "version": 1,
+        "effective_from": "2024-06-10T09:00:04.000Z",
+        "effective_to": "2024-06-10T17:00:00.000Z",
+        "is_current": false,
+        "operation": "INSERT",
+        "attributes": {
+          "product_id": "prod-A1",
+          "destination": "warehouse-east",
+          "quantity": 50,
+          "carrier": "FastFreight",
+          "name": null,
+          "category": null,
+          "price": null,
+          "stock": null,
+          "supplier": null
+        },
+        "source_event_id": "evt-208",
+        "entity_key": "shp-001"
+      },
+      {
+        "version": 2,
+        "effective_from": "2024-06-10T17:00:00.000Z",
+        "effective_to": null,
+        "is_current": true,
+        "operation": "UPDATE",
+        "attributes": {
+          "product_id": "prod-A1",
+          "destination": "warehouse-east",
+          "quantity": 48,
+          "carrier": null,
+          "name": null,
+          "category": null,
+          "price": null,
+          "stock": null,
+          "supplier": null
+        },
+        "source_event_id": "evt-209",
+        "entity_key": "shp-001"
+      },
+      {
+        "version": 1,
+        "effective_from": "2024-06-10T10:00:00.000Z",
+        "effective_to": "2024-06-10T22:00:00.000Z",
+        "is_current": false,
+        "operation": "INSERT",
+        "attributes": {
+          "product_id": "prod-B2",
+          "destination": "warehouse-west",
+          "quantity": 30,
+          "carrier": "QuickShip",
+          "name": null,
+          "category": null,
+          "price": null,
+          "stock": null,
+          "supplier": null
+        },
+        "source_event_id": "evt-210",
+        "entity_key": "shp-002"
+      }
+    ],
+    "total_versions": 8,
+    "entities_tracked": 4,
+    "entities_with_changes": 3
+  },
+  "pipeline_metrics": {
+    "deduplication": {
+      "total_input_events": 11,
+      "deduplicated_count": 9,
+      "duplicates_removed": 2,
+      "dedup_ratio": 0.1818
+    },
+    "schema_evolution": {
+      "versions_detected": 1,
+      "unified_columns": [
+        "name",
+        "category",
+        "price",
+        "stock",
+        "supplier",
+        "product_id",
+        "destination",
+        "quantity",
+        "carrier"
+      ],
+      "backfill_applied": false
+    },
+    "merge_operations": {
+      "inserts": 4,
+      "updates": 4,
+      "deletes": 1,
+      "conflicts": 0,
+      "final_row_count": 4
+    }
+  }
+}

@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/meta-analysis"
+description = "Debug a multi-file random-effects meta-analysis pipeline implementing DerSimonian-Laird heterogeneity estimation, Egger's publication bias test, and prediction intervals."
+
+[metadata]
+category = "data_science_and_reporting"
+subcategory = "statistical_analysis_and_inference"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 4.0
+difficulty_explanation = "This task requires debugging a 1200+ line random-effects meta-analysis pipeline spanning 6 modules that implement heterogeneity estimation, pooled effect computation, publication bias testing, and subgroup analyses from scratch (no statsmodels/scipy). The three bugs exploit domain-specific conventions and data-flow interactions: (1) Egger's regression test computes WLS weights as normalized precision (1/SE)/sum(1/SE) instead of standard inverse-variance 1/SE², hidden in a helper function with a plausible docstring — produces identical results with uniform standard errors but wrong regression with heterogeneous SEs; (2) the prediction interval uses t_(k-1) degrees of freedom instead of t_(k-2), which is negligible for large k but substantial for small k (Higgins & Thompson 2009 convention); (3) the subgroup analysis passes overall tau² to compute per-subgroup random-effects weights instead of re-estimating tau² within each subgroup — a data-flow bug disguised as an intentional 'common heterogeneity assumption' in a code comment, producing identical results when overall and subgroup tau² are the same (homogeneous visible data) but wrong subgroup estimates when they differ. The bugs compound: wrong Egger weights affect publication bias conclusions, wrong PI df changes interval width, and wrong subgroup tau² cascades through subgroup pooled estimates, CIs, and PIs. This synthetic pipeline is representative of systematic review work performed by biostatisticians conducting Cochrane-style meta-analyses for evidence-based medicine."
+solution_explanation = "Fix three bugs across three files: (1) In egger_test.py, replace the _compute_egger_weights helper's normalized precision formula '(1.0/se)/total_precision' with standard inverse-variance weights '1.0/(se*se)'. (2) In random_effects.py, change 'df = k - 1' to 'df = k - 2' in compute_prediction_interval, accounting for estimation of both the mean and tau². (3) In report_generator.py, change the subgroup analysis to compute per-subgroup heterogeneity FIRST via estimate_heterogeneity(sg_effects, sg_ses) and use the resulting sg_tau_sq for RE weights and prediction intervals, instead of the overall_tau_squared passed from the pipeline."
+verification_explanation = "The verifier copies hidden_meta_data.json (a 5-study pharmacological trial dataset with widely varying standard errors from 0.12 to 2.5 and significant heterogeneity tau²=0.499, I²=93.8%) into /app/meta_data.json, runs the pipeline, then uses pytest to compare output.json against expected_output.json. Tests check heterogeneity statistics, pooled estimates, prediction intervals, and subgroup-specific analyses using approximate equality with rel_tol=1e-3 (0.1%) for most numeric fields, and a looser rel_tol=1e-2 (1%) for Egger's p-value which is computed via a continued-fraction beta function approximation where different valid implementations may accumulate slightly different rounding. The 1e-3 band is calibrated to reject all three buggy outputs (which differ by 20-600% on affected fields) while accepting any implementation that computes the same corrected formulas — the band is three orders of magnitude wider than floating-point noise but three orders narrower than the bug-induced errors. The pipeline is fully deterministic with no randomness."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

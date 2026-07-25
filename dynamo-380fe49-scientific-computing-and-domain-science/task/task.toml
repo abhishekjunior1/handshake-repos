@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/thermal-stress"
+description = "Debug a thermal-mechanical coupling simulation with radiation linearization and modulus bugs."
+
+[metadata]
+category = "Scientific Computing and Domain Science"
+subcategory = "Differential equations and simulation"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 8 modules (~1600 lines) implementing coupled heat transfer and thermal stress analysis without external numerical libraries. Two bugs in the orchestrator (pipeline.py) pass wrong parameter values to correct module functions: the radiation linearization coefficient uses ambient temperature for both arguments instead of the local surface temperature (a stable but inaccurate linearization point), and the thermal stress computation uses constant reference modulus instead of the temperature-dependent value (ignoring thermal softening). Both bugs are comment-justified as engineering simplifications. Two correct numerical techniques — harmonic mean face conductivity (series resistance analogy) and fully implicit time stepping (theta=1.0 for lagged radiation stability) — appear suspicious but are essential, acting as decoys. Visible data has zero radiation surface area and zero softening coefficient, making both bugs mathematically inactive. A thermal engineer or finite element analyst would encounter these coupling bugs when extending simplified rod models to include radiation and temperature-dependent material properties. Data is synthetic, representing standard thermal stress test cases."
+solution_explanation = "The solver must identify two value-passing errors in pipeline.py: (1) compute_linearized_radiation_coefficient receives T_amb as both arguments instead of temperature[i] as the first — the linearization h_rad=eps*sigma*(Ts²+Te²)*(Ts+Te) needs the actual surface temperature; (2) compute_thermal_stress receives constant E_ref instead of the temperature-dependent modulus from compute_temperature_dependent_modulus(T, E_ref, T_ref, beta). Both fixes are single-variable changes in pipeline.py function calls."
+verification_explanation = "The verifier substitutes a hidden configuration with initial_temperature=500K (≠ambient 300K, triggering radiation bug), perimeter_area_ratio=4.0 (enabling radiation), and modulus_softening_coeff=3e-4 (enabling thermal softening). Tests compare temperature profiles, stress profiles, displacement, and diagnostics at rel_tol=1e-4. The buggy radiation linearization produces temperature errors (wrong cooling rate), and the constant modulus produces 6.5% stress error — both far exceeding tolerance."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

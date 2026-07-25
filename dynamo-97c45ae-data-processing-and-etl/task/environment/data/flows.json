@@ -1,0 +1,22 @@
+{
+  "stream_name": "campus_backbone",
+  "bin_config": {"bin_duration_sec": 120},
+  "processing_config": {"smoothing_alpha": 0.7},
+  "flows": [
+    {"timestamp": 5, "bytes": 1500, "dst_prefix": "10.0.1.0/24", "flow_id": "f001", "collector": "col-1"},
+    {"timestamp": 12, "bytes": 2200, "dst_prefix": "10.0.2.0/24", "flow_id": "f002", "collector": "col-1"},
+    {"timestamp": 18, "bytes": 980, "dst_prefix": "10.0.3.0/24", "flow_id": "f003", "collector": "col-1"},
+    {"timestamp": 25, "bytes": 3100, "dst_prefix": "10.0.1.0/24", "flow_id": "f004", "collector": "col-2"},
+    {"timestamp": 31, "bytes": 1750, "dst_prefix": "10.0.2.0/24", "flow_id": "f005", "collector": "col-1"},
+    {"timestamp": 38, "bytes": 2400, "dst_prefix": "10.0.3.0/24", "flow_id": "f006", "collector": "col-2"},
+    {"timestamp": 44, "bytes": 1900, "dst_prefix": "10.0.1.0/24", "flow_id": "f007", "collector": "col-1"},
+    {"timestamp": 52, "bytes": 2800, "dst_prefix": "10.0.2.0/24", "flow_id": "f008", "collector": "col-2"},
+    {"timestamp": 59, "bytes": 1350, "dst_prefix": "10.0.4.0/24", "flow_id": "f009", "collector": "col-1"},
+    {"timestamp": 65, "bytes": 2100, "dst_prefix": "10.0.1.0/24", "flow_id": "f010", "collector": "col-1"},
+    {"timestamp": 72, "bytes": 1600, "dst_prefix": "10.0.3.0/24", "flow_id": "f011", "collector": "col-2"},
+    {"timestamp": 78, "bytes": 3200, "dst_prefix": "10.0.2.0/24", "flow_id": "f012", "collector": "col-1"},
+    {"timestamp": 85, "bytes": 1450, "dst_prefix": "10.0.4.0/24", "flow_id": "f013", "collector": "col-2"},
+    {"timestamp": 92, "bytes": 2650, "dst_prefix": "10.0.1.0/24", "flow_id": "f014", "collector": "col-1"},
+    {"timestamp": 99, "bytes": 1800, "dst_prefix": "10.0.3.0/24", "flow_id": "f015", "collector": "col-2"}
+  ]
+}

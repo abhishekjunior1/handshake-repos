@@ -1,0 +1,154 @@
+{
+  "config": {
+    "reference_time": 1700003600,
+    "decay_half_life": 3600,
+    "correlation_window": 300,
+    "score_normalization_max": 100,
+    "version": "2.3.0"
+  },
+  "events": [
+    {
+      "event_id": "hevt-001",
+      "timestamp": 1700000100,
+      "src_ip": "10.0.1.50",
+      "dest_ip": "172.16.0.10",
+      "rule_id": "RULE-1001",
+      "severity": 7,
+      "payload_signature": "sig-alpha-001",
+      "sensor_id": "sensor-A",
+      "event_type": "intrusion_attempt"
+    },
+    {
+      "event_id": "hevt-002",
+      "timestamp": 1700000500,
+      "src_ip": "10.0.1.50",
+      "dest_ip": "172.16.0.10",
+      "rule_id": "RULE-1001",
+      "severity": 7,
+      "payload_signature": "sig-alpha-001",
+      "sensor_id": "sensor-B",
+      "event_type": "intrusion_attempt"
+    },
+    {
+      "event_id": "hevt-003",
+      "timestamp": 1700001200,
+      "src_ip": "::ffff:10.0.1.50",
+      "dest_ip": "172.16.0.20",
+      "rule_id": "RULE-1002",
+      "severity": 8,
+      "payload_signature": "sig-beta-002",
+      "sensor_id": "sensor-C",
+      "event_type": "malware_detected"
+    },
+    {
+      "event_id": "hevt-004",
+      "timestamp": 1700002000,
+      "src_ip": "10.0.1.50",
+      "dest_ip": "172.16.0.20",
+      "rule_id": "RULE-1002",
+      "severity": 8,
+      "payload_signature": "sig-beta-002",
+      "sensor_id": "sensor-A",
+      "event_type": "malware_detected"
+    },
+    {
+      "event_id": "hevt-005",
+      "timestamp": 1700000200,
+      "src_ip": "10.0.2.100",
+      "dest_ip": "172.16.0.30",
+      "rule_id": "RULE-2001",
+      "severity": 6,
+      "payload_signature": "sig-delta-004",
+      "sensor_id": "sensor-A",
+      "event_type": "brute_force"
+    },
+    {
+      "event_id": "hevt-006",
+      "timestamp": 1700001800,
+      "src_ip": "10.0.2.100",
+      "dest_ip": "172.16.0.30",
+      "rule_id": "RULE-2001",
+      "severity": 6,
+      "payload_signature": "sig-delta-004",
+      "sensor_id": "sensor-B",
+      "event_type": "brute_force"
+    },
+    {
+      "event_id": "hevt-007",
+      "timestamp": 1700003000,
+      "src_ip": "10.0.2.100",
+      "dest_ip": "172.16.0.40",
+      "rule_id": "RULE-2002",
+      "severity": 5,
+      "payload_signature": "sig-epsilon-005",
+      "sensor_id": "sensor-A",
+      "event_type": "data_exfiltration"
+    },
+    {
+      "event_id": "hevt-007b",
+      "timestamp": 1700003100,
+      "src_ip": "10.0.2.100",
+      "dest_ip": "172.16.0.45",
+      "rule_id": "RULE-2003",
+      "severity": 9,
+      "payload_signature": "sig-mu-011",
+      "sensor_id": "sensor-A",
+      "event_type": "lateral_movement"
+    },
+    {
+      "event_id": "hevt-008",
+      "timestamp": 1700003500,
+      "src_ip": "10.0.2.100",
+      "dest_ip": "172.16.0.40",
+      "rule_id": "RULE-2002",
+      "severity": 5,
+      "payload_signature": "sig-epsilon-005",
+      "sensor_id": "sensor-C",
+      "event_type": "data_exfiltration"
+    },
+    {
+      "event_id": "hevt-009",
+      "timestamp": 1700000300,
+      "src_ip": "192.168.1.10",
+      "dest_ip": "172.16.0.50",
+      "rule_id": "RULE-3001",
+      "severity": 4,
+      "payload_signature": "sig-zeta-006",
+      "sensor_id": "sensor-C",
+      "event_type": "policy_violation"
+    },
+    {
+      "event_id": "hevt-010",
+      "timestamp": 1700002500,
+      "src_ip": "192.168.1.10",
+      "dest_ip": "172.16.0.50",
+      "rule_id": "RULE-3001",
+      "severity": 4,
+      "payload_signature": "sig-zeta-006",
+      "sensor_id": "sensor-A",
+      "event_type": "policy_violation"
+    },
+    {
+      "event_id": "hevt-011",
+      "timestamp": 1700000800,
+      "src_ip": "10.0.3.200",
+      "dest_ip": "172.16.0.80",
+      "rule_id": "RULE-4001",
+      "severity": 6,
+      "payload_signature": "sig-iota-009",
+      "sensor_id": "sensor-B",
+      "event_type": "command_control"
+    },
+    {
+      "event_id": "hevt-012",
+      "timestamp": 1700003200,
+      "src_ip": "10.0.3.200",
+      "dest_ip": "172.16.0.90",
+      "rule_id": "RULE-4002",
+      "severity": 7,
+      "payload_signature": "sig-kappa-010",
+      "sensor_id": "sensor-C",
+      "event_type": "privilege_escalation"
+    }
+  ]
+}

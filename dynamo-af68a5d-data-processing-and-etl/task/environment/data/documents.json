@@ -1,0 +1,30 @@
+[
+  {
+    "id": "doc_001",
+    "title": "distributed systems overview",
+    "author": "engineering team",
+    "tags": ["architecture", "distributed"],
+    "text": "microservices architecture enables horizontal scaling across multiple nodes. container orchestration platforms manage deployment lifecycle automatically. service mesh provides observability tracing alongside distributed components."
+  },
+  {
+    "id": "doc_002",
+    "title": "machine learning pipeline",
+    "author": "data science team",
+    "tags": ["ml", "pipeline"],
+    "text": "feature engineering transforms raw numerical data toward model-ready representations. gradient descent optimization minimizes cross-entropy loss functions iteratively. hyperparameter tuning requires systematic grid-search validation approaches."
+  },
+  {
+    "id": "doc_003",
+    "title": "database optimization techniques",
+    "author": "infrastructure team",
+    "tags": ["database", "performance"],
+    "text": "query execution planners analyze predicate selectivity statistics. index-only scans eliminate unnecessary heap fetches completely. connection pooling reduces tcp handshake overhead significantly."
+  },
+  {
+    "id": "doc_004",
+    "title": "network security fundamentals",
+    "author": "security team",
+    "tags": ["security", "networking"],
+    "text": "transport layer encryption protects data-in-transit across endpoints. certificate pinning prevents man-in-the-middle proxy interception attacks. rate limiting mitigates distributed denial-of-service volumetric flooding."
+  }
+]

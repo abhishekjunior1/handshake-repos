@@ -1,0 +1,231 @@
+{
+  "metadata": {
+    "tables_loaded": [
+      "orders",
+      "order_lines",
+      "customers"
+    ],
+    "table_info": {
+      "orders": {
+        "row_count": 10,
+        "columns": [
+          "order_id",
+          "customer_id",
+          "order_date",
+          "freight",
+          "status"
+        ]
+      },
+      "order_lines": {
+        "row_count": 16,
+        "columns": [
+          "line_id",
+          "order_id",
+          "product",
+          "quantity",
+          "unit_price"
+        ]
+      },
+      "customers": {
+        "row_count": 6,
+        "columns": [
+          "customer_id",
+          "name",
+          "region",
+          "tier"
+        ]
+      }
+    },
+    "query_count": 3
+  },
+  "results": [
+    {
+      "query_index": 0,
+      "query_type": "join_aggregate",
+      "row_count": 5,
+      "columns": [
+        "l_customer_id",
+        "order_count",
+        "total_freight"
+      ],
+      "rows": [
+        {
+          "l_customer_id": 10,
+          "order_count": 3,
+          "total_freight": 95.0
+        },
+        {
+          "l_customer_id": 20,
+          "order_count": 3,
+          "total_freight": 130.0
+        },
+        {
+          "l_customer_id": 30,
+          "order_count": 2,
+          "total_freight": 95.0
+        },
+        {
+          "l_customer_id": 40,
+          "order_count": 1,
+          "total_freight": 40.0
+        },
+        {
+          "l_customer_id": 50,
+          "order_count": 1,
+          "total_freight": 28.0
+        }
+      ]
+    },
+    {
+      "query_index": 1,
+      "query_type": "window",
+      "row_count": 10,
+      "columns": [
+        "order_id",
+        "customer_id",
+        "order_date",
+        "freight",
+        "status",
+        "cumulative_freight"
+      ],
+      "rows": [
+        {
+          "order_id": 2001,
+          "customer_id": 10,
+          "order_date": "2024-03-01",
+          "freight": 45.0,
+          "status": "shipped",
+          "cumulative_freight": 45.0
+        },
+        {
+          "order_id": 2002,
+          "customer_id": 10,
+          "order_date": "2024-03-01",
+          "freight": 30.0,
+          "status": "shipped",
+          "cumulative_freight": 75.0
+        },
+        {
+          "order_id": 2008,
+          "customer_id": 10,
+          "order_date": "2024-03-05",
+          "freight": 20.0,
+          "status": "shipped",
+          "cumulative_freight": 95.0
+        },
+        {
+          "order_id": 2003,
+          "customer_id": 20,
+          "order_date": "2024-03-02",
+          "freight": 55.0,
+          "status": "shipped",
+          "cumulative_freight": 55.0
+        },
+        {
+          "order_id": 2004,
+          "customer_id": 20,
+          "order_date": "2024-03-02",
+          "freight": 25.0,
+          "status": "cancelled",
+          "cumulative_freight": 80.0
+        },
+        {
+          "order_id": 2009,
+          "customer_id": 20,
+          "order_date": "2024-03-06",
+          "freight": 50.0,
+          "status": "shipped",
+          "cumulative_freight": 130.0
+        },
+        {
+          "order_id": 2005,
+          "customer_id": 30,
+          "order_date": "2024-03-03",
+          "freight": 60.0,
+          "status": "shipped",
+          "cumulative_freight": 60.0
+        },
+        {
+          "order_id": 2006,
+          "customer_id": 30,
+          "order_date": "2024-03-03",
+          "freight": 35.0,
+          "status": "shipped",
+          "cumulative_freight": 95.0
+        },
+        {
+          "order_id": 2007,
+          "customer_id": 40,
+          "order_date": "2024-03-04",
+          "freight": 40.0,
+          "status": "pending",
+          "cumulative_freight": 40.0
+        },
+        {
+          "order_id": 2010,
+          "customer_id": 50,
+          "order_date": "2024-03-07",
+          "freight": 28.0,
+          "status": "shipped",
+          "cumulative_freight": 28.0
+        }
+      ]
+    },
+    {
+      "query_index": 2,
+      "query_type": "join_aggregate",
+      "row_count": 6,
+      "columns": [
+        "l_customer_id",
+        "l_name",
+        "l_region",
+        "order_count",
+        "total_value"
+      ],
+      "rows": [
+        {
+          "l_customer_id": 10,
+          "l_name": "Northwind Co",
+          "l_region": "East",
+          "order_count": 3,
+          "total_value": 95.0
+        },
+        {
+          "l_customer_id": 20,
+          "l_name": "Southgate Ltd",
+          "l_region": "West",
+          "order_count": 2,
+          "total_value": 105.0
+        },
+        {
+          "l_customer_id": 30,
+          "l_name": "Eastview Corp",
+          "l_region": "East",
+          "order_count": 2,
+          "total_value": 95.0
+        },
+        {
+          "l_customer_id": 40,
+          "l_name": "Westfield Inc",
+          "l_region": "West",
+          "order_count": 0,
+          "total_value": null
+        },
+        {
+          "l_customer_id": 50,
+          "l_name": "Central Hub",
+          "l_region": "North",
+          "order_count": 1,
+          "total_value": 28.0
+        },
+        {
+          "l_customer_id": 60,
+          "l_name": "Pacific Traders",
+          "l_region": "South",
+          "order_count": 0,
+          "total_value": null
+        }
+      ]
+    }
+  ]
+}

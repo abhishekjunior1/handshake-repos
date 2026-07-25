@@ -1,0 +1,263 @@
+{
+  "rates": {
+    "http_requests_total": {
+      "rates": [
+        {
+          "timestamp": 1700000010,
+          "rate_per_sec": 35.0,
+          "time_delta_sec": 10,
+          "raw_delta": 350
+        },
+        {
+          "timestamp": 1700000020,
+          "rate_per_sec": 25.0,
+          "time_delta_sec": 20,
+          "raw_delta": 500
+        },
+        {
+          "timestamp": 1700000030,
+          "rate_per_sec": 37.5,
+          "time_delta_sec": 20,
+          "raw_delta": 750
+        },
+        {
+          "timestamp": 1700000045,
+          "rate_per_sec": 28.0,
+          "time_delta_sec": 25,
+          "raw_delta": 700
+        },
+        {
+          "timestamp": 1700000060,
+          "rate_per_sec": 30.0,
+          "time_delta_sec": 30,
+          "raw_delta": 900
+        },
+        {
+          "timestamp": 1700000070,
+          "rate_per_sec": 24.0,
+          "time_delta_sec": 25,
+          "raw_delta": 600
+        },
+        {
+          "timestamp": 1700000090,
+          "rate_per_sec": 30.0,
+          "time_delta_sec": 30,
+          "raw_delta": 900
+        },
+        {
+          "timestamp": 1700000095,
+          "rate_per_sec": 28.0,
+          "time_delta_sec": 25,
+          "raw_delta": 700
+        }
+      ],
+      "mean_rate": 29.6875,
+      "max_rate": 37.5
+    },
+    "node_cpu_seconds_total": {
+      "rates": [
+        {
+          "timestamp": 1700000012,
+          "rate_per_sec": 16.666667,
+          "time_delta_sec": 12,
+          "raw_delta": 200
+        },
+        {
+          "timestamp": 1700000025,
+          "rate_per_sec": 20.0,
+          "time_delta_sec": 25,
+          "raw_delta": 500
+        },
+        {
+          "timestamp": 1700000040,
+          "rate_per_sec": 19.642857,
+          "time_delta_sec": 28,
+          "raw_delta": 550
+        },
+        {
+          "timestamp": 1700000050,
+          "rate_per_sec": 24.0,
+          "time_delta_sec": 25,
+          "raw_delta": 600
+        },
+        {
+          "timestamp": 1700000065,
+          "rate_per_sec": 18.0,
+          "time_delta_sec": 25,
+          "raw_delta": 450
+        },
+        {
+          "timestamp": 1700000080,
+          "rate_per_sec": 23.333333,
+          "time_delta_sec": 30,
+          "raw_delta": 700
+        }
+      ],
+      "mean_rate": 20.27381,
+      "max_rate": 24.0
+    }
+  },
+  "gauges": {
+    "memory_usage_bytes": {
+      "min": 2147483648,
+      "max": 4600000000,
+      "mean": 3549245094.4,
+      "last": 2300000000,
+      "count": 10,
+      "stale_markers_inserted": 0
+    },
+    "disk_io_utilization": {
+      "min": 0.35,
+      "max": 0.71,
+      "mean": 0.54,
+      "last": 0.55,
+      "count": 6,
+      "stale_markers_inserted": 0
+    }
+  },
+  "histograms": {
+    "http_request_duration_seconds": {
+      "p50": 0.037069,
+      "p90": 0.279412,
+      "p95": 0.5,
+      "p99": 2.05,
+      "total_observations": 3000.0
+    },
+    "grpc_server_handling_seconds": {
+      "p50": 0.022093,
+      "p90": 0.416667,
+      "p95": 0.763158,
+      "p99": 4.111111,
+      "total_observations": 2000.0
+    }
+  },
+  "rollups": {
+    "rollup_interval_sec": 60.0,
+    "counters": {
+      "http_requests_total": {
+        "num_buckets": 2,
+        "rollups": [
+          {
+            "mean_rate": 31.1,
+            "max_rate": 37.5,
+            "min_rate": 25.0,
+            "total_delta": 3200,
+            "sample_count": 5
+          },
+          {
+            "mean_rate": 27.333333,
+            "max_rate": 30.0,
+            "min_rate": 24.0,
+            "total_delta": 2200,
+            "sample_count": 3
+          }
+        ]
+      },
+      "node_cpu_seconds_total": {
+        "num_buckets": 2,
+        "rollups": [
+          {
+            "mean_rate": 19.661905,
+            "max_rate": 24.0,
+            "min_rate": 16.666667,
+            "total_delta": 2300,
+            "sample_count": 5
+          },
+          {
+            "mean_rate": 23.333333,
+            "max_rate": 23.333333,
+            "min_rate": 23.333333,
+            "total_delta": 700,
+            "sample_count": 1
+          }
+        ]
+      }
+    },
+    "gauges": {
+      "memory_usage_bytes": {
+        "num_buckets": 4,
+        "rollups": [
+          {
+            "min": 4294967296,
+            "max": 4500000000,
+            "mean": 4386241824.0,
+            "count": 4,
+            "sum": 17544967296,
+            "last": 4500000000
+          },
+          {
+            "min": 4450000000,
+            "max": 4600000000,
+            "mean": 4525000000.0,
+            "count": 2,
+            "sum": 18100000000.0,
+            "last": 4600000000
+          },
+          {
+            "min": 2147483648,
+            "max": 2200000000,
+            "mean": 2173741824.0,
+            "count": 2,
+            "sum": 4347483648,
+            "last": 2200000000
+          },
+          {
+            "min": 2250000000,
+            "max": 2300000000,
+            "mean": 2275000000.0,
+            "count": 2,
+            "sum": 9100000000.0,
+            "last": 2300000000
+          }
+        ]
+      },
+      "disk_io_utilization": {
+        "num_buckets": 2,
+        "rollups": [
+          {
+            "min": 0.35,
+            "max": 0.71,
+            "mean": 0.515,
+            "count": 4,
+            "sum": 2.06,
+            "last": 0.71
+          },
+          {
+            "min": 0.55,
+            "max": 0.63,
+            "mean": 0.59,
+            "count": 2,
+            "sum": 2.36,
+            "last": 0.55
+          }
+        ]
+      }
+    },
+    "histograms": {
+      "http_request_duration_seconds": {
+        "num_buckets": 1,
+        "rollups": [
+          {
+            "p50": 0.037069,
+            "p90": 0.279412,
+            "p95": 0.5,
+            "p99": 2.05,
+            "total_observations": 3000.0
+          }
+        ]
+      },
+      "grpc_server_handling_seconds": {
+        "num_buckets": 1,
+        "rollups": [
+          {
+            "p50": 0.022093,
+            "p90": 0.416667,
+            "p95": 0.763158,
+            "p99": 4.111111,
+            "total_observations": 2000.0
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "summary": {
+    "total_observations": 64,
+    "n_anomalies": 0,
+    "anomaly_rate": 0.0,
+    "n_segments": 6,
+    "mean_severity": 0.0,
+    "max_severity": 0.0
+  },
+  "segments": [
+    {
+      "segment_id": 0,
+      "start": 0,
+      "end": 0,
+      "length": 0,
+      "mean": -0.02783,
+      "variance": 0.033081,
+      "n_anomalies": 0,
+      "threshold": 0.27091
+    },
+    {
+      "segment_id": 1,
+      "start": 0,
+      "end": 0,
+      "length": 0,
+      "mean": 0.218496,
+      "variance": 0.841509,
+      "n_anomalies": 0,
+      "threshold": 0.226744
+    },
+    {
+      "segment_id": 2,
+      "start": 0,
+      "end": 0,
+      "length": 0,
+      "mean": -0.386211,
+      "variance": 10.466003,
+      "n_anomalies": 0,
+      "threshold": 0.161156
+    },
+    {
+      "segment_id": 3,
+      "start": 0,
+      "end": 0,
+      "length": 0,
+      "mean": -0.520589,
+      "variance": 3.658524,
+      "n_anomalies": 0,
+      "threshold": 0.044218
+    },
+    {
+      "segment_id": 4,
+      "start": 0,
+      "end": 0,
+      "length": 0,
+      "mean": 0.254054,
+      "variance": 0.234015,
+      "n_anomalies": 0,
+      "threshold": 0.349669
+    },
+    {
+      "segment_id": 5,
+      "start": 0,
+      "end": 0,
+      "length": 0,
+      "mean": 0.243262,
+      "variance": 0.9079,
+      "n_anomalies": 0,
+      "threshold": 0.305644
+    }
+  ],
+  "anomalies": [],
+  "spectral": {
+    "per_segment": [
+      {
+        "segment": 0,
+        "n_frequencies": 8,
+        "ar_order": 5,
+        "ar_sigma2": 0.018844,
+        "mean_power": 0.004411
+      },
+      {
+        "segment": 1,
+        "n_frequencies": 10,
+        "ar_order": 6,
+        "ar_sigma2": 0.61852,
+        "mean_power": 0.036018
+      },
+      {
+        "segment": 2,
+        "n_frequencies": 9,
+        "ar_order": 5,
+        "ar_sigma2": 8.985593,
+        "mean_power": 1.064708
+      },
+      {
+        "segment": 3,
+        "n_frequencies": 13,
+        "ar_order": 8,
+        "ar_sigma2": 3.031535,
+        "mean_power": 0.106051
+      },
+      {
+        "segment": 4,
+        "n_frequencies": 12,
+        "ar_order": 7,
+        "ar_sigma2": 0.152608,
+        "mean_power": 0.033948
+      },
+      {
+        "segment": 5,
+        "n_frequencies": 12,
+        "ar_order": 7,
+        "ar_sigma2": 0.517737,
+        "mean_power": 0.186735
+      }
+    ],
+    "window_type": "hann"
+  },
+  "config": {
+    "window_type": "hann",
+    "ar_order": 8,
+    "confidence": 0.95,
+    "decay_rate": 0.05,
+    "n_observations": 120,
+    "n_segments": 6,
+    "change_points": [
+      15,
+      33,
+      50,
+      75,
+      98
+    ]
+  }
+}

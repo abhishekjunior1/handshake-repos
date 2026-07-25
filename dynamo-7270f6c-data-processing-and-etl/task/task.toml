@@ -1,0 +1,32 @@
+artifacts = ["/app/data/output.json"]
+
+[task]
+name = "dynamo/etl-debug"
+description = "Debug a multi-stage ETL pipeline that processes transaction records through schema validation, transformation, incremental merging, and windowed aggregation."
+
+[metadata]
+category = "data_processing_and_etl"
+subcategory = "etl_pipelines"
+model_tested = "GPT-5.4"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "This is the work of senior data engineers debugging production ETL pipelines at analytics companies. Data is entirely synthetic (bespoke 6-module pipeline, 550+ lines, no public prior art). The pipeline runs correctly on visible data but has 3 interacting bugs requiring understanding of data flow across modules: (1) pipeline.py runs aggregation before merger dedup — duplicates inflate counts; visible data has no duplicates so ordering doesn't matter. (2) merger.py uses update semantics (overwrites all fields including nulls) instead of upsert (skip nulls) — visible data has complete records with no nulls. (3) aggregator.py uses ingestion timestamp for window assignment instead of effective_date for SCD type-2 records — visible data has effective_date == timestamp. These bugs compound: hidden records have duplicates with null fields AND SCD backdated effective_dates, triggering all 3 simultaneously."
+solution_explanation = "Three fixes: (1) pipeline.py: move merger dedup before aggregation so duplicates are resolved first. (2) merger.py: skip null fields during merge instead of overwriting. (3) aggregator.py: use effective_date (when present) instead of timestamp for window assignment. Each fix is 1-3 lines but requires tracing the full data flow to discover."
+verification_explanation = "The verifier injects hidden_source.json (25 records with duplicate IDs, null fields in partial updates, and SCD records with effective_date != timestamp) and runs the pipeline. Checks exact match on output.json: record counts, field values, and window assignments. The buggy pipeline produces inflated counts (duplicates not merged), erased fields (null overwrites), and wrong window assignments (SCD records in wrong time bucket)."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

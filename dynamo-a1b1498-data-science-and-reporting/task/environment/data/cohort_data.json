@@ -1,0 +1,44 @@
+{
+  "study_config": {
+    "study_name": "Adjuvant Therapy Survival Study",
+    "group_field": "treatment",
+    "time_field": "months",
+    "event_field": "death",
+    "covariates": ["age"],
+    "comparisons": [
+      {"group_a": "control", "group_b": "experimental"}
+    ]
+  },
+  "patients": [
+    {"id": 1, "treatment": "control", "months": 3, "death": 1, "age": 55},
+    {"id": 2, "treatment": "control", "months": 5, "death": 1, "age": 62},
+    {"id": 3, "treatment": "control", "months": 8, "death": 1, "age": 48},
+    {"id": 4, "treatment": "control", "months": 10, "death": 1, "age": 71},
+    {"id": 5, "treatment": "control", "months": 12, "death": 0, "age": 59},
+    {"id": 6, "treatment": "control", "months": 14, "death": 1, "age": 65},
+    {"id": 7, "treatment": "control", "months": 16, "death": 0, "age": 52},
+    {"id": 8, "treatment": "control", "months": 18, "death": 1, "age": 68},
+    {"id": 9, "treatment": "control", "months": 21, "death": 1, "age": 57},
+    {"id": 10, "treatment": "control", "months": 24, "death": 0, "age": 61},
+    {"id": 11, "treatment": "control", "months": 26, "death": 1, "age": 73},
+    {"id": 12, "treatment": "control", "months": 30, "death": 0, "age": 50},
+    {"id": 13, "treatment": "experimental", "months": 6, "death": 1, "age": 54},
+    {"id": 14, "treatment": "experimental", "months": 11, "death": 1, "age": 63},
+    {"id": 15, "treatment": "experimental", "months": 15, "death": 0, "age": 47},
+    {"id": 16, "treatment": "experimental", "months": 19, "death": 1, "age": 70},
+    {"id": 17, "treatment": "experimental", "months": 22, "death": 0, "age": 58},
+    {"id": 18, "treatment": "experimental", "months": 25, "death": 0, "age": 66},
+    {"id": 19, "treatment": "experimental", "months": 28, "death": 1, "age": 51},
+    {"id": 20, "treatment": "experimental", "months": 32, "death": 0, "age": 64},
+    {"id": 21, "treatment": "experimental", "months": 35, "death": 0, "age": 53},
+    {"id": 22, "treatment": "experimental", "months": 38, "death": 1, "age": 72},
+    {"id": 23, "treatment": "experimental", "months": 42, "death": 0, "age": 56},
+    {"id": 24, "treatment": "experimental", "months": 48, "death": 0, "age": 60}
+  ],
+  "analysis_params": {
+    "alpha": 0.05,
+    "confidence_level": 0.95,
+    "cox_max_iter": 100,
+    "cox_tol": 1e-9
+  }
+}

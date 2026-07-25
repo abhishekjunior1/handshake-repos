@@ -1,0 +1,107 @@
+{
+  "portfolio_summary": {
+    "total_market_value": 5324478.66,
+    "portfolio_yield": 1.21252903,
+    "portfolio_modified_duration": 1.453815,
+    "portfolio_convexity": 4.718426,
+    "portfolio_dv01": 774.08,
+    "number_of_positions": 5
+  },
+  "bond_analytics": [
+    {
+      "bond_id": "UST-5Y-2029",
+      "settlement_date": "2025-09-12",
+      "accrued_interest": 13.858696,
+      "dirty_price": 112.608696,
+      "clean_price": 98.75,
+      "ytm": 0.81962361,
+      "current_yield": 0.43037975,
+      "macaulay_duration": 2.899406,
+      "modified_duration": 2.056591,
+      "convexity": 5.964895,
+      "dollar_duration": 0.023159,
+      "bpv": -0.023156,
+      "market_value": 1126086.96,
+      "quantity": 1000,
+      "face_value": 1000.0
+    },
+    {
+      "bond_id": "CORP-A-2031",
+      "settlement_date": "2025-09-12",
+      "accrued_interest": 0.840278,
+      "dirty_price": 103.140278,
+      "clean_price": 102.3,
+      "ytm": 0.74090452,
+      "current_yield": 0.53763441,
+      "macaulay_duration": 2.831186,
+      "modified_duration": 2.065877,
+      "convexity": 7.22136,
+      "dollar_duration": 0.021308,
+      "bpv": -0.021304,
+      "market_value": 773552.08,
+      "quantity": 750,
+      "face_value": 1000.0
+    },
+    {
+      "bond_id": "MUNI-2032",
+      "settlement_date": "2025-09-12",
+      "accrued_interest": 18.736111,
+      "dirty_price": 114.336111,
+      "clean_price": 95.6,
+      "ytm": 1.67603054,
+      "current_yield": 1.9874477,
+      "macaulay_duration": 1.14667,
+      "modified_duration": 0.623863,
+      "convexity": 0.837132,
+      "dollar_duration": 0.007133,
+      "bpv": -0.007133,
+      "market_value": 2286722.22,
+      "quantity": 400,
+      "face_value": 5000.0
+    },
+    {
+      "bond_id": "CORP-BBB-2027",
+      "settlement_date": "2025-09-12",
+      "accrued_interest": 0.0,
+      "dirty_price": 101.15,
+      "clean_price": 101.15,
+      "ytm": 1.45872489,
+      "current_yield": 0.61789422,
+      "macaulay_duration": 1.669071,
+      "modified_duration": 1.223048,
+      "convexity": 2.056537,
+      "dollar_duration": 0.012371,
+      "bpv": -0.01237,
+      "market_value": 606900.0,
+      "quantity": 600,
+      "face_value": 1000.0
+    },
+    {
+      "bond_id": "UST-10Y-2035",
+      "settlement_date": "2025-09-12",
+      "accrued_interest": 13.043478,
+      "dirty_price": 106.243478,
+      "clean_price": 93.2,
+      "ytm": 0.45569449,
+      "current_yield": 0.42918455,
+      "macaulay_duration": 3.832211,
+      "modified_duration": 3.121081,
+      "convexity": 18.180262,
+      "dollar_duration": 0.033159,
+      "bpv": -0.03315,
+      "market_value": 531217.39,
+      "quantity": 500,
+      "face_value": 1000.0
+    }
+  ],
+  "risk_decomposition": {
+    "duration_contributions": [
+      0.299181,
+      0.206447,
+      0.184296,
+      0.09589,
+      0.214186
+    ],
+    "largest_risk_contributor": "UST-5Y-2029"
+  }
+}

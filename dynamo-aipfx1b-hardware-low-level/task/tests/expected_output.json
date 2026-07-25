@@ -1,0 +1,228 @@
+{
+  "migration_summary": {
+    "source_architecture": "ARM_PL080",
+    "target_architecture": "ARM_PL330",
+    "descriptor_count": 6,
+    "total_original_bytes": 14150,
+    "total_aligned_bytes": 14592,
+    "alignment_efficiency_percent": 96.9709,
+    "descriptor_size": 48,
+    "table_footprint_bytes": 288
+  },
+  "bus_performance": {
+    "total_beats": 1824,
+    "total_bursts": 114,
+    "overhead_cycles": 114,
+    "effective_cycles": 1938,
+    "boundary_warnings": [
+      {
+        "descriptor_id": 3,
+        "boundary": 20480,
+        "split_needed": false
+      }
+    ]
+  },
+  "validation": {
+    "overall_valid": false,
+    "checks_performed": 4,
+    "checks_passed": 3,
+    "boundary_violations": [
+      {
+        "descriptor_id": 3,
+        "start_address": 16384,
+        "end_address": 24063,
+        "boundary_crossed": 20480
+      }
+    ],
+    "size_violations": [],
+    "alignment_violations": [],
+    "capacity_utilization_percent": 0.01
+  },
+  "migrated_descriptors": [
+    {
+      "descriptor_id": 0,
+      "original_source_address": 256,
+      "translated_address": 2048,
+      "original_transfer_length": 1000,
+      "aligned_transfer_length": 1024,
+      "burst_parameters": {
+        "burst_length": 16,
+        "burst_size_bytes": 128,
+        "full_bursts": 8,
+        "remainder_bytes": 0,
+        "total_beats": 128
+      },
+      "chain_next": 65584,
+      "control_flags": 5,
+      "priority_level": 2
+    },
+    {
+      "descriptor_id": 1,
+      "original_source_address": 512,
+      "translated_address": 4096,
+      "original_transfer_length": 3000,
+      "aligned_transfer_length": 3072,
+      "burst_parameters": {
+        "burst_length": 16,
+        "burst_size_bytes": 128,
+        "full_bursts": 24,
+        "remainder_bytes": 0,
+        "total_beats": 384
+      },
+      "chain_next": 65632,
+      "control_flags": 5,
+      "priority_level": 1
+    },
+    {
+      "descriptor_id": 2,
+      "original_source_address": 1024,
+      "translated_address": 8192,
+      "original_transfer_length": 500,
+      "aligned_transfer_length": 512,
+      "burst_parameters": {
+        "burst_length": 16,
+        "burst_size_bytes": 128,
+        "full_bursts": 4,
+        "remainder_bytes": 0,
+        "total_beats": 64
+      },
+      "chain_next": 65680,
+      "control_flags": 4,
+      "priority_level": 2
+    },
+    {
+      "descriptor_id": 3,
+      "original_source_address": 2048,
+      "translated_address": 16384,
+      "original_transfer_length": 7500,
+      "aligned_transfer_length": 7680,
+      "burst_parameters": {
+        "burst_length": 16,
+        "burst_size_bytes": 128,
+        "full_bursts": 60,
+        "remainder_bytes": 0,
+        "total_beats": 960
+      },
+      "chain_next": 65728,
+      "control_flags": 5,
+      "priority_level": 0
+    },
+    {
+      "descriptor_id": 4,
+      "original_source_address": 4096,
+      "translated_address": 32768,
+      "original_transfer_length": 2000,
+      "aligned_transfer_length": 2048,
+      "burst_parameters": {
+        "burst_length": 16,
+        "burst_size_bytes": 128,
+        "full_bursts": 16,
+        "remainder_bytes": 0,
+        "total_beats": 256
+      },
+      "chain_next": 65776,
+      "control_flags": 5,
+      "priority_level": 1
+    },
+    {
+      "descriptor_id": 5,
+      "original_source_address": 8192,
+      "translated_address": 65536,
+      "original_transfer_length": 150,
+      "aligned_transfer_length": 256,
+      "burst_parameters": {
+        "burst_length": 16,
+        "burst_size_bytes": 128,
+        "full_bursts": 2,
+        "remainder_bytes": 0,
+        "total_beats": 32
+      },
+      "chain_next": 0,
+      "control_flags": 3,
+      "priority_level": 0
+    }
+  ],
+  "chain_linkage": {
+    "base_address": 65536,
+    "descriptor_size": 48,
+    "links_valid": true,
+    "table_layout": [
+      {
+        "descriptor_index": 0,
+        "start_address": 65536,
+        "end_address": 65583
+      },
+      {
+        "descriptor_index": 1,
+        "start_address": 65584,
+        "end_address": 65631
+      },
+      {
+        "descriptor_index": 2,
+        "start_address": 65632,
+        "end_address": 65679
+      },
+      {
+        "descriptor_index": 3,
+        "start_address": 65680,
+        "end_address": 65727
+      },
+      {
+        "descriptor_index": 4,
+        "start_address": 65728,
+        "end_address": 65775
+      },
+      {
+        "descriptor_index": 5,
+        "start_address": 65776,
+        "end_address": 65823
+      }
+    ]
+  },
+  "address_translation": {
+    "bus_width_used": 8,
+    "address_span": {
+      "min_address": 2048,
+      "max_address": 65792,
+      "total_span": 63744
+    },
+    "address_map": [
+      {
+        "descriptor_id": 0,
+        "original_address": 256,
+        "translated_address": 2048,
+        "alignment_valid": true
+      },
+      {
+        "descriptor_id": 1,
+        "original_address": 512,
+        "translated_address": 4096,
+        "alignment_valid": true
+      },
+      {
+        "descriptor_id": 2,
+        "original_address": 1024,
+        "translated_address": 8192,
+        "alignment_valid": true
+      },
+      {
+        "descriptor_id": 3,
+        "original_address": 2048,
+        "translated_address": 16384,
+        "alignment_valid": true
+      },
+      {
+        "descriptor_id": 4,
+        "original_address": 4096,
+        "translated_address": 32768,
+        "alignment_valid": true
+      },
+      {
+        "descriptor_id": 5,
+        "original_address": 8192,
+        "translated_address": 65536,
+        "alignment_valid": true
+      }
+    ]
+  }
+}

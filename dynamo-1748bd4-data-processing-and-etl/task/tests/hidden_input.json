@@ -1,0 +1,136 @@
+{
+  "transactions": [
+    {
+      "transaction_id": "TXN-2024-H001",
+      "transaction_date": "2024-01-15",
+      "product": "gaming_laptop",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 1200.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "north"
+    },
+    {
+      "transaction_id": "TXN-2024-H002",
+      "transaction_date": "2024-01-10",
+      "product": "phone_case",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 25.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "south"
+    },
+    {
+      "transaction_id": "TXN-2024-H003",
+      "transaction_date": "2024-01-05",
+      "product": "hdmi_cable",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 15.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "east"
+    },
+    {
+      "transaction_id": "TXN-2024-H004",
+      "transaction_date": "2023-12-20",
+      "product": "keyboard_basic",
+      "category": "electronics",
+      "department": "technology",
+      "revenue": 45.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "west"
+    },
+    {
+      "transaction_id": "TXN-2024-H005",
+      "transaction_date": "2024-01-14",
+      "product": "winter_jacket",
+      "category": "clothing",
+      "department": "apparel",
+      "revenue": 180.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "north"
+    },
+    {
+      "transaction_id": "TXN-2024-H006",
+      "transaction_date": "2024-01-02",
+      "product": "silk_scarf",
+      "category": "clothing",
+      "department": "apparel",
+      "revenue": 75.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "south"
+    },
+    {
+      "transaction_id": "TXN-2024-H007",
+      "transaction_date": "2023-12-15",
+      "product": "running_shoes",
+      "category": "clothing",
+      "department": "apparel",
+      "revenue": 130.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "east"
+    },
+    {
+      "transaction_id": "TXN-2024-H008",
+      "transaction_date": "2023-11-20",
+      "product": "designer_bag",
+      "category": "clothing",
+      "department": "apparel",
+      "revenue": 2500.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "west"
+    },
+    {
+      "transaction_id": "TXN-2024-H009",
+      "transaction_date": "2024-01-13",
+      "product": "organic_coffee",
+      "category": "food",
+      "department": "grocery",
+      "revenue": 22.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "north"
+    },
+    {
+      "transaction_id": "TXN-2024-H010",
+      "transaction_date": "2024-01-08",
+      "product": "protein_bars",
+      "category": "food",
+      "department": "grocery",
+      "revenue": 35.00,
+      "quantity": 1,
+      "customer_segment": "consumer",
+      "region": "south"
+    },
+    {
+      "transaction_id": "TXN-2024-H011",
+      "transaction_date": "2023-12-01",
+      "product": "truffle_oil",
+      "category": "food",
+      "department": "grocery",
+      "revenue": 85.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "east"
+    },
+    {
+      "transaction_id": "TXN-2024-H012",
+      "transaction_date": "2023-11-16",
+      "product": "wagyu_beef",
+      "category": "food",
+      "department": "grocery",
+      "revenue": 4500.00,
+      "quantity": 1,
+      "customer_segment": "enterprise",
+      "region": "west"
+    }
+  ]
+}

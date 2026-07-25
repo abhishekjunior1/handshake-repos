@@ -1,0 +1,83 @@
+{
+  "controller_settings": {
+    "prigroup": 4,
+    "basepri": 64,
+    "vector_table_base": 536870912
+  },
+  "interrupts": [
+    {
+      "vector_number": 2,
+      "configured_priority": 128,
+      "sub_priority": 0,
+      "handler_address": 536871168,
+      "uses_fpu": false
+    },
+    {
+      "vector_number": 3,
+      "configured_priority": 192,
+      "sub_priority": 0,
+      "handler_address": 536871424,
+      "uses_fpu": false
+    },
+    {
+      "vector_number": 16,
+      "configured_priority": 48,
+      "sub_priority": 5,
+      "handler_address": 536871680,
+      "uses_fpu": false
+    },
+    {
+      "vector_number": 17,
+      "configured_priority": 32,
+      "sub_priority": 24,
+      "handler_address": 536871936,
+      "uses_fpu": false
+    },
+    {
+      "vector_number": 18,
+      "configured_priority": 32,
+      "sub_priority": 2,
+      "handler_address": 536872192,
+      "uses_fpu": false
+    },
+    {
+      "vector_number": 19,
+      "configured_priority": 0,
+      "sub_priority": 3,
+      "handler_address": 536872448,
+      "uses_fpu": false
+    }
+  ],
+  "events": [
+    {
+      "vector_number": 16,
+      "arrival_cycle": 100
+    },
+    {
+      "vector_number": 17,
+      "arrival_cycle": 200
+    },
+    {
+      "vector_number": 16,
+      "arrival_cycle": 350,
+      "type": "handler_complete"
+    },
+    {
+      "vector_number": 17,
+      "arrival_cycle": 400,
+      "type": "handler_complete"
+    },
+    {
+      "vector_number": 18,
+      "arrival_cycle": 450
+    },
+    {
+      "vector_number": 2,
+      "arrival_cycle": 550
+    },
+    {
+      "vector_number": 3,
+      "arrival_cycle": 650
+    }
+  ]
+}

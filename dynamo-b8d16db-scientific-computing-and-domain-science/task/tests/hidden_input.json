@@ -1,0 +1,17 @@
+{
+  "function": {
+    "type": "composite",
+    "terms": [
+      {"type": "exponential", "base": 2.718281828459045, "scale": 1.0},
+      {"type": "trigonometric", "function": "sin", "frequency": 12.0, "amplitude": 1.0}
+    ],
+    "operation": "multiply"
+  },
+  "interval": {
+    "lower": 0.0,
+    "upper": 2.5
+  },
+  "tolerance": 1e-7,
+  "max_subdivisions": 50,
+  "singularity_detection": false
+}

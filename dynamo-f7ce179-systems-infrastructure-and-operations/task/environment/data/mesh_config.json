@@ -1,0 +1,77 @@
+{
+  "current_time": 1000.0,
+  "services": [
+    {
+      "service_name": "api-gateway",
+      "ttl_seconds": 60.0,
+      "protocol": "http",
+      "backends": [
+        {
+          "backend_id": "gw-backend-1",
+          "address": "10.0.1.10",
+          "port": 8080,
+          "weight": 1,
+          "registration_timestamp": 990.0,
+          "last_heartbeat_timestamp": 990.0,
+          "failure_count": 0,
+          "metadata": {"zone": "us-east-1a"}
+        }
+      ]
+    },
+    {
+      "service_name": "user-service",
+      "ttl_seconds": 60.0,
+      "protocol": "http",
+      "backends": [
+        {
+          "backend_id": "user-backend-1",
+          "address": "10.0.2.10",
+          "port": 9090,
+          "weight": 1,
+          "registration_timestamp": 990.0,
+          "last_heartbeat_timestamp": 990.0,
+          "failure_count": 0,
+          "metadata": {"zone": "us-east-1a"}
+        }
+      ]
+    }
+  ],
+  "circuit_breaker": {
+    "failure_threshold": 5,
+    "recovery_timeout": 30.0
+  },
+  "routing_rules": [
+    {
+      "rule_id": "route-users",
+      "destination": "user-service",
+      "priority": 0,
+      "path_pattern": "/api/users.*",
+      "header_match": {},
+      "traffic_weight": 100
+    },
+    {
+      "rule_id": "route-gateway",
+      "destination": "api-gateway",
+      "priority": 1,
+      "path_pattern": "/api/.*",
+      "header_match": {},
+      "traffic_weight": 100
+    }
+  ],
+  "requests": [
+    {
+      "request_id": "req-001",
+      "source": "frontend",
+      "path": "/api/users/list",
+      "headers": {"x-request-id": "abc123"},
+      "max_retries": 3
+    },
+    {
+      "request_id": "req-002",
+      "source": "frontend",
+      "path": "/api/health",
+      "headers": {},
+      "max_retries": 3
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "events": [
+    {
+      "event_id": "evt-201",
+      "table_name": "products",
+      "operation": "INSERT",
+      "primary_key": "prod-A1",
+      "timestamp": "2024-06-10T08:00:00.000Z",
+      "payload": {
+        "name": "Quantum Drive",
+        "category": "storage",
+        "price": 299.99,
+        "stock": 150,
+        "supplier": "TechCorp"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-202",
+      "table_name": "products",
+      "operation": "INSERT",
+      "primary_key": "prod-A1",
+      "timestamp": "2024-06-10T08:00:03.000Z",
+      "payload": {
+        "name": "Quantum Drive",
+        "category": "storage",
+        "price": 299.99,
+        "stock": 150,
+        "supplier": "TechCorp"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-203",
+      "table_name": "products",
+      "operation": "UPDATE",
+      "primary_key": "prod-A1",
+      "timestamp": "2024-06-10T14:00:00.000Z",
+      "payload": {
+        "name": "Quantum Drive",
+        "category": "storage",
+        "price": 249.99,
+        "stock": null,
+        "supplier": null
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-204",
+      "table_name": "products",
+      "operation": "INSERT",
+      "primary_key": "prod-B2",
+      "timestamp": "2024-06-10T08:30:00.000Z",
+      "payload": {
+        "name": "Neural Chip",
+        "category": "processors",
+        "price": 599.99,
+        "stock": 75,
+        "supplier": "SiliconMax"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-205",
+      "table_name": "products",
+      "operation": "UPDATE",
+      "primary_key": "prod-B2",
+      "timestamp": "2024-06-10T16:00:00.000Z",
+      "payload": {
+        "name": "Neural Chip v2",
+        "category": "processors",
+        "price": 649.99,
+        "stock": null,
+        "supplier": null
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-206",
+      "table_name": "products",
+      "operation": "UPDATE",
+      "primary_key": "prod-B2",
+      "timestamp": "2024-06-10T21:00:00.000Z",
+      "payload": {
+        "name": "Neural Chip v2",
+        "category": null,
+        "price": 619.99,
+        "stock": 60,
+        "supplier": null
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-207",
+      "table_name": "shipments",
+      "operation": "INSERT",
+      "primary_key": "shp-001",
+      "timestamp": "2024-06-10T09:00:00.000Z",
+      "payload": {
+        "product_id": "prod-A1",
+        "destination": "warehouse-east",
+        "quantity": 50,
+        "carrier": "FastFreight"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-208",
+      "table_name": "shipments",
+      "operation": "INSERT",
+      "primary_key": "shp-001",
+      "timestamp": "2024-06-10T09:00:04.000Z",
+      "payload": {
+        "product_id": "prod-A1",
+        "destination": "warehouse-east",
+        "quantity": 50,
+        "carrier": "FastFreight"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-209",
+      "table_name": "shipments",
+      "operation": "UPDATE",
+      "primary_key": "shp-001",
+      "timestamp": "2024-06-10T17:00:00.000Z",
+      "payload": {
+        "product_id": "prod-A1",
+        "destination": "warehouse-east",
+        "quantity": 48,
+        "carrier": null
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-210",
+      "table_name": "shipments",
+      "operation": "INSERT",
+      "primary_key": "shp-002",
+      "timestamp": "2024-06-10T10:00:00.000Z",
+      "payload": {
+        "product_id": "prod-B2",
+        "destination": "warehouse-west",
+        "quantity": 30,
+        "carrier": "QuickShip"
+      },
+      "schema_version": 1
+    },
+    {
+      "event_id": "evt-211",
+      "table_name": "shipments",
+      "operation": "DELETE",
+      "primary_key": "shp-002",
+      "timestamp": "2024-06-10T22:00:00.000Z",
+      "payload": {},
+      "schema_version": 1
+    }
+  ]
+}

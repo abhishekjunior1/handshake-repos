@@ -1,0 +1,74 @@
+{
+  "experiment_name": "pricing_experiment",
+  "primary_metric": {
+    "metric_name": "revenue_per_user",
+    "metric_type": "primary",
+    "p_value": 0.5131379992250116,
+    "t_statistic": 1.3783978860909003,
+    "df": 29.208625426226934,
+    "significant": false,
+    "corrected_p_value": 1.0,
+    "significant_corrected": false
+  },
+  "secondary_metrics": [
+    {
+      "metric_name": "session_duration",
+      "metric_type": "secondary",
+      "p_value": 0.5131379992250116,
+      "t_statistic": 1.3783978860909003,
+      "df": 29.208625426226934,
+      "significant": false,
+      "corrected_p_value": 1.0,
+      "significant_corrected": false
+    },
+    {
+      "metric_name": "page_views",
+      "metric_type": "secondary",
+      "p_value": 0.5131379992250116,
+      "t_statistic": 1.3783978860909003,
+      "df": 29.208625426226934,
+      "significant": false,
+      "corrected_p_value": 1.0,
+      "significant_corrected": false
+    },
+    {
+      "metric_name": "bounce_rate",
+      "metric_type": "secondary",
+      "p_value": 0.5131379992250116,
+      "t_statistic": 1.3783978860909003,
+      "df": 29.208625426226934,
+      "significant": false,
+      "corrected_p_value": 1.0,
+      "significant_corrected": false
+    }
+  ],
+  "effect_size": {
+    "hedges_g": 0.383746,
+    "cohens_d": 0.38987,
+    "correction_factor": 0.984293
+  },
+  "confidence_interval": {
+    "lower": -0.806461,
+    "upper": 4.626493,
+    "point_estimate": 1.910016
+  },
+  "power_analysis": {
+    "observed_power": 0.095366,
+    "minimum_detectable_effect": 1.72719,
+    "power_target": 0.8
+  },
+  "correction_info": {
+    "method": "bonferroni",
+    "n_tests": 4,
+    "alpha_original": 0.05
+  },
+  "sample_summary": {
+    "control_n": 25,
+    "control_mean": 10.603264,
+    "control_variance": 4.750071,
+    "treatment_n": 25,
+    "treatment_mean": 12.51328,
+    "treatment_variance": 43.252536,
+    "pooled_variance": 24.001303
+  }
+}

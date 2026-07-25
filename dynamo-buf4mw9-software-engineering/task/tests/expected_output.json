@@ -1,0 +1,94 @@
+{
+  "metadata": {
+    "source_format": "historian_v2",
+    "migration_version": "1.0",
+    "tag_count": 3,
+    "total_samples": 10
+  },
+  "tags": [
+    {
+      "tag_id": 1,
+      "tag_type": "discrete",
+      "sample_count": 3,
+      "calibration_applied": true,
+      "samples": [
+        {
+          "timestamp_iso": "2023-11-14T22:13:20.000000Z",
+          "value": 1.0,
+          "quality_severity": 0,
+          "interpolated": false
+        },
+        {
+          "timestamp_iso": "2023-11-14T22:13:24.000000Z",
+          "value": 1.0,
+          "quality_severity": 0,
+          "interpolated": true
+        },
+        {
+          "timestamp_iso": "2023-11-14T22:13:28.000000Z",
+          "value": 0.0,
+          "quality_severity": 0,
+          "interpolated": false
+        }
+      ]
+    },
+    {
+      "tag_id": 2,
+      "tag_type": "analog",
+      "sample_count": 3,
+      "calibration_applied": true,
+      "samples": [
+        {
+          "timestamp_iso": "2023-11-14T22:13:20.000000Z",
+          "value": 5000.0,
+          "quality_severity": 0,
+          "interpolated": false
+        },
+        {
+          "timestamp_iso": "2023-11-14T22:13:21.500000Z",
+          "value": 5500.0,
+          "quality_severity": 0,
+          "interpolated": true
+        },
+        {
+          "timestamp_iso": "2023-11-14T22:13:23.000000Z",
+          "value": 6000.0,
+          "quality_severity": 0,
+          "interpolated": false
+        }
+      ]
+    },
+    {
+      "tag_id": 3,
+      "tag_type": "analog",
+      "sample_count": 4,
+      "calibration_applied": true,
+      "samples": [
+        {
+          "timestamp_iso": "2023-11-14T22:13:25.000000Z",
+          "value": 4000.0,
+          "quality_severity": 1,
+          "interpolated": false
+        },
+        {
+          "timestamp_iso": "2023-11-14T22:13:22.000000Z",
+          "value": 4100.0,
+          "quality_severity": 1,
+          "interpolated": false
+        },
+        {
+          "timestamp_iso": "2023-11-14T22:13:25.000000Z",
+          "value": 4150.0,
+          "quality_severity": 0,
+          "interpolated": true
+        },
+        {
+          "timestamp_iso": "2023-11-14T22:13:28.000000Z",
+          "value": 4200.0,
+          "quality_severity": 1,
+          "interpolated": false
+        }
+      ]
+    }
+  ]
+}

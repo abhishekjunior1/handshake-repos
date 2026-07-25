@@ -1,0 +1,129 @@
+{
+  "analysis_name": "Pharmacological Intervention for Treatment-Resistant Depression",
+  "effect_measure": "standardized_mean_difference",
+  "num_studies": 5,
+  "summary_statistics": {
+    "effects": {
+      "min": 0.25,
+      "max": 1.85,
+      "mean": 0.91,
+      "median": 0.52
+    },
+    "std_errors": {
+      "min": 0.12,
+      "max": 2.5,
+      "mean": 0.63,
+      "median": 0.18
+    }
+  },
+  "overall_analysis": {
+    "random_effects": {
+      "pooled_estimate": 1.00452,
+      "std_error": 0.359148,
+      "ci_lower": 0.30045,
+      "ci_upper": 1.708591,
+      "prediction_interval_lower": -1.499564,
+      "prediction_interval_upper": 3.508605,
+      "num_studies": 5
+    },
+    "fixed_effect": {
+      "pooled_estimate": 1.025123,
+      "std_error": 0.076716,
+      "ci_lower": 0.874729,
+      "ci_upper": 1.175516
+    },
+    "heterogeneity": {
+      "Q": 64.172136,
+      "df": 4,
+      "p_value": 0.0,
+      "I_squared": 93.7668,
+      "tau_squared": 0.498855,
+      "fixed_effect_estimate": 1.025123
+    }
+  },
+  "publication_bias": {
+    "intercept": -7.375257,
+    "slope": 2.122683,
+    "se_intercept": 11.41078,
+    "se_slope": 1.625265,
+    "t_intercept": -0.646341,
+    "t_slope": 1.306053,
+    "p_intercept": 0.564098,
+    "p_slope": 0.282653,
+    "df": 3,
+    "bias_detected": false
+  },
+  "subgroup_analyses": [
+    {
+      "subgroup": "SSRI_augmentation",
+      "num_studies": 2,
+      "studies": [
+        "Nakamura_2019",
+        "Fischer_2020"
+      ],
+      "analysis": {
+        "random_effects": {
+          "pooled_estimate": 1.044531,
+          "std_error": 0.799981,
+          "ci_lower": -0.523748,
+          "ci_upper": 2.612811,
+          "prediction_interval_lower": -1.649653,
+          "prediction_interval_upper": 3.738716,
+          "num_studies": 2
+        },
+        "fixed_effect": {
+          "pooled_estimate": 0.826
+        },
+        "heterogeneity": {
+          "Q": 40.96,
+          "df": 1,
+          "p_value": 0.0,
+          "I_squared": 97.5586,
+          "tau_squared": 1.24875,
+          "fixed_effect_estimate": 0.826
+        }
+      }
+    },
+    {
+      "subgroup": "ketamine_based",
+      "num_studies": 2,
+      "studies": [
+        "Okonkwo_2021",
+        "Bergstrom_2022"
+      ],
+      "analysis": {
+        "random_effects": {
+          "pooled_estimate": 0.519794,
+          "std_error": 0.179535,
+          "ci_lower": 0.167834,
+          "ci_upper": 0.871754,
+          "prediction_interval_lower": 0.167834,
+          "prediction_interval_upper": 0.871754,
+          "num_studies": 2
+        },
+        "fixed_effect": {
+          "pooled_estimate": 0.519794
+        },
+        "heterogeneity": {
+          "Q": 0.000255,
+          "df": 1,
+          "p_value": 0.987267,
+          "I_squared": 0.0,
+          "tau_squared": 0.0,
+          "fixed_effect_estimate": 0.519794
+        }
+      }
+    },
+    {
+      "subgroup": "neuromodulation",
+      "num_studies": 1,
+      "analysis": null,
+      "note": "Insufficient studies for meta-analysis"
+    }
+  ],
+  "between_subgroup_heterogeneity": {
+    "Q_between": 7.291945,
+    "df": 1,
+    "p_value": 0.006926
+  }
+}

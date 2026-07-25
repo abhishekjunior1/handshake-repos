@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/query-engine-debug"
+description = "Debug a SQL-like analytical query engine with silent semantic bugs."
+
+[metadata]
+category = "Data Querying and Databases"
+subcategory = "Analytical queries"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "Three bugs in a 900+ line custom SQL query engine processing synthetic order data. Bugs are standard SQL execution patterns applied in the wrong context: join-before-aggregate causes fan-out inflation when 1:many relationships exist, implicit RANGE frame default produces wrong running totals with tied ORDER BY values, and WHERE-after-LEFT-JOIN discards outer rows that should be preserved. Visible data masks all three through degenerate properties (1:1 joins, unique timestamps, all-matching rows). A data engineer building analytical query systems would encounter these exact semantic issues. Data is synthetic, shaped like e-commerce analytics."
+solution_explanation = "Bug 1: _execute_join_aggregate_query joins then aggregates causing fan-out — fix by aggregating on source table directly when aggregation columns are from the left table only. Bug 2: window_functions.py defaults frame_mode to 'range' — fix by defaulting to 'rows'. Bug 3: _execute_join_aggregate_query applies join filter as WHERE after LEFT JOIN — fix by applying as ON predicate (filter right table before join). Each fix is localized to the specific function."
+verification_explanation = "test.sh substitutes hidden data with multiple order lines per order (fan-out trigger), tied order dates (RANGE trigger), and customers with no completed orders (LEFT JOIN trigger). Tests verify correct aggregate counts, sequential running totals, and preserved outer rows in results."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

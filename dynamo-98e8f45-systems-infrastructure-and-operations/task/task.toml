@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/k8s-scheduler-debug"
+description = "Debug a Kubernetes pod scheduling simulator with resource fitting, affinity evaluation, and node scoring bugs."
+
+[metadata]
+category = "Systems Infrastructure and Operations"
+subcategory = "Containers and Orchestration"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~1000 lines) implementing a Kubernetes-style pod scheduler without external libraries. Three bugs are distributed across three different files (pipeline.py, resource_calculator.py, affinity_evaluator.py), each exploiting a different K8s scheduling convention: (1) pipeline.py reads a cluster-wide default_max_pods configuration value instead of the per-node allocatable.pods field — only detectable when individual nodes have lower pod limits than the cluster default, (2) resource_calculator.py fits pods against resource limits instead of requests — only detectable with Burstable QoS pods where requests differ significantly from limits, and (3) affinity_evaluator.py scales anti-affinity penalty by the count of matching colocated pods instead of applying a flat penalty per the K8s preferredDuringScheduling semantics — only detectable when multiple matching pods exist on the same topology domain. Two correct-but-suspicious patterns (remaining-resource normalization in node scoring, exact-match for Equal operator in taint matching) create discrimination difficulty. Visible configuration uses default_max_pods=110 matching all nodes' allocatable.pods=110, Guaranteed QoS pods (requests==limits), and no existing pods — making all three bugs produce identical output to correct code. Data is synthetic, shaped like production edge-cluster and multi-tenant scheduling scenarios. A senior Kubernetes platform engineer would do this work."
+solution_explanation = "The solver patches three files: (1) pipeline.py: replaces `cluster_default = cluster_config.get('cluster', {}).get('default_max_pods', 110)` with `node_max = node.get('status', {}).get('allocatable', {}).get('pods', 110)` so each node enforces its own pod capacity limit instead of a cluster-wide default; (2) resource_calculator.py: changes fit computation from using `limits.get('cpu_millicores', requests.get('cpu_millicores', 0))` to `requests.get('cpu_millicores', 0)` (and similarly for memory), because the K8s scheduler always fits against requests not limits; (3) affinity_evaluator.py: replaces `anti_affinity_score -= weight * matching_colocated` with `anti_affinity_score -= weight` so preferred anti-affinity applies a flat penalty when any matching pods are colocated, rather than scaling by the count of matches. Each fix is 1-3 lines and requires understanding how the scheduler uses each value in the broader pipeline context."
+verification_explanation = "The verifier substitutes two structurally different hidden cluster configurations and runs the fixed pipeline on each. Hidden config 1 features edge nodes with per-node pods=4 while cluster default_max_pods=110 (triggering Bug 1 pod capacity filtering), Burstable pods with limits 3-4x requests on nodes with limited memory (triggering Bug 2 resource rejection), and existing system/telemetry pods with matching anti-affinity labels (matching_colocated=4 and 2 respectively, triggering Bug 3 scaled-vs-flat penalty). Hidden config 2 uses a worker-pool-a with pods=5 and 5 existing pods (capacity saturated), different request/limit ratios, and 2 matching anti-affinity pods on the same hostname (matching_colocated=2 triggers the scaling bug differently). The verifier performs exact JSON comparison on scheduling_summary, pod_decisions (phases, node assignments, score breakdowns, filtered nodes), node_placements, and cluster_info. Exact match is appropriate because the pipeline is fully deterministic with no floating-point ambiguity — all scores derive from integer weights and discrete matching operations."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

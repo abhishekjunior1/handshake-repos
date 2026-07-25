@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/env-profile-compiler"
+description = "Shell environment profile compiler that processes layered dotenv configurations with variable interpolation, multiline handling, and quoting semantics."
+
+[metadata]
+category = "Systems Infrastructure and Operations"
+subcategory = "Shell and Environment Configuration"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~700 lines) implementing a dotenv-style environment profile compiler. Three bugs are data-property dependent — they produce silently wrong output that LOOKS correct on most inputs and only diverges on specific data patterns the agent is unlikely to construct during testing: (1) file_parser.py joins multiline quoted values with literal '\\n' escape sequence instead of actual newline characters. Masked because visible data has no multiline values. Comment justifies as 'portable serialization across shell implementations.' (2) interpolation_engine.py resolves variable references incrementally (against partial state accumulated so far) instead of against the full final state. Masked because visible data defines all referenced variables before their use (no forward references). Comment justifies as 'deterministic parse-order-dependent resolution.' (3) quote_handler.py uses Python's str.strip() which removes ALL matching characters from boundaries, instead of removing exactly one enclosing pair. Masked because visible data only has single pairs of quotes. Comment justifies as 'symmetric handling of nested quote scenarios.' The key difficulty: these bugs produce output that appears correct on agent-crafted test inputs unless the agent specifically constructs multiline values, forward-references, or double-quoted boundaries — patterns agents rarely test. Data is synthetic, shaped like enterprise deployment configurations managed by platform engineers."
+solution_explanation = "Three patches across 3 different files: (1) file_parser.py: Replace '\\\\n'.join(value_parts) with '\\n'.join(value_parts) for both double and single quoted multiline values. (2) interpolation_engine.py: Change the resolution loop to expand each variable against the full variable map instead of the partial accumulated state, then iterate until stable. (3) quote_handler.py: Replace value.strip('\"') with value[1:-1] (remove exactly one character from each end) for both quote styles."
+verification_explanation = "The verifier substitutes a hidden 3-layer configuration with: a multiline SSH_BANNER spanning 4 lines (triggers Bug 1 — literal \\n vs actual newline), a SERVICE_URL referencing APP_DOMAIN which is defined AFTER it in the same layer (triggers Bug 2 — forward reference unresolved), and JWT_SECRET/API_KEY with double-quote characters at value boundaries (triggers Bug 3 — over-stripped vs single-pair removal). Tests compare exact JSON equality on all environment values."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

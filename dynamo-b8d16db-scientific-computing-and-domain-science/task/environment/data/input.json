@@ -1,0 +1,13 @@
+{
+  "function": {
+    "type": "polynomial",
+    "coefficients": [1.0, 2.0, -1.0, 0.5]
+  },
+  "interval": {
+    "lower": 0.0,
+    "upper": 1.0
+  },
+  "tolerance": 1e-8,
+  "max_subdivisions": 50,
+  "singularity_detection": true
+}

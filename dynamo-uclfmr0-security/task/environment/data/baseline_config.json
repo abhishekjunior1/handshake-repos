@@ -1,0 +1,97 @@
+{
+  "metadata": {
+    "framework": "CIS",
+    "benchmark_version": "2.1",
+    "assessment_scope": "production",
+    "evaluation_date": "2025-06-15"
+  },
+  "profiles": [
+    {
+      "id": "level-1",
+      "name": "CIS Level 1",
+      "parent_id": null,
+      "level": 1,
+      "description": "Basic security hardening profile"
+    }
+  ],
+  "rules": [
+    {
+      "id": "rule-1.1",
+      "category": "access_control",
+      "severity": 5,
+      "check_type": "boolean",
+      "description": "Ensure SSH root login is disabled",
+      "remediation": "Set PermitRootLogin to no in sshd_config",
+      "profile_ids": ["level-1"]
+    },
+    {
+      "id": "rule-1.2",
+      "category": "access_control",
+      "severity": 5,
+      "check_type": "boolean",
+      "description": "Ensure password authentication uses strong hashing",
+      "remediation": "Configure SHA-512 password hashing",
+      "profile_ids": ["level-1"]
+    },
+    {
+      "id": "rule-2.1",
+      "category": "network_security",
+      "severity": 5,
+      "check_type": "boolean",
+      "description": "Ensure firewall is active",
+      "remediation": "Enable and configure iptables or nftables",
+      "profile_ids": ["level-1"]
+    },
+    {
+      "id": "rule-2.2",
+      "category": "network_security",
+      "severity": 5,
+      "check_type": "boolean",
+      "description": "Ensure unnecessary services are disabled",
+      "remediation": "Disable and mask unnecessary service units",
+      "profile_ids": ["level-1"]
+    }
+  ],
+  "resources": [
+    {
+      "id": "web-server-01",
+      "type": "compute",
+      "status": "running",
+      "tags": {"environment": "production", "team": "platform"},
+      "profile_id": "level-1",
+      "region": "us-east-1"
+    },
+    {
+      "id": "db-server-01",
+      "type": "compute",
+      "status": "running",
+      "tags": {"environment": "production", "team": "data"},
+      "profile_id": "level-1",
+      "region": "us-east-1"
+    }
+  ],
+  "waivers": [
+    {
+      "id": "waiver-001",
+      "rule_id": "rule-2.2",
+      "resource_pattern": "db-server-01",
+      "reason": "Legacy monitoring agent requires this service",
+      "expiry": "2099-12-31",
+      "approved_by": "security-team"
+    }
+  ],
+  "checks": {
+    "web-server-01": {
+      "rule-1.1": true,
+      "rule-1.2": true,
+      "rule-2.1": true,
+      "rule-2.2": true
+    },
+    "db-server-01": {
+      "rule-1.1": true,
+      "rule-1.2": false,
+      "rule-2.1": true,
+      "rule-2.2": true
+    }
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "metadata": {
+    "report_version": "1.0",
+    "framework": "CIS",
+    "benchmark_version": "2.1",
+    "assessment_scope": "production",
+    "evaluation_date": "2025-06-15"
+  },
+  "summary": {
+    "overall_compliance": 0.5719,
+    "security_posture": "weak",
+    "risk_score": 0.2846,
+    "resources_assessed": 3,
+    "rules_evaluated": 7
+  },
+  "compliance_scores": {
+    "per_category": {
+      "access_control": {
+        "score": 0.6667,
+        "passing": 4,
+        "failing": 2,
+        "total": 6
+      },
+      "audit_logging": {
+        "score": 0.6,
+        "passing": 3,
+        "failing": 2,
+        "total": 5
+      },
+      "filesystem_integrity": {
+        "score": 0.5,
+        "passing": 1,
+        "failing": 1,
+        "total": 2
+      },
+      "network_security": {
+        "score": 0.5,
+        "passing": 3,
+        "failing": 3,
+        "total": 6
+      }
+    },
+    "overall_score": 0.5719,
+    "category_weights": {
+      "access_control": 0.3111,
+      "audit_logging": 0.2,
+      "filesystem_integrity": 0.2222,
+      "network_security": 0.2667
+    }
+  },
+  "severity_distribution": {
+    "2": 1,
+    "10": 1,
+    "9": 1,
+    "6": 1,
+    "8": 1
+  },
+  "critical_findings": [
+    {
+      "rule_id": "rule-4.1",
+      "resource_id": "web-prod-01",
+      "severity": 10,
+      "category": "filesystem_integrity",
+      "description": "Ensure AIDE is installed and configured"
+    },
+    {
+      "rule_id": "rule-2.1",
+      "resource_id": "web-prod-02",
+      "severity": 9,
+      "category": "network_security",
+      "description": "Ensure host-based firewall is configured"
+    },
+    {
+      "rule_id": "rule-1.1",
+      "resource_id": "db-prod-01",
+      "severity": 8,
+      "category": "access_control",
+      "description": "Ensure SSH root login is disabled"
+    }
+  ],
+  "risk_score": 0.2846,
+  "waivers_applied": [
+    {
+      "resource_id": "db-prod-01",
+      "rule_id": "rule-3.1",
+      "waiver_id": "waiver-002",
+      "reason": "Database audit handled by separate SIEM integration"
+    },
+    {
+      "resource_id": "db-prod-02",
+      "rule_id": "rule-3.1",
+      "waiver_id": "waiver-002",
+      "reason": "Database audit handled by separate SIEM integration"
+    },
+    {
+      "resource_id": "web-prod-01",
+      "rule_id": "rule-2.2",
+      "waiver_id": "waiver-001",
+      "reason": "Network team manages ICMP at perimeter level"
+    },
+    {
+      "resource_id": "web-prod-02",
+      "rule_id": "rule-2.2",
+      "waiver_id": "waiver-001",
+      "reason": "Network team manages ICMP at perimeter level"
+    }
+  ],
+  "scope_coverage": {
+    "total_possible_pairs": 21,
+    "applicable_pairs": 19,
+    "coverage_pct": 90.48,
+    "resources_in_scope": 3,
+    "rules_in_scope": 7,
+    "excluded_resources": 1
+  },
+  "detailed_results": [
+    {
+      "resource_id": "db-prod-01",
+      "rule_id": "rule-1.1",
+      "status": "fail",
+      "details": "Rule rule-1.1 check failed for db-prod-01"
+    },
+    {
+      "resource_id": "db-prod-01",
+      "rule_id": "rule-1.2",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "db-prod-01",
+      "rule_id": "rule-2.1",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "db-prod-01",
+      "rule_id": "rule-2.2",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "db-prod-01",
+      "rule_id": "rule-3.1",
+      "status": "waived",
+      "details": "Exempted by waiver: waiver-002"
+    },
+    {
+      "resource_id": "web-prod-01",
+      "rule_id": "rule-1.1",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "web-prod-01",
+      "rule_id": "rule-1.2",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "web-prod-01",
+      "rule_id": "rule-2.1",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "web-prod-01",
+      "rule_id": "rule-2.2",
+      "status": "waived",
+      "details": "Exempted by waiver: waiver-001"
+    },
+    {
+      "resource_id": "web-prod-01",
+      "rule_id": "rule-3.1",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "web-prod-01",
+      "rule_id": "rule-3.2",
+      "status": "fail",
+      "details": "Rule rule-3.2 check failed for web-prod-01"
+    },
+    {
+      "resource_id": "web-prod-01",
+      "rule_id": "rule-4.1",
+      "status": "fail",
+      "details": "Rule rule-4.1 check failed for web-prod-01"
+    },
+    {
+      "resource_id": "web-prod-02",
+      "rule_id": "rule-1.1",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "web-prod-02",
+      "rule_id": "rule-1.2",
+      "status": "fail",
+      "details": "Rule rule-1.2 check failed for web-prod-02"
+    },
+    {
+      "resource_id": "web-prod-02",
+      "rule_id": "rule-2.1",
+      "status": "fail",
+      "details": "Rule rule-2.1 check failed for web-prod-02"
+    },
+    {
+      "resource_id": "web-prod-02",
+      "rule_id": "rule-2.2",
+      "status": "waived",
+      "details": "Exempted by waiver: waiver-001"
+    },
+    {
+      "resource_id": "web-prod-02",
+      "rule_id": "rule-3.1",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "web-prod-02",
+      "rule_id": "rule-3.2",
+      "status": "pass",
+      "details": ""
+    },
+    {
+      "resource_id": "web-prod-02",
+      "rule_id": "rule-4.1",
+      "status": "pass",
+      "details": ""
+    }
+  ]
+}

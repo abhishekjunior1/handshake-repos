@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/spi-i2c-init"
+description = "Debug a peripheral initialization pipeline with clock, bus arbitration, and register programming bugs."
+
+[metadata]
+category = "Hardware Embedded and Low Level Systems"
+subcategory = "Embedded and firmware"
+model_tested = "Opus-4.8"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~970 lines) implementing SPI/I2C peripheral initialization without external libraries. Three bugs are spread across 3 different files — the orchestrator and two domain modules — making them harder to locate than if concentrated in a single file: (1) pipeline.py hardcodes clock_stable=True ignoring PLL lock status — invisible when no PLL is configured, (2) clock_config.py derives peripheral clock from system clock instead of bus clock — invisible when bus_divider=1, (3) bus_arbiter.py uses hardcoded CS_ACTIVE_HIGH polarity for deassert instead of the configured polarity parameter — invisible with single device. Two correct-but-suspicious patterns (reverse power domain sequencing and 8-bit enumeration reads) attract over-fixing that breaks output. The data is synthetic, representative of embedded firmware initialization sequences that a firmware engineer would debug during board bring-up."
+solution_explanation = "Fix Bug 1 (pipeline.py): replace hardcoded clock_stable=True with the actual PLL lock status from clock configuration (pll_lock_time == 0), and pass clock_stable through to the register programming phase. Fix Bug 2 (clock_config.py): in compute_peripheral_clock_rate, derive from bus_clock (system_clock/bus_divider) divided by peripheral_divider instead of system_clock/peripheral_divider directly. Fix Bug 3 (bus_arbiter.py): in compute_deassert_signals, use the cs_polarity_const parameter passed in instead of hardcoded CS_ACTIVE_HIGH. Each fix is 1-3 lines in its respective file."
+verification_explanation = "The verifier substitutes a hidden configuration with PLL enabled (lock_time=25us), bus_divider=4, and 3 peripheral devices. It runs the fixed pipeline and compares output.json against expected_output.json using exact JSON field matching. Bug 1 causes 9 registers to appear programmed when they should be lost (clock unstable). Bug 2 produces peripheral_clock=24MHz instead of correct 6MHz (4x error). Bug 3 produces deassert_level=0 for all devices instead of correct 1 (inverted polarity). The band rejects any output where registers are incorrectly marked as programmed, peripheral clock differs from 6MHz, or deassert signals use wrong polarity."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []

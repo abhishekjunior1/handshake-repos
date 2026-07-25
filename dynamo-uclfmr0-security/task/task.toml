@@ -1,0 +1,32 @@
+artifacts = ["/app/output.json"]
+
+[task]
+name = "dynamo/compliance-scanner"
+description = "Security compliance hardening scanner pipeline with CIS-style rule inheritance, exception matching, and severity scoring."
+
+[metadata]
+category = "security"
+subcategory = "security_hardening"
+model_tested = "GPT-5.4"
+agent_tested = "Terminus-2"
+task_objective = ["fix", "debug"]
+artifact_type = ["codebase", "generated_output_artifact"]
+expert_time_estimate_hours = 5.0
+difficulty_explanation = "The pipeline spans 7 modules (~950 lines) implementing CIS-style compliance evaluation without external libraries. Three bugs are data-flow errors across 2 files: (1) pipeline.py fetches only direct profile rules instead of walking the full ancestor inheritance chain, (2) pipeline.py computes waived_results correctly but passes raw_results (pre-waiver) to scoring and report formatting — a computed-but-unused variable pattern where the waiver application runs but its output is discarded, and (3) exception_matcher.py uses exact string comparison instead of glob pattern matching for waiver-to-resource resolution. Each bug is masked on the visible configuration: a single-level profile makes inheritance irrelevant, all waivers target passing checks so raw_results equals waived_results, and exact-ID waivers make glob identical to equality. Hidden data uses nested 3-level profiles, glob-pattern waivers targeting failing checks, and mixed severities to trigger all three simultaneously. Two correct-but-suspicious patterns (active-resource-only scoping and child-overrides-parent precedence) attract over-fixing. Data is synthetic, shaped like production cloud infrastructure assessments performed by security compliance engineers."
+solution_explanation = "Fix requires three targeted patches: (1) In pipeline.py, replace get_rules_for_profile(rules, profile_id) with resolve_inherited_rules(rules, profiles, profile_id) to walk the full ancestor chain. (2) In pipeline.py, replace all references to raw_results in Steps 7-8 with waived_results so that waiver exemptions are reflected in scoring and report output. (3) In exception_matcher.py, add import fnmatch and replace exact string comparison with fnmatch.fnmatch for glob-based waiver matching. Each fix is 1-2 lines but requires tracing data flow across the pipeline to identify the disconnect between waiver computation and downstream consumption."
+verification_explanation = "The verifier substitutes a hidden baseline configuration with 3-level nested profiles (base→level-1→level-2), glob-pattern waivers (\"web-prod-*\", \"db-prod-*\") targeting failing checks, mixed rule severities (2-10), and a stopped resource. It runs the fixed pipeline and compares output.json against expected_output.json using exact JSON equality on all fields: overall_score (0.5719 expected vs 0.6333 buggy), risk_score (0.2846 vs 0.4419), waivers_applied count (4 vs 0), detailed_results count (19 vs 7), category presence (4 vs 3), and per-result statuses showing waived entries. The tolerance is exact match because the computation is fully deterministic."
+
+[verifier]
+timeout_sec = 120.0
+
+[agent]
+timeout_sec = 3600.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
+allow_internet = true
+mcp_servers = []
