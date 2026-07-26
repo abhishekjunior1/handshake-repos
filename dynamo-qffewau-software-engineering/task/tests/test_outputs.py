@@ -6,18 +6,22 @@ and dependency-ordered execution.
 """
 
 import json
+import os
 import pytest
 from pathlib import Path
 
 
 EXPECTED_PATH = Path("/tests/expected_output.json")
-OUTPUT_PATH = Path("/app/output.json")
+OUTPUT_PATH = "/app/output_eval.json"
 
 
 @pytest.fixture
 def output():
     """Load the pipeline output for verification."""
-    assert OUTPUT_PATH.exists(), f"Output file not found: {OUTPUT_PATH}"
+    assert os.path.exists(OUTPUT_PATH), f"Output file not found: {OUTPUT_PATH}"
+    assert not os.path.islink(OUTPUT_PATH), f"Output must not be a symlink: {OUTPUT_PATH}"
+    real_path = os.path.realpath(OUTPUT_PATH)
+    assert real_path.startswith("/app/"), f"Output escapes /app: {real_path}"
     with open(OUTPUT_PATH) as f:
         return json.load(f)
 

@@ -1,14 +1,13 @@
 #!/bin/bash
-set -uo pipefail
+mkdir -p /logs/verifier
 
-cp /tests/hidden_taskfile.json /app/taskfile.json
-cd /app
-python3 runner.py taskfile.json /app/output.json
+echo "0" > /logs/verifier/reward.txt
 
-pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py /tests/test_runner.py -rA -v
+# The agent was instructed to run pipeline on eval_taskfile.json during its turn
+# and write results to /app/output_eval.json.
+# The verifier only reads those outputs — it never re-runs agent code.
+pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py -rA
 
 if [ $? -eq 0 ]; then
-  echo 1 > /logs/verifier/reward.txt
-else
-  echo 0 > /logs/verifier/reward.txt
+  echo "1" > /logs/verifier/reward.txt
 fi

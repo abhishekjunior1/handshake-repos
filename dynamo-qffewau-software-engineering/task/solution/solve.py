@@ -78,7 +78,7 @@ def fix_executor_retry():
 def run_pipeline():
     """Run the pipeline to generate output."""
     result = subprocess.run(
-        [sys.executable, "/app/runner.py", "/app/taskfile.json", "/app/output.json"],
+        [sys.executable, "/app/runner.py", "/app/eval_taskfile.json", "/app/output_eval.json"],
         cwd="/app",
         capture_output=True,
         text=True,
