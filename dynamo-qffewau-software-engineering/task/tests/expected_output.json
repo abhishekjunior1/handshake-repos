@@ -234,17 +234,5 @@
       ],
       "exit_code": 0
     }
-  },
-  "duration_ms": 428.11,
-  "timings": {
-    "init": 3.99,
-    "fetch-config": 1.16,
-    "fetch-schemas": 1.56,
-    "validate": 1.66,
-    "setup-env": 105.67,
-    "build-worker": 54.99,
-    "build-gateway": 157.02,
-    "build-api": 305.51,
-    "package": 7.57
   }
 }

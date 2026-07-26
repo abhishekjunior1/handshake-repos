@@ -126,30 +126,6 @@
       ],
       "exit_code": 0
     },
-    "deploy-auth": {
-      "status": "success",
-      "commands": [
-        {
-          "command": "mkdir -p /app/workspace/deploy/services/auth",
-          "exit_code": 0,
-          "stdout": "",
-          "stderr": ""
-        },
-        {
-          "command": "sleep 0.25",
-          "exit_code": 0,
-          "stdout": "",
-          "stderr": ""
-        },
-        {
-          "command": "echo 'auth-service deployed' > /app/workspace/deploy/services/auth/auth.out",
-          "exit_code": 0,
-          "stdout": "",
-          "stderr": ""
-        }
-      ],
-      "exit_code": 0
-    },
     "deploy-backend": {
       "status": "success",
       "commands": [
@@ -198,6 +174,30 @@
       ],
       "exit_code": 0
     },
+    "deploy-auth": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/deploy/services/auth",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "sleep 0.25",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'auth-service deployed' > /app/workspace/deploy/services/auth/auth.out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
     "finalize": {
       "status": "success",
       "commands": [
@@ -234,17 +234,5 @@
       ],
       "exit_code": 0
     }
-  },
-  "duration_ms": 398.44,
-  "timings": {
-    "bootstrap": 3.12,
-    "load-secrets": 1.08,
-    "provision-infra": 1.44,
-    "validate-infra": 1.52,
-    "configure-runtime": 98.33,
-    "deploy-backend": 102.17,
-    "deploy-proxy": 202.88,
-    "deploy-auth": 252.61,
-    "finalize": 6.83
   }
 }
