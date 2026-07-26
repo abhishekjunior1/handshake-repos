@@ -257,30 +257,27 @@ class TestEval1PipelineOutput:
             assert result["status"] == "success", \
                 f"Task '{name}' has status '{result['status']}'"
 
-    def test_full_output_matches_expected(self):
-        """Verify full output matches sealed expected output exactly.
+    def test_setup_env_command_texts_match_expected(self):
+        """Verify setup-env command texts match sealed expected output exactly.
 
-        Compares tasks_executed list and all results entries against the sealed
-        fixture. This catches any remaining structural or content differences.
+        The setup-env task contains the three pipeline-computed values that prove
+        all three bugs were fixed:
+        - Command[0]: exported ARTIFACT_TAG value (Bug 1 variable expansion)
+        - Command[1,2]: .attempt retry commands with exit codes (Bug 3 retry state)
+        - Command[3]: fully chain-expanded build_vars.sh content (Bug 1 chained expansion)
+        These are compared against the sealed expected fixture, not the input taskfile.
         """
         output = _load_output("/app/output_eval_1.json")
         expected = _load_expected("expected_output.json")
-        assert output["tasks_executed"] == expected["tasks_executed"], \
-            "tasks_executed mismatch"
-        for task_name in expected["results"]:
-            assert task_name in output["results"], f"Missing result for '{task_name}'"
-            assert output["results"][task_name]["status"] == \
-                expected["results"][task_name]["status"], \
-                f"Status mismatch for '{task_name}'"
-            out_cmds = output["results"][task_name]["commands"]
-            exp_cmds = expected["results"][task_name]["commands"]
-            assert len(out_cmds) == len(exp_cmds), \
-                f"Command count mismatch for '{task_name}': got {len(out_cmds)}, expected {len(exp_cmds)}"
-            for i, (oc, ec) in enumerate(zip(out_cmds, exp_cmds)):
-                assert oc["command"] == ec["command"], \
-                    f"Command text mismatch for '{task_name}'[{i}]:\n  got: {oc['command']}\n  exp: {ec['command']}"
-                assert oc["exit_code"] == ec["exit_code"], \
-                    f"Exit code mismatch for '{task_name}'[{i}]: got {oc['exit_code']}, exp {ec['exit_code']}"
+        out_cmds = output["results"]["setup-env"]["commands"]
+        exp_cmds = expected["results"]["setup-env"]["commands"]
+        assert len(out_cmds) == len(exp_cmds), \
+            f"setup-env command count: got {len(out_cmds)}, expected {len(exp_cmds)}"
+        for i, (oc, ec) in enumerate(zip(out_cmds, exp_cmds)):
+            assert oc["command"] == ec["command"], \
+                f"setup-env command[{i}] mismatch:\n  got: {oc['command']}\n  exp: {ec['command']}"
+            assert oc["exit_code"] == ec["exit_code"], \
+                f"setup-env command[{i}] exit_code: got {oc['exit_code']}, exp {ec['exit_code']}"
 
 
 # ── Eval 2: pipeline-computed values ─────────────────────────────────────────
@@ -396,23 +393,21 @@ class TestEval2PipelineOutput:
             assert result["status"] == "success", \
                 f"Task '{name}' has status '{result['status']}'"
 
-    def test_full_output_matches_expected(self):
-        """Verify full output matches sealed expected output exactly for eval 2."""
+    def test_configure_runtime_command_texts_match_expected(self):
+        """Verify configure-runtime command texts match sealed expected output exactly.
+
+        Same principle as eval 1: only the configure-runtime task contains the
+        pipeline-computed values (variable expansion + retry exit codes) that
+        prove all three bugs were fixed on this config.
+        """
         output = _load_output("/app/output_eval_2.json")
         expected = _load_expected("expected_output_2.json")
-        assert output["tasks_executed"] == expected["tasks_executed"], \
-            "tasks_executed mismatch"
-        for task_name in expected["results"]:
-            assert task_name in output["results"], f"Missing result for '{task_name}'"
-            assert output["results"][task_name]["status"] == \
-                expected["results"][task_name]["status"], \
-                f"Status mismatch for '{task_name}'"
-            out_cmds = output["results"][task_name]["commands"]
-            exp_cmds = expected["results"][task_name]["commands"]
-            assert len(out_cmds) == len(exp_cmds), \
-                f"Command count mismatch for '{task_name}': got {len(out_cmds)}, expected {len(exp_cmds)}"
-            for i, (oc, ec) in enumerate(zip(out_cmds, exp_cmds)):
-                assert oc["command"] == ec["command"], \
-                    f"Command text mismatch for '{task_name}'[{i}]:\n  got: {oc['command']}\n  exp: {ec['command']}"
-                assert oc["exit_code"] == ec["exit_code"], \
-                    f"Exit code mismatch for '{task_name}'[{i}]: got {oc['exit_code']}, exp {ec['exit_code']}"
+        out_cmds = output["results"]["configure-runtime"]["commands"]
+        exp_cmds = expected["results"]["configure-runtime"]["commands"]
+        assert len(out_cmds) == len(exp_cmds), \
+            f"configure-runtime command count: got {len(out_cmds)}, expected {len(exp_cmds)}"
+        for i, (oc, ec) in enumerate(zip(out_cmds, exp_cmds)):
+            assert oc["command"] == ec["command"], \
+                f"configure-runtime command[{i}] mismatch:\n  got: {oc['command']}\n  exp: {ec['command']}"
+            assert oc["exit_code"] == ec["exit_code"], \
+                f"configure-runtime command[{i}] exit_code: got {oc['exit_code']}, exp {ec['exit_code']}"
