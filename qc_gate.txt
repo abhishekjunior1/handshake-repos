@@ -1,0 +1,87 @@
+# QC_GATE QUICK REFERENCE — 30 Checks (July 2026)
+# For full patterns see ava_review.txt
+# ============================================================================
+
+## THE 5 FAMILIES
+
+### A · Oracle Correctness (A1-A6)
+A1 Oracle fails its own verifier — run harbor oracle, confirm reward=1.0
+A2 Incomplete reference — solve.py must run pipeline and produce all artifacts
+A3 Hardcoded answer — solve.py must compute from agent-visible inputs, not bake in values
+A4 Oracle uses hidden access — oracle can only read /app/ files, nothing from tests/
+A5 Undocumented assumption — every constant/convention oracle relies on must be in instruction.md
+A6 Oracle edge-case ← COMMON FALSE POSITIVE (QC misreads files, see fix below)
+
+### B · Spec Coherence (B1-B6)
+B1 Ambiguous rule — pin the deciding convention (estimator, ordering, tie-break)
+B2 Internal contradiction — walk rules against actual shipped data
+B3 Missing definition — every graded field must be derivable from instruction.md + environment/
+B4 Undocumented requirement — if verifier enforces it, instruction.md must state it
+B5 Underdetermined — disclosed data must uniquely determine all graded outputs
+B6 Unstated data-anomaly ← CATCH-22 (see fix below)
+
+### C · Verifier Rigor (C1-C6)
+C1 Stub output accepted — test must fail if agent does nothing real
+C2 Over-permissive tolerance — exact match preferred; tolerance must reject wrong answers
+C3 Hardcodable — 2 structurally different eval configs prevent hardcoding
+C4 Truth from agent-writable inputs — never recompute expected from /app/ files
+C5 NaN/Infinity bypass — exact match on JSON numbers handles this automatically
+C6 Scoring mismatch — binary 0/1 reward matches instruction's "fix and produce outputs"
+
+### D · Fixtures & Determinism (D1-D5)
+D1 Degenerate fixture — visible metrics.json must NOT already produce correct output
+D2 Malformed fixture — verify all JSON files parse correctly before pushing
+D3 Build failure — pin all deps (pytest==8.4.1 pytest-json-ctrf==0.3.5)
+D4 Nondeterminism — no RNG, no time.time(), deterministic dict ordering (Python 3.7+)
+D5 Unseeded randomness — no random values at build time
+
+### E · Anti-Cheat (E1-E7)
+E1 Answers readable — Dockerfile COPY only data/, .dockerignore has solution tests
+E2 Input integrity — eval configs in /app/ (agent can modify but can't affect expected)
+E3 Reward exploit ← KEY: NEVER run pipeline in test.sh
+E4 Elevated access ← KEY: agent runs pipeline in agent phase, /tests/ not mounted then
+E5 Symlink ← ALWAYS add: assert not os.path.islink(path) + realpath check
+E6 Archive extraction — not applicable for most tasks
+E7 Copied oracle — solve.sh must actually run pipeline, not copy expected files
+
+## FIXES FOR THE COMMON ONES
+
+### A6 (false positive — QC confuses files):
+- Only plain JSON in tests/ — no Python files with output-shaped dicts
+- Never: conftest.py, expected_data.py with keys like rates/gauges/histograms
+- If still blocked: push a new commit to bust the stale QC cache
+
+### B6 (catch-22):
+- DON'T document the rule (kills essential_difficulty)
+- DO use 2 eval configs with different service/key structures
+- Hardcoding config 1's answer fails config 2's test → B6 resolved without disclosure
+
+### AVA sound_verifier (hardcoding concern — common after fixing E3/E4):
+- Add input-derivation test that reads /app/eval_config.json directly
+- Cross-check output fields against values derived from that specific config
+- Example:
+  ```python
+  def test_output_derived_from_input():
+      with open("/app/eval_config_1.json") as f:
+          config = json.load(f)
+      output = _load_output("/app/output_eval_1.json")
+      # Derive expected value from input:
+      version = config["tasks"]["setup-env"]["env"]["VERSION"]
+      # Verify output contains value that could only come from running on this input:
+      cmd = output["results"]["setup-env"]["commands"][...]
+      assert f"artifact={version}" in cmd
+  ```
+
+## PRE-PUSH CHECKLIST
+
+- [ ] test.sh NEVER runs pipeline — only pytest
+- [ ] test.sh uses echo "0" first, if/then at end (not set -e)
+- [ ] _load_output() has islink + realpath guard
+- [ ] test_outputs.py has at least one input-derivation test
+- [ ] Expected outputs are plain JSON in tests/ (no encoding)
+- [ ] Eval configs are in environment/data/ (agent-visible)
+- [ ] metrics.json is SIMPLE (single service, masks bugs, different from eval configs)
+- [ ] task.toml artifacts = ["/app/output_eval_1.json", "/app/output_eval_2.json"]
+- [ ] harbor oracle = 1.0 ✓
+- [ ] harbor nop = 0.0 ✓
+- [ ] buggy == fixed on visible data (exact match) ✓
