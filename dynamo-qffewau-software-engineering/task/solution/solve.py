@@ -76,18 +76,22 @@ def fix_executor_retry():
 
 
 def run_pipeline():
-    """Run the pipeline to generate output."""
-    result = subprocess.run(
-        [sys.executable, "/app/runner.py", "/app/eval_taskfile.json", "/app/output_eval.json"],
-        cwd="/app",
-        capture_output=True,
-        text=True,
-        timeout=60,
-    )
-    if result.returncode != 0:
-        print(f"Pipeline failed: {result.stderr}", file=sys.stderr)
-        sys.exit(1)
-    print("Pipeline completed successfully")
+    """Run the pipeline on both eval taskfiles to generate outputs."""
+    for taskfile, output in [
+        ("/app/eval_taskfile.json", "/app/output_eval_1.json"),
+        ("/app/eval_taskfile_2.json", "/app/output_eval_2.json"),
+    ]:
+        result = subprocess.run(
+            [sys.executable, "/app/runner.py", taskfile, output],
+            cwd="/app",
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        if result.returncode != 0:
+            print(f"Pipeline failed on {taskfile}: {result.stderr}", file=sys.stderr)
+            sys.exit(1)
+        print(f"Pipeline completed successfully: {taskfile} -> {output}")
 
 
 def main():

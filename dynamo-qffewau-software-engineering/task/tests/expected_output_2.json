@@ -1,0 +1,250 @@
+{
+  "success": true,
+  "tasks_executed": [
+    "bootstrap",
+    "load-secrets",
+    "provision-infra",
+    "validate-infra",
+    "configure-runtime",
+    "deploy-auth",
+    "deploy-backend",
+    "deploy-proxy",
+    "finalize"
+  ],
+  "results": {
+    "bootstrap": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/deploy/out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "mkdir -p /app/workspace/deploy/cache",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "mkdir -p /app/workspace/deploy/services",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "load-secrets": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "echo 'deploy_key=prod-9.1.0' > /app/workspace/deploy/cache/secrets.env",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'loaded' > /app/workspace/deploy/cache/.secrets_loaded",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "provision-infra": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/deploy/infra",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo '{\"region\": \"us-east-1\", \"tier\": \"production\"}' > /app/workspace/deploy/infra/config.json",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "validate-infra": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "cat /app/workspace/deploy/cache/secrets.env",
+          "exit_code": 0,
+          "stdout": "deploy_key=prod-9.1.0",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'infra_valid' > /app/workspace/deploy/out/infra_validated.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "configure-runtime": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "echo 'export RELEASE_TAG=deploy-9.1.0'",
+          "exit_code": 0,
+          "stdout": "export RELEASE_TAG=deploy-9.1.0",
+          "stderr": ""
+        },
+        {
+          "command": "test -f /app/workspace/deploy/cache/.lock || (touch /app/workspace/deploy/cache/.lock && exit 1)",
+          "exit_code": 1,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "test -f /app/workspace/deploy/cache/.lock || (touch /app/workspace/deploy/cache/.lock && exit 1)",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo \"release=9.1.0 tag=deploy-9.1.0\" > /app/workspace/deploy/cache/runtime.cfg",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'runtime_ready' > /app/workspace/deploy/cache/.runtime_configured",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "deploy-auth": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/deploy/services/auth",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "sleep 0.25",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'auth-service deployed' > /app/workspace/deploy/services/auth/auth.out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "deploy-backend": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/deploy/services/backend",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "sleep 0.1",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'backend-service deployed' > /app/workspace/deploy/services/backend/backend.out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "deploy-proxy": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "mkdir -p /app/workspace/deploy/services/proxy",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "sleep 0.2",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "echo 'proxy-service deployed' > /app/workspace/deploy/services/proxy/proxy.out",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    },
+    "finalize": {
+      "status": "success",
+      "commands": [
+        {
+          "command": "cat /app/workspace/deploy/services/auth/auth.out > /app/workspace/deploy/out/deploy_manifest.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "cat /app/workspace/deploy/services/backend/backend.out >> /app/workspace/deploy/out/deploy_manifest.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "cat /app/workspace/deploy/services/proxy/proxy.out >> /app/workspace/deploy/out/deploy_manifest.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "cat /app/workspace/deploy/infra/config.json >> /app/workspace/deploy/out/deploy_manifest.txt",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        {
+          "command": "tar czf /app/workspace/deploy/out/release.tar.gz -C /app/workspace/deploy/services .",
+          "exit_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      ],
+      "exit_code": 0
+    }
+  },
+  "duration_ms": 398.44,
+  "timings": {
+    "bootstrap": 3.12,
+    "load-secrets": 1.08,
+    "provision-infra": 1.44,
+    "validate-infra": 1.52,
+    "configure-runtime": 98.33,
+    "deploy-backend": 102.17,
+    "deploy-proxy": 202.88,
+    "deploy-auth": 252.61,
+    "finalize": 6.83
+  }
+}

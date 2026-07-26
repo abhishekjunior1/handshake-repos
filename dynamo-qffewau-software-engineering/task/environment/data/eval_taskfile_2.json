@@ -1,0 +1,180 @@
+{
+  "metadata": {
+    "name": "deploy-pipeline",
+    "version": "1.5.0",
+    "description": "Multi-stage deployment pipeline with service provisioning and parallel deployments"
+  },
+  "settings": {
+    "parallelism": 3,
+    "retry_policy": "preserve_state"
+  },
+  "tasks": {
+    "bootstrap": {
+      "description": "Bootstrap deployment directories",
+      "commands": [
+        "mkdir -p /app/workspace/deploy/out",
+        "mkdir -p /app/workspace/deploy/cache",
+        "mkdir -p /app/workspace/deploy/services"
+      ],
+      "dependencies": [],
+      "priority": 5,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app",
+      "conditions": {}
+    },
+    "load-secrets": {
+      "description": "Load deployment secrets and credentials",
+      "commands": [
+        "echo 'deploy_key=prod-9.1.0' > /app/workspace/deploy/cache/secrets.env",
+        "echo 'loaded' > /app/workspace/deploy/cache/.secrets_loaded"
+      ],
+      "dependencies": ["bootstrap"],
+      "priority": 8,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app/workspace/deploy",
+      "conditions": {}
+    },
+    "provision-infra": {
+      "description": "Provision infrastructure resources",
+      "commands": [
+        "mkdir -p /app/workspace/deploy/infra",
+        "echo '{\"region\": \"us-east-1\", \"tier\": \"production\"}' > /app/workspace/deploy/infra/config.json"
+      ],
+      "dependencies": ["bootstrap"],
+      "priority": 12,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app/workspace/deploy",
+      "conditions": {}
+    },
+    "validate-infra": {
+      "description": "Validate infrastructure configuration",
+      "commands": [
+        "cat /app/workspace/deploy/cache/secrets.env",
+        "echo 'infra_valid' > /app/workspace/deploy/out/infra_validated.txt"
+      ],
+      "dependencies": ["load-secrets"],
+      "priority": 10,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app/workspace/deploy",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "cache/secrets.env"}
+        ]
+      }
+    },
+    "configure-runtime": {
+      "description": "Configure runtime environment with version pinning",
+      "commands": [
+        "echo 'export RELEASE_TAG=deploy-9.1.0'",
+        "test -f /app/workspace/deploy/cache/.lock || (touch /app/workspace/deploy/cache/.lock && exit 1)",
+        "echo \"${DEPLOY_MANIFEST}\" > /app/workspace/deploy/cache/runtime.cfg",
+        "echo 'runtime_ready' > /app/workspace/deploy/cache/.runtime_configured"
+      ],
+      "dependencies": ["validate-infra"],
+      "priority": 15,
+      "retries": 2,
+      "env": {
+        "STAGE": "configure",
+        "CACHE_DIR": "/app/workspace/deploy/cache",
+        "VERSION": "9.1.0",
+        "DEPLOY_MANIFEST": "release=$VERSION tag=$RELEASE_TAG"
+      },
+      "workdir": "/app/workspace/deploy",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "out/infra_validated.txt"}
+        ]
+      }
+    },
+    "deploy-auth": {
+      "description": "Deploy authentication service",
+      "commands": [
+        "mkdir -p ${SVC_DIR}",
+        "sleep 0.25",
+        "echo 'auth-service deployed' > ${SVC_DIR}/auth.out"
+      ],
+      "dependencies": ["configure-runtime"],
+      "priority": 10,
+      "retries": 0,
+      "env": {
+        "SVC_DIR": "/app/workspace/deploy/services/auth"
+      },
+      "workdir": "/app/workspace/deploy",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "cache/.runtime_configured"}
+        ]
+      }
+    },
+    "deploy-backend": {
+      "description": "Deploy backend service",
+      "commands": [
+        "mkdir -p ${SVC_DIR}",
+        "sleep 0.1",
+        "echo 'backend-service deployed' > ${SVC_DIR}/backend.out"
+      ],
+      "dependencies": ["configure-runtime"],
+      "priority": 5,
+      "retries": 0,
+      "env": {
+        "SVC_DIR": "/app/workspace/deploy/services/backend"
+      },
+      "workdir": "/app/workspace/deploy",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "cache/.runtime_configured"}
+        ]
+      }
+    },
+    "deploy-proxy": {
+      "description": "Deploy reverse proxy service",
+      "commands": [
+        "mkdir -p ${SVC_DIR}",
+        "sleep 0.2",
+        "echo 'proxy-service deployed' > ${SVC_DIR}/proxy.out"
+      ],
+      "dependencies": ["configure-runtime"],
+      "priority": 8,
+      "retries": 0,
+      "env": {
+        "SVC_DIR": "/app/workspace/deploy/services/proxy"
+      },
+      "workdir": "/app/workspace/deploy",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "cache/.runtime_configured"}
+        ]
+      }
+    },
+    "finalize": {
+      "description": "Finalize deployment and create release manifest",
+      "commands": [
+        "cat /app/workspace/deploy/services/auth/auth.out > /app/workspace/deploy/out/deploy_manifest.txt",
+        "cat /app/workspace/deploy/services/backend/backend.out >> /app/workspace/deploy/out/deploy_manifest.txt",
+        "cat /app/workspace/deploy/services/proxy/proxy.out >> /app/workspace/deploy/out/deploy_manifest.txt",
+        "cat /app/workspace/deploy/infra/config.json >> /app/workspace/deploy/out/deploy_manifest.txt",
+        "tar czf /app/workspace/deploy/out/release.tar.gz -C /app/workspace/deploy/services ."
+      ],
+      "dependencies": ["deploy-auth", "deploy-backend", "deploy-proxy", "provision-infra"],
+      "priority": 20,
+      "retries": 0,
+      "env": {},
+      "workdir": "/app/workspace/deploy",
+      "conditions": {
+        "pre": [
+          {"type": "file_exists", "path": "services/auth/auth.out"},
+          {"type": "file_exists", "path": "services/backend/backend.out"},
+          {"type": "file_exists", "path": "services/proxy/proxy.out"},
+          {"type": "file_exists", "path": "infra/config.json"}
+        ],
+        "post": [
+          {"type": "file_exists", "path": "out/release.tar.gz"}
+        ]
+      }
+    }
+  }
+}
