@@ -222,3 +222,52 @@ def test_no_failed_tasks(output):
         assert result["status"] == "success", (
             f"Task '{task_name}' has status '{result['status']}'"
         )
+
+
+def test_output_derived_from_eval_taskfile():
+    """Verify output was computed from running the fixed pipeline on eval_taskfile.json.
+
+    This test reads the eval taskfile directly and cross-checks that the output
+    contains values that can only be produced by running the fixed pipeline on
+    this specific input. An agent that hardcodes the output file without running
+    the pipeline cannot pass this test without also correctly deriving these values.
+
+    Specifically: setup-env's DEPLOY_TEMPLATE uses VERSION and ARTIFACT_TAG env vars.
+    The fixed pipeline must two-pass expand these to produce artifact=3.2.1 and
+    tag=release-3.2.1 in the build_vars.sh command.
+    """
+    with open("/app/eval_taskfile.json", "r") as f:
+        taskfile = json.load(f)
+
+    # Verify we're testing the right taskfile
+    setup_env = taskfile.get("tasks", {}).get("setup-env", {})
+    env = setup_env.get("env", {})
+    version = env.get("VERSION")
+    template = env.get("DEPLOY_TEMPLATE")
+
+    assert version is not None, "eval_taskfile.json must have setup-env.env.VERSION"
+    assert template is not None, "eval_taskfile.json must have setup-env.env.DEPLOY_TEMPLATE"
+
+    # Derive expected values from the taskfile
+    # VERSION=3.2.1 → ARTIFACT_TAG=release-3.2.1 (set by export in setup-env commands)
+    # DEPLOY_TEMPLATE='artifact=$VERSION tag=$ARTIFACT_TAG' → two-pass expansion
+    expected_version_in_output = version  # e.g., "3.2.1"
+    expected_tag = f"release-{version}"  # e.g., "release-3.2.1"
+
+    # Load actual output and verify it contains values derived from this taskfile
+    output = _load_output(OUTPUT_PATH)
+    result = output["results"]["setup-env"]
+    commands = result.get("commands", [])
+    build_vars_cmds = [c for c in commands if "build_vars.sh" in c.get("command", "")]
+
+    assert len(build_vars_cmds) > 0, "setup-env must produce a build_vars.sh command"
+    cmd = build_vars_cmds[0]["command"]
+
+    assert f"artifact={expected_version_in_output}" in cmd, (
+        f"build_vars.sh command must contain 'artifact={expected_version_in_output}' "
+        f"(derived from VERSION={version} in eval_taskfile.json), got: {cmd}"
+    )
+    assert f"tag={expected_tag}" in cmd, (
+        f"build_vars.sh command must contain 'tag={expected_tag}' "
+        f"(derived from ARTIFACT_TAG=release-{version}), got: {cmd}"
+    )
