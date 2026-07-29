@@ -1,0 +1,114 @@
+{
+  "test_suite": "smoke_tests",
+  "runs": [
+    {
+      "run_id": "s1",
+      "timestamp": "2024-05-01T08:00:00",
+      "environment": "dev_local",
+      "results": [
+        {
+          "test_id": "test_boot_sequence",
+          "status": "passed",
+          "duration_ms": 200,
+          "error_type": null
+        },
+        {
+          "test_id": "test_config_load",
+          "status": "failed",
+          "duration_ms": 50,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "test_health_check",
+          "status": "passed",
+          "duration_ms": 30,
+          "error_type": null
+        }
+      ]
+    },
+    {
+      "run_id": "s2",
+      "timestamp": "2024-05-02T08:00:00",
+      "environment": "ci_ubuntu",
+      "results": [
+        {
+          "test_id": "test_boot_sequence",
+          "status": "passed",
+          "duration_ms": 180,
+          "error_type": null
+        },
+        {
+          "test_id": "test_config_load",
+          "status": "passed",
+          "duration_ms": 45,
+          "error_type": null
+        },
+        {
+          "test_id": "test_health_check",
+          "status": "passed",
+          "duration_ms": 28,
+          "error_type": null
+        }
+      ]
+    },
+    {
+      "run_id": "s3",
+      "timestamp": "2024-05-03T08:00:00",
+      "environment": "dev_local",
+      "results": [
+        {
+          "test_id": "test_boot_sequence",
+          "status": "passed",
+          "duration_ms": 210,
+          "error_type": null
+        },
+        {
+          "test_id": "test_config_load",
+          "status": "failed",
+          "duration_ms": 55,
+          "error_type": "assertion"
+        },
+        {
+          "test_id": "test_health_check",
+          "status": "passed",
+          "duration_ms": 32,
+          "error_type": null
+        }
+      ]
+    },
+    {
+      "run_id": "s4",
+      "timestamp": "2024-05-04T08:00:00",
+      "environment": "ci_ubuntu",
+      "results": [
+        {
+          "test_id": "test_boot_sequence",
+          "status": "passed",
+          "duration_ms": 190,
+          "error_type": null
+        },
+        {
+          "test_id": "test_config_load",
+          "status": "passed",
+          "duration_ms": 48,
+          "error_type": null
+        },
+        {
+          "test_id": "test_health_check",
+          "status": "passed",
+          "duration_ms": 29,
+          "error_type": null
+        }
+      ]
+    }
+  ],
+  "config": {
+    "decay_factor": 0.75,
+    "window_size": 2,
+    "correlation_threshold": 0.6,
+    "flip_rate_threshold": 0.3,
+    "timing_cv_threshold": 0.4,
+    "deterministic_threshold": 0.8,
+    "confidence_method": "harmonic"
+  }
+}

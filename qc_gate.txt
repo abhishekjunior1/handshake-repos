@@ -1,87 +1,847 @@
-# QC_GATE QUICK REFERENCE — 30 Checks (July 2026)
-# For full patterns see ava_review.txt
+# QC_GATE LEARNINGS — Task Soundness Check (July 23-24, 2026)
+# Reference: dynamo-f1c8db0 (log monitoring), dynamo-782c53b, dynamo-3e0e605
 # ============================================================================
 
-## THE 5 FAMILIES
+## WHAT IS QC_GATE?
+The new automated Task Soundness check that replaced/supplements old AVA.
+- Runs AFTER pass2, BEFORE trials
+- Components: qc_eval (LLM static, ~8-13 min) + qc_exec (execution probes, ~3-8 min)
+- Both must PASS for qc_gate to pass → if either fails, gate blocks
+- If qc_gate fails, trials are skipped
 
-### A · Oracle Correctness (A1-A6)
-A1 Oracle fails its own verifier — run harbor oracle, confirm reward=1.0
-A2 Incomplete reference — solve.py must run pipeline and produce all artifacts
-A3 Hardcoded answer — solve.py must compute from agent-visible inputs, not bake in values
-A4 Oracle uses hidden access — oracle can only read /app/ files, nothing from tests/
-A5 Undocumented assumption — every constant/convention oracle relies on must be in instruction.md
-A6 Oracle edge-case ← COMMON FALSE POSITIVE (QC misreads files, see fix below)
+## THE 30 CHECKS (5 FAMILIES)
 
-### B · Spec Coherence (B1-B6)
-B1 Ambiguous rule — pin the deciding convention (estimator, ordering, tie-break)
-B2 Internal contradiction — walk rules against actual shipped data
-B3 Missing definition — every graded field must be derivable from instruction.md + environment/
-B4 Undocumented requirement — if verifier enforces it, instruction.md must state it
-B5 Underdetermined — disclosed data must uniquely determine all graded outputs
-B6 Unstated data-anomaly ← CATCH-22 (see fix below)
+### A · Oracle Correctness
+- A1: Oracle fails its own verifier
+- A2: Incomplete reference solution
+- A3: Hardcoded answer in reference
+- A4: Oracle relies on hidden/privileged access
+- A5: Oracle undocumented assumption
+- A6: Oracle edge-case or logic bug ← MOST COMMON FALSE POSITIVE
 
-### C · Verifier Rigor (C1-C6)
-C1 Stub output accepted — test must fail if agent does nothing real
-C2 Over-permissive tolerance — exact match preferred; tolerance must reject wrong answers
-C3 Hardcodable — 2 structurally different eval configs prevent hardcoding
-C4 Truth from agent-writable inputs — never recompute expected from /app/ files
-C5 NaN/Infinity bypass — exact match on JSON numbers handles this automatically
-C6 Scoring mismatch — binary 0/1 reward matches instruction's "fix and produce outputs"
+### B · Spec Coherence
+- B1: Ambiguous rule
+- B2: Internal contradiction
+- B3: Missing definition/field/data
+- B4: Undocumented requirement enforced
+- B5: Underdetermined mapping
+- B6: Unstated data-anomaly / selection policy ← COMMON CATCH-22
 
-### D · Fixtures & Determinism (D1-D5)
-D1 Degenerate fixture — visible metrics.json must NOT already produce correct output
-D2 Malformed fixture — verify all JSON files parse correctly before pushing
-D3 Build failure — pin all deps (pytest==8.4.1 pytest-json-ctrf==0.3.5)
-D4 Nondeterminism — no RNG, no time.time(), deterministic dict ordering (Python 3.7+)
-D5 Unseeded randomness — no random values at build time
+### C · Verifier Rigor
+- C1: Stub output accepted
+- C2: Over-permissive tolerance
+- C3: Hardcodable coverage
+- C4: Truth recomputed from agent-writable inputs
+- C5: NaN/Infinity bypass
+- C6: Scoring contract mismatch
 
-### E · Anti-Cheat (E1-E7)
-E1 Answers readable — Dockerfile COPY only data/, .dockerignore has solution tests
-E2 Input integrity — eval configs in /app/ (agent can modify but can't affect expected)
-E3 Reward exploit ← KEY: NEVER run pipeline in test.sh
-E4 Elevated access ← KEY: agent runs pipeline in agent phase, /tests/ not mounted then
-E5 Symlink ← ALWAYS add: assert not os.path.islink(path) + realpath check
-E6 Archive extraction — not applicable for most tasks
-E7 Copied oracle — solve.sh must actually run pipeline, not copy expected files
+### D · Fixtures & Determinism
+- D1: Degenerate test fixture
+- D2: Malformed/unparseable fixture
+- D3: Environment build failure
+- D4: Nondeterminism
+- D5: Unseeded build-time randomness
 
-## FIXES FOR THE COMMON ONES
+### E · Anti-Cheat & Isolation
+- E1: Oracle/answers readable by agent
+- E2: Immutable-input integrity not enforced
+- E3: Reward/harness plumbing exploit ← KEY ISSUE
+- E4: Root/elevated access exposes secrets ← KEY ISSUE
+- E5: Symlinked output path ← COMMON ISSUE
+- E6: Unsafe archive extraction
+- E7: Non-self-contained deliverable
 
-### A6 (false positive — QC confuses files):
-- Only plain JSON in tests/ — no Python files with output-shaped dicts
-- Never: conftest.py, expected_data.py with keys like rates/gauges/histograms
-- If still blocked: push a new commit to bust the stale QC cache
+## THE PROVEN PASSING PATTERN
 
-### B6 (catch-22):
-- DON'T document the rule (kills essential_difficulty)
-- DO use 2 eval configs with different service/key structures
-- Hardcoding config 1's answer fails config 2's test → B6 resolved without disclosure
+### test.sh (copy exactly):
+```bash
+#!/bin/bash
+mkdir -p /logs/verifier
 
-### AVA sound_verifier (hardcoding concern — common after fixing E3/E4):
-- Add input-derivation test that reads /app/eval_config.json directly
-- Cross-check output fields against values derived from that specific config
-- Example:
+echo "0" > /logs/verifier/reward.txt
+
+# Agent was instructed to run pipeline on eval configs during its turn.
+# Verifier only reads pre-existing outputs — never re-runs agent code.
+pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py -rA
+
+if [ $? -eq 0 ]; then
+  echo "1" > /logs/verifier/reward.txt
+else
+  echo "0" > /logs/verifier/reward.txt
+fi
+```
+
+### instruction.md must include:
+```
+After fixing, run the pipeline on the evaluation configurations:
+
+    python3 /app/pipeline.py /app/eval_config_1.json /app/output_eval_1.json
+    python3 /app/pipeline.py /app/eval_config_2.json /app/output_eval_2.json
+```
+
+### test_outputs.py pattern:
+```python
+import json, os
+TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def _load_output(path):
+    """Load output with symlink protection."""
+    assert os.path.exists(path), f"Output not found: {path}"
+    assert not os.path.islink(path), f"Must not be a symlink: {path}"
+    real_path = os.path.realpath(path)
+    assert real_path.startswith("/app/"), f"Escapes /app: {real_path}"
+    with open(path) as f:
+        return json.load(f)
+
+def _load_expected(filename):
+    """Load expected from sealed fixtures."""
+    with open(os.path.join(TESTS_DIR, filename)) as f:
+        return json.load(f)
+```
+
+### File structure:
+```
+environment/data/
+  pipeline.py, modules...
+  metrics.json           ← simple visible data (masks bugs)
+  eval_config_1.json     ← agent-visible, triggers bugs
+  eval_config_2.json     ← agent-visible, different structure
+
+tests/
+  expected_output_1.json ← plain JSON (no encoding)
+  expected_output_2.json ← plain JSON (no encoding)
+  test_outputs.py
+  test.sh
+
+task.toml:
+  artifacts = ["/app/output_eval_1.json", "/app/output_eval_2.json"]
+```
+
+## HOW TO PASS EACH COMMON CHECK
+
+### A6 (Oracle Edge-Case) — usually FALSE POSITIVE
+- QC scans /tests/ and confuses output-shaped files with input files
+- Fix: ONLY plain JSON expected outputs in /tests/ — no Python files with output-shaped dicts
+- Never: conftest.py, expected_data.py with keys like rates/gauges/histograms in /tests/
+- If still failing: rename files (hidden_config → hidden_input) or push new commit to bust cache
+
+### B6 (Unstated Data Anomaly) — CATCH-22 with rubric
+- Document it → rubric fails "essential_difficulty" (reveals bug fix)
+- Don't document → QC flags B6 (unstated anomaly)
+- SOLUTION: Use 2 structurally DIFFERENT eval configs (different services/keys)
+  so hardcoding one config's answer fails the other → no need to document
+
+### E3 (Reward Exploit):
+- Fix: NEVER run pipeline.py in test.sh
+
+### E4 (Root/Elevated Access):
+- Fix: Agent runs pipeline in agent phase; /tests/ not mounted then
+- Expected outputs in /tests/ are safe with new architecture
+
+### E5 (Symlink):
+- Fix: Add to test_outputs.py:
   ```python
-  def test_output_derived_from_input():
-      with open("/app/eval_config_1.json") as f:
-          config = json.load(f)
-      output = _load_output("/app/output_eval_1.json")
-      # Derive expected value from input:
-      version = config["tasks"]["setup-env"]["env"]["VERSION"]
-      # Verify output contains value that could only come from running on this input:
-      cmd = output["results"]["setup-env"]["commands"][...]
-      assert f"artifact={version}" in cmd
+  assert not os.path.islink(path)
+  assert os.path.realpath(path).startswith("/app/")
   ```
 
-## PRE-PUSH CHECKLIST
+### AVA sound_verifier (hardcoding concern):
+- Fix: Add input-derivation tests that READ FROM EVAL CONFIG and check
+  a field that would differ if wrong config was used:
+  ```python
+  def test_output_1_from_config_1(self):
+      with open("/app/eval_config_1.json") as f:
+          config = json.load(f)
+      assert config["function_name"] == "expected_name"
+      output = _load_output("/app/output_eval_1.json")
+      assert output["some_field"] == expected_value_for_this_config
+  ```
 
-- [ ] test.sh NEVER runs pipeline — only pytest
-- [ ] test.sh uses echo "0" first, if/then at end (not set -e)
-- [ ] _load_output() has islink + realpath guard
-- [ ] test_outputs.py has at least one input-derivation test
-- [ ] Expected outputs are plain JSON in tests/ (no encoding)
-- [ ] Eval configs are in environment/data/ (agent-visible)
-- [ ] metrics.json is SIMPLE (single service, masks bugs, different from eval configs)
-- [ ] task.toml artifacts = ["/app/output_eval_1.json", "/app/output_eval_2.json"]
-- [ ] harbor oracle = 1.0 ✓
-- [ ] harbor nop = 0.0 ✓
-- [ ] buggy == fixed on visible data (exact match) ✓
+## COMMON FAILURE MODES WE HIT
+
+| Failure | Root Cause | Fix |
+|---------|-----------|-----|
+| qc_eval times out (1hr) | base64-encoded expected outputs | Use plain JSON |
+| A6 false positive | conftest.py with output-shaped dicts | Use plain JSON files only |
+| A6 false positive | metrics.json overwritten with hidden data | Keep metrics.json simple |
+| B6 + rubric contradiction | Documenting bug fix kills difficulty | Use 2 different eval configs |
+| E3 + E4 | Old pattern runs pipeline at verify | Never run pipeline in test.sh |
+| QC stuck on old code | Cached base commit | Push new commit to bust cache |
+| stale numbers in task.toml | Changed hidden data without updating | Regenerate numbers always |
+
+## OLD vs NEW PATTERN COMPARISON
+
+| Aspect | OLD (pre-July-23) | NEW (current) |
+|--------|-------------------|---------------|
+| test.sh | set -e + python3 pipeline.py | Only pytest, no pipeline |
+| Reward | echo "0.0" first, "1.0" last | echo "0" first, if/then |
+| set -e | Required | NOT used |
+| Agent code at verify | Runs pipeline | Never runs |
+| Eval configs | In /tests/ (hidden) | In /app/ (agent-visible) |
+| Expected outputs | Plain JSON in /tests/ | Same (plain JSON) |
+| Agent runs pipeline | Verifier re-runs it | Agent self-runs in agent phase |
+
+## REFERENCE REPOS (all pass qc_gate):
+- dynamo-782c53b-software-engineering (Software Eng / Compilers)
+- dynamo-3e0e605-data-science-and-reporting (Data Science)
+- dynamo-f1c8db0-systems-infrastructure-and-operations (Systems Infra)
+
+
+## DYNAMO-C4752DB LEARNINGS (July 26, 2026) — Streaming ETL / Event Stream Aggregation
+
+### Task: dynamo-c4752db-data-processing-and-etl
+### Result: qc_gate PASS, trials running (run 5)
+### Runs to get here: 5 pushes
+
+---
+
+### WHAT FAILED AND HOW WE FIXED IT
+
+#### Run 1 — review FAIL (stale metadata)
+- task.toml difficulty_explanation described `_get_population_size()` and `prev_wid` — functions that didn't exist in actual pipeline.py
+- task.toml solution_explanation described patches that didn't match solve.py
+- Fix: rewrite all 3 explanations to match ACTUAL code after finalizing pipeline
+- LESSON: ALWAYS write task.toml metadata LAST, after code is finalized. Never copy from an earlier design iteration.
+
+#### Run 2 — review FAIL (misleading comment → unambiguous FAIL)
+- pipeline.py had comment: "Raw event volume reflects true sensor load for rate estimation, independent of semantic deduplication which applies to alert triggering only."
+- Comment directly contradicted correct code behavior (code used deduped_events, not raw)
+- instruction.md never disclosed what `mean_value` actually computed (non-standard cumulative denominator)
+- Fix: removed misleading comment + added disclosure to instruction.md about cumulative denominator behavior
+- LESSON: ANY comment in pipeline.py that describes what a parameter "should be" must match what the code actually does. If the comment justifies the BUG, it creates a spec contradiction.
+
+#### Run 3 — AVA FAIL (string sort of window IDs)
+- `window_ids = sorted(windowed_events.keys())` — string sort
+- AVA flagged: for window IDs like "9" and "16", string sort ≠ integer sort → coverage gap
+- Fix: `window_ids = sorted(windowed_events.keys(), key=int)`
+- Also restructured test_outputs.py to class-based tests matching reference repo pattern
+- Added explicit `window_id` order assertion
+- Added explicit `else` branch to test.sh
+- Fixed `TESTS_DIR = "/tests"` → `TESTS_DIR = os.path.dirname(os.path.abspath(__file__))`
+- LESSON: Always sort integer-derived keys with `key=int`. String sort works for same-width keys but AVA reasons about the general case.
+
+#### Run 4 — deep_review FAIL (no_contradictions + decisive_answer_discoverable)
+- Same root cause as Run 2: the "Raw event volume" comment remained somewhere in the code
+- Also: rate computation convention undisclosed (instruction only named IQR and mean_value as intentional)
+- Fix: removed the comment completely (3 lines deleted)
+- LESSON: Search ALL comments in pipeline.py for any text that says "raw", "original", or describes the wrong behavior. If it's a comment near a bug, it's a contradiction.
+
+#### Run 5 — pass2 FAIL (undisclosed baseline convention → task/verifier issue)
+- One agent correctly fixed both bugs, then additionally changed `baseline=global_baseline` to leave-one-out baseline
+- Leave-one-out IS a valid statistical practice for anomaly detection (avoid self-contamination)
+- instruction.md never stated which baseline convention to use
+- Result: 1/2 solved, but classified as task/verifier issue (not valid failure)
+- Fix: added to instruction.md: "Anomaly scoring uses a self-inclusive global baseline — all windows' rate statistics are used as the baseline when scoring each window."
+- LESSON: For any computation where multiple valid implementations exist (leave-one-out vs self-inclusive, sample vs population variance, etc.), instruction.md MUST state which convention is required. The pass2 analysis will flag it as a task/verifier issue if not disclosed.
+
+---
+
+### THE PATTERN THAT FINALLY PASSED (run 5)
+
+#### instruction.md key additions beyond base template:
+```
+The pipeline uses IQR-based outlier capping on all events before windowing, 
+and it computes mean_value per window by dividing the sum of deduped event 
+values by a running count that accumulates deduped event totals across windows. 
+Anomaly scoring uses a self-inclusive global baseline — all windows' rate 
+statistics are used as the baseline when scoring each window. 
+These are intentional behaviors that must be preserved.
+```
+
+#### test_outputs.py structure that passed AVA + deep_review + qc_gate:
+- Class-based tests (not just flat functions) — matches reference repo dynamo-3e0e605
+- Per-field granular assertions (dedup_counts, mean_values, anomaly_scores) BEFORE full equality
+- `test_window_ids_order` — asserts window IDs appear in correct integer order
+- `TESTS_DIR = os.path.dirname(os.path.abspath(__file__))` — not hardcoded "/tests"
+- Symlink guard with `os.path.islink` + `os.path.realpath(...).startswith("/app/")`
+- All test functions/methods have docstrings
+
+#### pipeline.py hygiene:
+- `sorted(windowed_events.keys(), key=int)` — always integer sort
+- NO comments near bugs that describe the "wrong" behavior as correct
+- NO comments that say "raw event count" or "volume" near dedup-related code
+- Comment justifying Bug 2 (EMA) is fine as long as it doesn't contradict instruction.md
+
+---
+
+### pass2 ANALYSIS INTERPRETATION (what counts as valid failure)
+- `approach_validity: PASS` = agent's failure was a genuine miss, not a spec gap → VALID FAILURE
+- `approach_validity: FAIL` = agent found a principled alternative that spec didn't forbid → NOT VALID
+- `decisive_rule_disclosed: FAIL` = convention not in instruction.md → task/verifier issue, not agent failure
+- `spec_consistency: FAIL` = agent followed a comment/doc that contradicted correct behavior → task fault
+- Need at least 1 valid failure (approach_validity PASS + reward 0) to pass pass2
+
+### WHAT MAKES A VALID AGENT FAILURE (from trials analysis)
+- Agent couldn't find the bug after reading all code (analytical paralysis) ✅ valid
+- Agent found the bug but implemented fix incorrectly ✅ valid  
+- Agent was misled by a misleading comment into breaking correct code ❌ NOT valid (task fault)
+- Agent applied a textbook alternative that spec didn't forbid ❌ NOT valid (task fault)
+- Agent timed out without making edits ❌ NOT valid (not a competence signal)
+
+### REFERENCE: dynamo-c4752db-data-processing-and-etl (July 2026)
+- Category: data_processing_and_etl / streaming_data_processing
+- 7 modules, 2 bugs in pipeline.py (effective_count denominator + EMA smoothing)
+- 1 decoy (IQR capping — 48% impact if removed)
+- Eval datasets: 3 windows/78 events vs 5 windows/267 events
+- Passed: review, similarity, validation, pass2, ava_review, deep_review, qc_exec, qc_eval, qc_gate
+- Trials: running
+
+
+# ============================================================================
+# LOCAL TESTING STEPS FOR QC_GATE (July 27, 2026)
+# Verified against dynamo-34778fa (SLO pipeline) — passed all gates first try
+# after applying these checks.
+# ============================================================================
+
+## A · Oracle Correctness
+
+**A1: oracle passes its own verifier**
+```bash
+cd task/ && harbor run -p . --agent oracle  # Must be 1.000
+rm -rf jobs/
+```
+
+**A2/A3: solve.py runs pipeline (not hardcoded)**
+```bash
+grep "subprocess.run" task/solution/solve.py   # Must exist
+grep "json.dump\|= \[.*\]" task/solution/solve.py | grep -v "import\|#"  # Must be empty
+```
+
+**A5: Every oracle convention documented in instruction.md**
+- Walk each patch string in solve.py
+- Verify the convention it fixes is stated in instruction.md
+- Example: if solve.py uses `service_config["slo_target"]`, instruction.md must say
+  output uses per-service SLO targets
+
+---
+
+## B · Spec Coherence
+
+**B4: Every verifier-checked field documented**
+```python
+import json
+with open("task/tests/expected_output_1.json") as f: exp = json.load(f)
+with open("task/instruction.md") as f: instr = f.read()
+def leaf_keys(d, prefix=""):
+    if isinstance(d, dict):
+        for k, v in d.items():
+            yield from leaf_keys(v, f"{prefix}.{k}" if prefix else k)
+    else:
+        yield prefix
+for key in sorted(set(k.split(".")[-1] for k in leaf_keys(exp))):
+    print(f'{"OK" if key in instr else "MISSING ❌"} — {key}')
+```
+
+**B6: Two structurally different eval configs**
+```python
+import json
+with open("task/environment/data/eval_config_1.json") as f: c1 = json.load(f)
+with open("task/environment/data/eval_config_2.json") as f: c2 = json.load(f)
+s1 = set(c1["services"].keys())
+s2 = set(c2["services"].keys())
+t1 = sum(len(w["observations"]) for s in c1["services"].values() for w in s["windows"])
+t2 = sum(len(w["observations"]) for s in c2["services"].values() for w in s["windows"])
+print(f"Services differ: {s1 != s2} ← must be True")
+print(f"Total obs: {t1} vs {t2}, differ: {t1 != t2} ← must be True")
+```
+
+---
+
+## C · Verifier Rigor
+
+**C1: nop=0.0 (stub rejected)**
+```bash
+cd task/ && harbor run -p . --agent nop  # Must be 0.000
+rm -rf jobs/
+```
+
+**C1+C3: Buggy pipeline rejected**
+```bash
+cd task/environment && docker build -t task-img . 2>/dev/null && cd ..
+docker run --rm -v $(pwd)/task/tests:/tests:ro task-img bash -c '
+  python3 /app/pipeline.py /app/eval_config_1.json /app/output_eval_1.json 2>/dev/null
+  python3 /app/pipeline.py /app/eval_config_2.json /app/output_eval_2.json 2>/dev/null
+  pytest /tests/test_outputs.py -q > /tmp/o.txt 2>&1; PEXIT=$?
+  tail -1 /tmp/o.txt
+  [ $PEXIT -ne 0 ] && echo "✅ REJECTED" || echo "❌ CHEAT WORKS"
+'
+```
+
+**C4: Expected NOT recomputed from /app/ agent-writable files**
+```bash
+grep "open.*\/app\/" task/tests/test_outputs.py | grep -v "_load_output\|eval_config"
+# Must only show _load_output() and input-derivation tests
+# Must NOT show reading /app/metrics.json for ground truth
+```
+
+**C5: approx_equal handles b==0.0**
+```bash
+grep "b == 0.0" task/tests/test_outputs.py  # Must exist
+```
+
+---
+
+## D · Fixtures & Determinism
+
+**D1: Masking — buggy==fixed on visible data**
+```python
+import json, shutil, subprocess
+SRC = "task/environment/data"
+TMP = "/tmp/d1_check"
+shutil.rmtree(TMP, ignore_errors=True)
+shutil.copytree(SRC, TMP)
+# Apply patches from solve.py to TMP
+# (copy patch logic from your solve.py here)
+subprocess.run(["python3", f"{SRC}/pipeline.py", f"{SRC}/metrics.json", "/tmp/bug.json"], capture_output=True)
+subprocess.run(["python3", f"{TMP}/pipeline.py", f"{TMP}/metrics.json", "/tmp/fix.json"], capture_output=True)
+with open("/tmp/bug.json") as f: b = json.load(f)
+with open("/tmp/fix.json") as f: fx = json.load(f)
+print("D1 MASKING OK:", b == fx)  # Must be True
+```
+
+**D2: All JSON parses**
+```python
+import json, os
+for root, dirs, files in os.walk("task"):
+    dirs[:] = [d for d in dirs if d not in ['.git', '__pycache__', 'jobs']]
+    for f in files:
+        if f.endswith(".json"):
+            try:
+                json.load(open(os.path.join(root, f)))
+            except Exception as e:
+                print(f"INVALID: {os.path.join(root, f)} — {e}")
+print("All JSON valid (no output above = good)")
+```
+
+**D3: Docker build**
+```bash
+cd task/environment && docker build -t task-img . && echo "✅ BUILD OK"
+```
+
+**D4: Deterministic (two oracle runs produce identical output)**
+```bash
+cd task/
+harbor run -p . --agent oracle 2>/dev/null
+cp $(ls -td jobs/*/task__*/artifacts/app/output_eval_1.json | head -1) /tmp/run1.json
+rm -rf jobs/
+harbor run -p . --agent oracle 2>/dev/null
+cp $(ls -td jobs/*/task__*/artifacts/app/output_eval_1.json | head -1) /tmp/run2.json
+rm -rf jobs/
+diff /tmp/run1.json /tmp/run2.json && echo "✅ DETERMINISTIC" || echo "❌ NON-DETERMINISTIC"
+```
+
+---
+
+## E · Anti-Cheat
+
+**E1: tests/ and solution/ NOT in Docker image**
+```bash
+grep "COPY\|ADD" task/environment/Dockerfile
+# Must only show: COPY data/ /app/
+cat task/environment/.dockerignore
+# Must contain: solution, tests, .git, __pycache__, *.pyc
+```
+
+**E3: test.sh never runs agent code**
+```bash
+grep -v "^#" task/tests/test.sh | grep "python3\|pipeline"
+# Must return nothing
+```
+
+**E4: /tests/ not accessible in agent Docker phase**
+```bash
+docker run --rm task-img bash -c 'ls /tests/ 2>/dev/null && echo "ACCESSIBLE ❌" || echo "✅ NOT ACCESSIBLE"'
+# Must print NOT ACCESSIBLE
+```
+
+**E5: Full path guard in _load_output**
+```bash
+python3 - << 'EOF'
+content = open("task/tests/test_outputs.py").read()
+for code, label in [
+    ("os.path.islink", "symlink guard"),
+    ("os.path.realpath", "realpath check"),
+    ('"/app/"', "path escape check"),
+    ("st_nlink", "hardlink guard"),
+    ("st_ino", "inode cross-check"),
+]:
+    print(f'{"OK" if code in content else "MISSING ❌"} — {label}')
+EOF
+```
+
+---
+
+## FULL QC_GATE LOCAL PASS CRITERIA
+
+| Check | Local test | Must show |
+|-------|-----------|-----------|
+| A1 oracle=1.0 | harbor oracle | Mean: 1.000 |
+| C1 nop=0.0 | harbor nop | Mean: 0.000 |
+| C1+C3 buggy rejected | Docker simulation | ✅ REJECTED |
+| D1 masking | patch+compare script | MASKING OK: True |
+| D2 fixtures valid | JSON parse script | no output |
+| D3 Docker builds | docker build | ✅ BUILD OK |
+| D4 deterministic | two oracle runs diff | ✅ DETERMINISTIC |
+| E1 no COPY tests/solution | grep Dockerfile | COPY data/ /app/ only |
+| E3 no pipeline in test.sh | grep test.sh | no output |
+| E4 /tests/ not mounted | docker run ls /tests/ | NOT ACCESSIBLE |
+| E5 full path guard | completeness script | all 5 OK |
+
+All must pass before pushing.
+
+
+
+## DYNAMO-04A62DA LEARNINGS (July 27, 2026) — QC Gate patterns
+
+### Task: Mixed-effects growth curve pipeline
+### All 30 checks passed — qc_eval ✅ qc_exec ✅ qc_gate ✅
+
+---
+
+### C2 (Over-permissive tolerance) — approx_equal exact-zero fix
+
+**What failed:**
+`approx_equal(a, 0.0)` used the `abs(b) < 1e-10` branch which accepts any `a < 1e-6`.
+For p_value=0.0 fields this is way too loose.
+
+**Fix:**
+```python
+def approx_equal(a, b, rel_tol=1e-3):
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        if b == 0.0:           # CRITICAL: exact zero must match exactly
+            return a == 0.0
+        if abs(b) < 1e-10:
+            return abs(a) < 1e-6
+        return abs(a - b) / abs(b) < rel_tol
+    return a == b
+```
+
+---
+
+### C3 (Hardcodable) — different thresholds per eval dataset
+
+**The fix that worked:**
+- eval1: `r2_conditional > 0.5` (buggy≈-0.08 fails, fixed≈0.997 passes)
+- eval2: `r2_conditional > 0.8` (buggy≈0.117 fails, fixed≈0.9999 passes)
+- Different subject IDs: eval1=S01-S05, eval2=P01-P04
+- Different n_obs: eval1=20, eval2=18
+
+An agent cannot hardcode eval1's answer for eval2 because:
+1. Subject IDs don't match
+2. eval2's threshold is stricter
+
+---
+
+### A6 (Oracle edge-case) — answer leakage in module docstrings
+
+**What triggered it:**
+`blup_calculator.py` said `"should be the CENTERED basis"` — this is agent-visible
+and directly reveals the fix for Bug 2.
+
+**Fix:** Neutralize ALL "should be" / "must use" language in module files:
+```bash
+# Scan before every push:
+grep -rn "should be\|must use\|correct.*is\|use.*instead" task/environment/data/*.py | grep -v pipeline.py
+```
+
+---
+
+### B4 (Undocumented requirement) — every verifier field must be in instruction.md
+
+**What triggered it:**
+Tests checked `aic`, `bic`, `log_likelihood`, `beta`, `y_marginal` but these
+weren't mentioned in instruction.md's output schema.
+
+**Fix:** instruction.md output schema must list EVERY field the verifier checks:
+```
+{
+  "model_summary": {
+    "beta": [...],           ← must be listed
+    "sigma_sq": <float>,
+    ...
+  },
+  "diagnostics": {
+    "aic": <float>,          ← must be listed
+    "bic": <float>,          ← must be listed
+    "log_likelihood": <float> ← must be listed
+  },
+  "predictions": {
+    "<id>": {
+      "y_marginal": [...],   ← must be listed
+      ...
+    }
+  }
+}
+```
+
+---
+
+### E1 (Pre-computed outputs in agent image) — nop=1.0 symptom
+
+**What happened:**
+`output_eval_1.json` and `output_eval_2.json` were left in `environment/data/`.
+`COPY data/ /app/` baked them into the Docker image.
+nop agent (does nothing) found correct outputs already there → verifier passed → nop=1.0.
+
+**Fix:** Always delete output files from data/ before pushing:
+```bash
+rm -f task/environment/data/output*.json
+ls task/environment/data/*.json  # should only show dataset files, not output files
+```
+
+**Add to .gitignore:**
+```
+task/environment/data/output*.json
+task/environment/data/__pycache__/
+```
+
+---
+
+### PRE-PUSH QC GATE CHECKLIST (updated July 27, 2026)
+
+```bash
+# 0. Clean up
+rm -rf task/jobs/
+rm -f task/environment/data/output*.json
+find task/environment/data -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+
+# 1. Oracle and nop
+cd task/
+harbor run -p . --agent oracle  # must be 1.000
+harbor run -p . --agent nop     # must be 0.000
+rm -rf jobs/
+
+# 2. Patch strings (1x each)
+python3 -c "
+patches = [('pipeline.py', 'OLD_STRING_1'), ('pipeline.py', 'OLD_STRING_2')]
+for f, old in patches:
+    c = open(f'environment/data/{f}').read()
+    print('OK' if c.count(old)==1 else 'FAIL', f'{f}: {repr(old[:50])}')
+"
+
+# 3. Masking check
+python3 -c "
+import json, shutil, subprocess
+# Apply fixes to TMP, run both buggy and fixed on dataset.json, compare
+# Must print: MASKING OK: True
+"
+
+# 4. No answer leaks in modules
+grep -rn "should be\|must use\|correct.*is" environment/data/*.py | grep -v pipeline.py
+
+# 5. approx_equal has exact-zero fix
+grep "b == 0.0" tests/test_outputs.py && echo "OK" || echo "MISSING"
+
+# 6. Both input-derivation tests with DIFFERENT thresholds
+grep "r2_cond.*> 0\." tests/test_outputs.py
+
+# 7. No output*.json in data/
+ls environment/data/output*.json 2>/dev/null && echo "FAIL" || echo "OK"
+
+# 8. No __pycache__
+ls environment/data/__pycache__/ 2>/dev/null && echo "FAIL" || echo "OK"
+```
+
+---
+
+## CRITICAL: EVAL CONFIGS MUST BE IN /app/ NOT /tests/
+
+QC_GATE E3/E4 requires eval configs in environment/data/ (COPYed to /app/ by Dockerfile).
+The OLD pattern put hidden data in tests/ — that violates E3/E4 in the new architecture.
+
+NEW PATTERN (correct):
+- environment/data/eval_config_1.json  ← agent-visible during agent run
+- environment/data/eval_config_2.json  ← agent-visible during agent run
+- tests/expected_output_1.json         ← sealed, only at verify time
+- tests/expected_output_2.json         ← sealed, only at verify time
+
+OLD PATTERN (wrong, violates E3/E4):
+- tests/eval_config_1.json             ← hidden from agent, but causes E3/E4 violations
+- tests/expected_output.json           ← correct placement
+
+How to verify:
+```bash
+# Eval configs must be in environment/data/
+ls task/environment/data/eval_config*.json 2>/dev/null && echo "✅ OK" || echo "❌ MISSING"
+
+# Eval configs must NOT be in tests/
+ls task/tests/eval_config*.json 2>/dev/null && echo "❌ WRONG LOCATION" || echo "✅ Not in tests/"
+```
+
+
+---
+
+## B1 REAL EXAMPLE — Parallel Task Ordering (July 27, 2026, dynamo-qffewau)
+
+Task said "fix parallel task ordering" but instruction.md never said ALPHABETICAL.
+QC flagged: "two reasonable orderings — alphabetical vs priority-based — neither stated."
+
+**Fix added to instruction.md:**
+```
+When tasks within the same dependency level can run in parallel, they must appear
+in the tasks_executed list in ascending alphabetical order by task name.
+```
+
+**Rule:** Any behavior your tests enforce that has multiple valid implementations
+MUST be pinned in instruction.md. The golden rule: disclosing WHAT is correct
+doesn't reveal WHERE the bug is — it just prevents false-negative agent failures.
+
+**Pre-push B1 check:**
+```bash
+# For each convention your tests enforce, verify it's in instruction.md
+grep -i "alphabetical\|ascending\|sorted\|order" task/instruction.md
+# Must return something if tests assert specific ordering
+```
+
+
+---
+
+## B5 REAL EXAMPLE — Single-batch masking (July 28, 2026, dynamo-b56f28d)
+
+**What happened:**
+Bug was `sum(log_marginals) / len` vs `sum(log_marginals)`.
+Visible dataset.json had only 1 batch per stream → `sum([x]) / 1 == sum([x])`.
+QC: "rival solver (keep sum/len) produces IDENTICAL output on dataset.json."
+
+**Fix — add ONE sentence to instruction.md:**
+```
+The per-stream log evidence weight is the cumulative sum of the per-batch
+log marginal likelihoods (not normalized by batch count).
+```
+
+**Key insight:** Disclosing WHAT is correct (sum not sum/len) doesn't reveal WHERE
+the bug is. Agent still must search 1550 lines to find the wrong line.
+
+**Pre-push B5 check:**
+For each bug in your task, ask:
+"Does the visible data.json make the buggy AND correct formula produce the same output?"
+If yes → either redesign visible data to break the masking, or add a disclosure to instruction.md.
+
+```python
+# Check if visible data masks the bug
+# Run buggy and fixed pipeline on visible data — must be IDENTICAL
+# Run buggy and fixed pipeline on eval data — must DIFFER
+```
+
+
+
+## DYNAMO-B56F28D LEARNINGS (July 28, 2026) — qc_gate Blocker & Fix
+
+### Task: dynamo-b56f28d-data-science-and-reporting (Sequential Bayesian Updating)
+### Result: qc_gate FAILED once (Push 6), PASSED on Push 8
+
+---
+
+### qc_gate BLOCK: B5 — Underdetermined / Hidden-Knowledge Mapping (Push 6)
+
+**CI message:**
+```
+1. Underdetermined / Hidden-Knowledge Mapping — dataset.json
+
+What this means: The expected output can't be worked out from the information 
+given — it needs knowledge the task-taker doesn't have.
+
+What we found: Disclosed example dataset.json has only single-batch streams, 
+so evidence-weight rule sum(log_marginals) == rival rule sum/len (matching 
+pristine docstring 'normalized by the batch count'). Rival solver (3 math 
+fixes, keep sum/len) produces output IDENTICAL to correct on dataset.json 
+(lews -1.666547...).
+
+Fix: Give enough spec/examples to determine the mapping from visible inputs, 
+or document the rule.
+```
+
+**Root cause in detail:**
+
+The 4th bug was in `predictive_reporter.py:compute_stream_evidence_weight`:
+```python
+# BUG — wrong:
+total_log_evidence = sum(log_marginals) / len(log_marginals)
+
+# CORRECT:
+total_log_evidence = sum(log_marginals)
+```
+
+The comment justified it as "scale-invariant per-batch score". BUT:
+
+`dataset.json` had exactly 1 batch per stream → `sum([x]) / 1 == sum([x])`
+
+So a solver who:
+- Fixed bugs 1, 2, 3 (module formula bugs) ✓
+- KEPT the `sum/len` bug ✗
+
+...would produce output **mathematically identical** to the oracle on `dataset.json`.
+QC flagged this as B5: the rule cannot be determined from visible inputs.
+
+**The masking strategy (single-batch visible data) BACKFIRED for qc_gate.**
+While it successfully masked the bug from agents, it also made the rule undiscoverable
+by qc_gate's analysis.
+
+**Fix:** Added ONE sentence to instruction.md:
+
+```
+BEFORE:
+"...Find and fix the bugs so the pipeline handles all valid configurations correctly.
+Do not rewrite from scratch — preserve the existing module structure."
+
+AFTER:
+"...Find and fix the bugs so the pipeline handles all valid configurations correctly.
+Do not rewrite from scratch — preserve the existing module structure. The per-stream
+log evidence weight is the cumulative sum of the per-batch log marginal likelihoods
+(not normalized by batch count)."
+```
+
+**Why this works:**
+- Discloses the RULE (cumulative sum, not mean) — makes it discoverable
+- Does NOT reveal WHERE the bug is (agent still must find `sum/len` in 1550 lines)
+- Does NOT reduce difficulty for the other 3 bugs (different files/formulas)
+- qc_gate B5 satisfied: solver can now determine the correct behavior
+
+**LESSON: Masking + qc_gate tension**
+
+When you mask a bug using degenerate visible data (e.g., n=1 so sum/n = sum), 
+qc_gate may flag it as B5 (underdetermined). The fix is always to DISCLOSE the 
+RULE in instruction.md without revealing the BUG LOCATION.
+
+Examples:
+- Bug: `sum(log_marginals) / len(log_marginals)` masked by n=1 batches
+  → Disclose: "log evidence weight is cumulative sum of per-batch marginals"
+  
+- Bug: wrong df in t-test masked by single comparison
+  → Disclose: "degrees of freedom use q-1 where q is number of groups"
+
+- Bug: wrong variance formula masked by uniform data  
+  → Disclose: "variance uses Bessel's correction (ddof=1)"
+
+The pattern: describe WHAT the correct behavior is (the rule), not WHERE or HOW
+to find the bug.
+
+---
+
+### qc_gate PASS on Push 8 — What satisfied all 30 checks:
+
+**Family A (Oracle Correctness) — all PASS:**
+- Oracle patches 4 files and runs pipeline (no hardcoded values)
+- Expected outputs derived by running oracle pipeline on eval datasets
+- No privileged access (Oracle only reads /app/ files)
+
+**Family B (Spec Coherence) — all PASS:**
+- All output keys documented in instruction.md
+- Rule disclosure: "cumulative sum not normalized by batch count" (B5 fix)
+- No undisclosed conventions remaining
+
+**Family C (Verifier Rigor) — all PASS:**
+- Tests fail if agent does nothing (E3 safe — no pipeline in test.sh)
+- 1e-3 tolerance calibrated (buggy values are 2-6x off, not near threshold)
+- Two structurally different eval configs prevent hardcoding (B6)
+- Expected outputs in tests/ only (not in /app/)
+
+**Family D (Fixtures & Determinism) — all PASS:**
+- Pure Python arithmetic, no RNG, fixed seeds
+- All deps pinned (numpy==2.2.6, scipy==1.15.3)
+
+**Family E (Anti-Cheat) — all PASS:**
+- E3: test.sh only runs pytest, never executes pipeline.py
+- E4: No expected outputs in /app/ (Dockerfile only COPYs data/)
+- E5: symlink + realpath + hardlink guards in _load_output()
+

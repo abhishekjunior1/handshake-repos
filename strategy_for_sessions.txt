@@ -4,7 +4,6 @@
 
 PROVEN STRATEGIES FOR 0/7 SELF-PLAY (from 5 accepted tasks):
 
-READ THE PLAYBOOK FIRST: /Users/ABKUMAR2501/Desktop/handshake/dynamo_playbook.txt
 
 THE ONLY BUG TYPES THAT GET 0/7:
 

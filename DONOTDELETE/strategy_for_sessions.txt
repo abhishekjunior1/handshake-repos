@@ -1,0 +1,1281 @@
+# ⚠️ CRITICAL QUALITY GATE: 1 task per 99 hours. Must score 4+ to unlock full access.
+# NO EXPERIMENTS. Every task must be PERFECT on first submission.
+# Score <4 = stuck throttled. Treat every push as your only shot.
+
+PROVEN STRATEGIES FOR 0/7 SELF-PLAY (from 5 accepted tasks):
+
+READ THE PLAYBOOK FIRST: /Users/ABKUMAR2501/Desktop/handshake/dynamo_playbook.txt
+
+THE ONLY BUG TYPES THAT GET 0/7:
+
+1. CROSS-MODULE DATA-FLOW BUGS — a VALUE is passed wrong between modules. The receiving function is correct. The sending function computes the wrong value OR passes the wrong variable. A comment justifies the wrong value as intentional.
+   - Example: passing overall_tau² to subgroups instead of per-subgroup tau² (meta-analysis, 0/7)
+   - Example: passing raw_count instead of deduped_count to normalizer (streaming, 0/7)
+   - Example: accumulating carry_forward with * decay_factor when decay only belongs inside the aggregator (streaming, 0/7)
+
+2. DECOY PATTERNS — code that looks wrong but IS correct. Agents over-fix it and break the output.
+   - Example: sorting by key instead of timestamp (looks wrong for time-series, correct for grouped processing)
+   - Example: between-key variance formula (looks like wrong variance formula, but intentionally computes variance of key means)
+   - This COMPOUNDS with real bugs — agents fix 4 things (2 real + 2 decoys) and still fail
+
+WHAT ALWAYS FAILS (7/7 — DON'T USE):
+
+- Formula bugs (wrong constant, wrong exponent, divide vs multiply) — models know all formulas
+- Structural bugs (persistent state, wrong scope, double-application) — visible from code structure
+- Inverted comparisons (< vs >, wrong sort order) — trivially detectable
+- Docstring-contradicts-code — models spot this instantly
+- Any bug a model can verify by "checking the formula against textbook"
+
+MASKING RULES:
+
+- Visible data must make buggy value = correct value MATHEMATICALLY (not approximately)
+- Single window → carry-forward never used
+- No duplicates → raw_count = deduped_count
+- tau²=0 → overall tau² = subgroup tau² (both zero)
+- Uniform weights → any weight scheme gives same result
+- decay_factor=1.0 → any decay application is a no-op
+
+INSTRUCTION.MD RULES:
+
+- NO timeout line (rubric fails it as "TB3 boilerplate")
+- NO hints about which modules have bugs
+- NO description of symptoms ("convergence fails", "values too high")
+- Just say "has bugs that cause incorrect results on other data"
+- Absolute /app paths, under 1500 tokens, no headers
+
+BEFORE GIVING SELF-PLAY PROMPT:
+- Verify: harbor run -p . --agent oracle = 1.0
+- Verify: harbor run -p . --agent nop = 0.0
+- Verify: buggy and fixed produce IDENTICAL output on visible data
+
+DO NOT PUSH UNTIL SELF-PLAY CONFIRMS 0-2/7.
+
+
+---
+
+## FIREWALL POLICY EVALUATOR (dynamo-2847aff) — July 8, 2026
+## Category: Systems Infrastructure and Operations / Network configuration
+## Result: 0/7 self-play, 0/5 CI pass@5, FIRST-PUSH acceptance
+
+### STRATEGY: Domain-Specific Processing Order + "Do Not Rewrite" Constraint
+
+### Approach:
+- 6-module zone-based firewall policy evaluation engine (~900 lines)
+- ALL 3 bugs in pipeline.py orchestrator — every module individually correct
+- Bugs exploit firewall ARCHITECTURE conventions (not formula errors):
+  1. DNAT applied AFTER policy eval (should be BEFORE — ingress translation)
+  2. State table keyed by pre-NAT tuple (should be post-NAT for return traffic matching)
+  3. Zone-pair key uses sorted() (should be directional src→dst)
+- NO decoys needed — the "do not rewrite" instruction acts as the compound trap
+
+### Why It Worked:
+- Agents found Bug 3 (sorted key) trivially — it's a visible pattern
+- Agents MISSED Bugs 1+2 because they require firewall architecture knowledge
+- Agents who found ALL 3 bugs STILL FAILED because they rewrote pipeline.py instead of patching
+- Rewrites introduced NEW bugs (resolving dst_zone from post-NAT IP instead of original)
+- "Do not rewrite from scratch" = agents violate it every time under time pressure
+
+### Masking (visible data):
+- Identity DNAT (10.0.2.50→10.0.2.50) → pre-NAT = post-NAT, Bug 1 invisible
+- No return traffic packets → state lookup never exercised, Bug 2 invisible
+- Alphabetical zone names (alpha < beta < gamma = directional) → Bug 3 invisible
+
+### Key Insights:
+- Networking/infrastructure is a STRONG domain — agents don't have firewall conventions memorized
+- "Do not rewrite" acts like a decoy for the WHOLE codebase — agents can't help themselves
+- 3 bugs where 1 easy + 2 hard = agents "fix" easy one, overhaul rest, introduce new errors
+- Domain knowledge bugs (processing ORDER, not formula errors) are hardest for agents
+- No decoys needed when the instruction constraint itself creates the compound failure
+
+
+---
+
+## METRICS AGGREGATION PIPELINE (dynamo-c75e93b) — July 12-13, 2026
+## Category: Systems Infrastructure and Operations / Logging monitoring and observability
+## Task ID: fe4ab170-6005-4375-8163-cd39d5db12ec
+## Result: 0/7 self-play, 0/2 pass@2, ALL CI GREEN, FIRST-PUSH acceptance
+
+### STRATEGY: Comment-Justified Domain Convention Bugs + Decoys That Trap Over-Fixers
+
+### Approach:
+- 8-module Prometheus-style metrics aggregation pipeline (~1400 lines)
+- ALL 3 bugs in pipeline.py orchestrator — every module individually correct
+- Bugs exploit observability DOMAIN CONVENTIONS (not formula errors):
+  1. Rate uses total_span (last_ts - first_ts) as divisor instead of per-sample time_delta
+     Comment: "smoothed rate estimation resilient to transient bursts and scrape jitter"
+  2. Histogram merges ALL historical snapshots instead of latest-per-source only
+     Comment: "comprehensive percentile estimation capturing full request population"
+     (Prometheus histograms are CUMULATIVE — merging old snapshots double-counts)
+  3. Staleness threshold uses collection_interval*5 (75s) instead of STALENESS_THRESHOLD_SEC (300s)
+     Comment: "adaptive monitoring that scales with collection cadence"
+- 2 DECOYS in pipeline.py (correct code agents over-fix):
+  1. Cross-source timestamp sort for rate interleaving (breaks rollup bucket assignment if removed)
+  2. Partial-bucket extrapolation for trailing gauge windows (100-300% deviation if removed)
+
+### Why It Worked (0/7):
+- Bug 2 (histogram): 0/7 agents found it — the comment about "comprehensive estimation" completely fooled them
+  All agents accepted that merging all datapoints was intentional because the comment is plausible
+- Bug 3 (staleness): Only 4/7 found it — agents must notice inline reimplementation vs module function
+- Gauge rollup decoy: 7/7 agents OVER-FIXED it (merged sources before bucketing) — broke output
+- The discrimination problem (3 real bugs + 2 decoys = 5 suspicious things) was too hard under pressure
+- Agents who found 2/3 bugs but over-fixed decoys still failed
+
+### Masking (visible data):
+- 2 counter datapoints → total_span = single interval (Bug 1 invisible: delta/90 == delta/90)
+- 1 histogram source, 1 datapoint → else branch taken (Bug 2 invisible: no multi-source merge)
+- No gauge gaps > 75s → both thresholds agree (Bug 3 invisible: 75s and 300s both say "no stale")
+- Single source → timestamp sort is no-op (Decoy 1 invisible)
+- All samples fit in one 60s bucket → no trailing partial bucket (Decoy 2 invisible)
+
+### Hidden Data Triggers:
+- Counter intervals vary (10-30s) → total_span=90 vs per-sample 10-30s = 66-75% rate deviation
+- 3 histogram sources × 2 snapshots each → merging all = 2× total_observations, 22-100% percentile deviation
+- Gauge gaps of 155-165s → between 75s (bug threshold) and 300s (correct threshold) → wrong stale count
+- Multiple sources → sort changes rollup bucket assignment
+- Gauge data spans >60s → trailing partial bucket triggers extrapolation
+
+### Key Insights:
+- CUMULATIVE HISTOGRAM SEMANTICS is a blind spot for models — they don't understand that merging
+  two cumulative snapshots from the same source double-counts observations
+- Comment justification is the #1 weapon — "comprehensive percentile estimation" sounds so reasonable
+  that 0/7 agents questioned it
+- Decoys that TRAP OVER-FIXERS compound the difficulty — even if an agent finds all 3 bugs,
+  touching the decoys creates a net failure
+- Instruction says "modules are correct, bugs in pipeline.py" — this is a VALID hint that doesn't
+  reduce difficulty because pipeline.py has 5 suspicious patterns and agents can't discriminate
+- NOT stating the correct conventions in instruction.md forces agents to derive correctness from
+  module code, which they fail to do for cumulative histogram semantics
+- The "do not rewrite" constraint punishes agents who restructure code (7/7 broke gauge rollups)
+
+### Evolution (what failed before this version):
+- v1 (7/7 PASS): Rate used sample_count (obvious suspicious variable name), histogram averaged
+  per-source percentiles (textbook anti-pattern). Instruction stated exact conventions explicitly.
+  Every agent found both bugs trivially.
+- v2 (3/7 PASS): Rate used collection_interval (better), histogram same as v1.
+  Instruction stated conventions. 3/7 passed, 4/7 failed only from over-fixing gauge rollups.
+- v3 (0/7 PASS): Rate uses total_span (plausible engineering choice), histogram merges ALL
+  snapshots (domain convention bug), staleness uses wrong threshold (inline reimplementation).
+  Instruction does NOT state conventions. 0/7 found histogram bug. 7/7 over-fixed decoys.
+
+### LESSON: The progression from 7/7 → 3/7 → 0/7:
+1. Remove suspicious variable names (sample_count → total_span)
+2. Change from "textbook anti-pattern" to "domain convention violation"
+3. Add 3rd bug for compound difficulty
+4. Remove explicit convention statements from instruction.md
+5. Add decoys that PUNISH over-fixing (not just distract)
+6. Use a domain where models have genuine blind spots (cumulative histogram semantics)
+
+
+## THERMAL-MECHANICAL COUPLING TASK (dynamo-380fe49) — July 13, 2026
+## Category: Scientific Computing and Domain Science / Differential equations and simulation
+## Result: 1/5 pass@5, ALL CI green
+
+### STRATEGY: Value-passing bugs + decoys that agents can't resist over-fixing
+
+### What Worked (1/5 CI — 4 valid failures):
+- **Value-passing bugs** — `T_amb` instead of `temperature[i]` for radiation, `E_ref` instead of `E(T)` for stress
+- **Comment-justified bugs** — "stable linearization at ambient reference," "consistent elastic baseline"
+- **Strong decoys** — harmonic mean face conductivity (looks wrong, is correct) and theta=1.0 (looks like it should be 0.5)
+- **Energy balance diagnostic as accidental trap** — code that looks like a bug but is correct (agents modify it and break output)
+- **Visible config disables BOTH bug paths entirely** — perimeter_area_ratio=0 (radiation never executes), beta=0 (modulus constant)
+- **Instruction explicitly protects decoys** — "preserve harmonic mean averaging" and "preserve fully implicit time stepping"
+
+### Why It Passed the Golden Test:
+- All rules are stated plainly in instruction.md (E(T) formula, radiation needs surface temperature)
+- Difficulty comes from DISCRIMINATING 4+ suspicious patterns (2 real bugs + 2 protected decoys + energy diagnostic)
+- 1/5 agents DID solve it (proving it's fair and solvable)
+- 4/5 agents over-fixed energy diagnostics or face conductivity (genuine analytical failure, not spec gap)
+- No "TASK FIX SUGGESTED" in the analysis — reviewer confirmed "task specification, tolerance, and verifier are sound"
+
+### Why Previous Reactive Transport Versions Failed:
+1. **v1 (double-counting reaction)**: 7/7 solved — "wrong function" pattern too obvious
+2. **v2 (pre-computed source rates)**: 7/7 solved — `apply_source_to_concentration` vs `apply_reaction_step` trivially distinguishable
+3. **v3 (porosity scaling + dt/porosity)**: 0/5 CI but UNFAIR — agents solved the crux, failed only on undisclosed mass convention (∫C dx vs ∫φC dx)
+4. **v4 (Biot consolidation)**: 7/7 solved — `derived["alpha"]` available in same function = trivially traceable
+5. **v5 (thermal-mechanical)**: 1/5 CI, FAIR — genuine difficulty from over-fix trap, all rules disclosed
+
+### Key Design Principles Confirmed:
+1. **Visible config must COMPLETELY DISABLE the buggy code path** — not "approximately same," but literally never executed (perimeter_area_ratio=0 means radiation loop produces all zeros)
+2. **Decoys must be ACCIDENTAL, not forced** — the energy diagnostic and face conductivity indexing weren't designed as traps but naturally attract over-fixing
+3. **Comment justification works** — "stable linearization at ambient" made agents accept the radiation bug on first read
+4. **1/5 solve rate is IDEAL** — proves task is fair (solvable) while still hard (4/5 fail)
+5. **The difficulty is DISCIPLINE** — agents find bugs easily but can't resist fixing adjacent correct code
+
+### WHAT MAKES THIS DIFFERENT FROM UNFAIR TASKS:
+| Unfair (reactive transport v3) | Fair (thermal-mechanical v5) |
+|---|---|
+| Difficulty from undisclosed mass convention | Difficulty from over-engineering trap |
+| Agents failed on something instruction CAUSED | Agents failed on their own initiative |
+| "TASK FIX SUGGESTED" in analysis | "task specification and verifier are sound" |
+| All 5 failures identical (same spec-induced mistake) | Failures varied (different over-fixes) |
+| Writing the rule plainly → trivial | Writing all rules plainly → still 4/5 fail |
+
+### REUSABLE PATTERN — "ACCIDENTAL DECOY TRAP":
+- Don't design explicit decoys. Instead, write realistic code with:
+  - Unusual but correct numerical conventions (harmonic mean, theta=1.0)
+  - Diagnostic computations that look buggy (energy balance comparing initial vs final)
+  - Array sizing that looks wrong but works (n+1 faces for n cells)
+- Agents will find these "bugs" on their own and waste effort fixing them
+- This is MORE effective than designed decoys because it's organic — no "this looks intentionally suspicious"
+- Combined with 2 real bugs that are comment-justified, creates a 4-6 target discrimination problem
+
+### DOMAIN SELECTION INSIGHT:
+- Reactive transport (advection-diffusion-reaction): TOO WELL KNOWN — agents verify from memory
+- Biot consolidation: TOO TRACEABLE — `derived["alpha"]` sitting right there
+- Thermal-mechanical with radiation: SWEET SPOT — radiation linearization conventions are domain-specific, E(T) softening is straightforward but agents over-fix everything else
+- The domain doesn't need to be obscure IF the code naturally creates over-fix traps
+
+
+---
+
+## ANALYTICAL QUERY ENGINE v2 (dynamo-b48a5d2) — July 13, 2026
+## Category: Data Querying and Databases / Analytical queries
+## Task ID: 6b79bfd7-67fd-4b01-bb54-b74bdba55034
+## Result: 0/7 self-play, 0/2 pass@2, 0/5 trials, ALL CI GREEN, ACCEPTED (2nd push after infra crash)
+
+### STRATEGY: Standard SQL Patterns in the Wrong Context (proven by dynamo-3c33b63)
+
+### CRITICAL LESSON — WHAT FAILED 3x AT 7/7:
+
+**ATTEMPT 1 (7/7):** Bugs in pipeline.py with suspicious comments like "pre-aggregate efficiency",
+"cross-partition ranking consistency", "single-pass evaluation". Modules had unintentional bugs
+(join_engine or-pattern, filter_engine NULL handling). Agents found ALL bugs + module bugs instantly.
+
+**ATTEMPT 2 (7/7):** Bugs with "cardinality ratio < 0.5" threshold check in pipeline.py.
+Removed convention hints from instruction. Still obvious — any threshold/heuristic that drops
+partitions SCREAMS "wrong" to an agent.
+
+**ATTEMPT 3 (7/7):** Moved RANGE semantics to window_engine.py (correct location) but queries.json
+specified `"frame": "rows"` — literally TOLD the agent the correct answer! Also had an explicit
+`corr_outer_table != subquery.source` guard in pipeline.py that agents read and fixed instantly.
+
+### WHY IT FINALLY WORKED (0/7):
+
+The ONLY bug type that works for SQL/query engine domain:
+**Standard SQL patterns that are CORRECT per spec but wrong for the specific data/use case.**
+
+The code must look like COMPLETELY NORMAL, CORRECT SQL execution. The bugs are:
+1. A DEFAULT VALUE that's valid per SQL standard but wrong for the pipeline's semantics
+2. A standard EXECUTION ORDER (join→aggregate) that's correct for 1:1 but wrong for 1:many
+3. A standard FILTER PLACEMENT (WHERE after JOIN) that's correct for INNER but wrong for LEFT
+
+### THE 3 BUGS THAT GOT 0/5 CI:
+
+| Bug | Location | Pattern | Why Invisible |
+|-----|----------|---------|---------------|
+| Fan-out aggregate | pipeline.py | join → aggregate (standard SQL order) | 1 line per order = no inflation |
+| RANGE default | window_functions.py | `spec.get("frame_mode", "range")` | Unique ORDER BY values = no ties |
+| WHERE after LEFT JOIN | pipeline.py | `apply_where_clause(joined, filter)` | All rows match = no outer rows lost |
+
+### KEY DIFFERENCES FROM FAILED APPROACHES:
+
+| What | Failed (7/7) | Worked (0/5) |
+|------|-------------|--------------|
+| Bug comments | "optimization", "efficiency", "consistency" | No comments OR "SQL standard" (TRUE statement) |
+| Bug visibility | Threshold checks, explicit guards, `if` conditions | Standard code flow — join→filter→aggregate |
+| Query spec | Specifies frame_mode, tells agent the answer | Does NOT specify frame_mode (underdetermined) |
+| Module bugs | Unintentional bugs in join/filter modules | ALL modules 100% correct |
+| Bug location | Only in pipeline.py (agents focus there) | Spread: window_functions.py + pipeline.py |
+| Instruction | States conventions ("HAVING operates on computed values") | Says NOTHING about conventions |
+| Code structure | Suspicious branches, heuristics | Linear standard execution path |
+
+### FUNDAMENTAL INSIGHT FOR SQL/QUERY ENGINE DOMAIN:
+
+Models have DEEP SQL training. ANY code that deviates from standard SQL behavior is flagged instantly.
+The ONLY way to make bugs unfindable is to make them BE standard SQL behavior that happens to be
+the wrong CHOICE for the specific use case:
+
+- RANGE is the SQL STANDARD default → agents won't "fix" a correct standard
+- JOIN→AGGREGATE is the standard execution order → agents won't restructure it
+- WHERE after JOIN is the standard filter placement → agents won't move it to ON
+
+The difficulty is NOT in the code (it looks perfect). The difficulty is in knowing that:
+- RANGE produces wrong results WITH TIED VALUES (data property)
+- JOIN→AGGREGATE inflates WITH 1:MANY (data property)
+- WHERE kills outer rows WITH UNMATCHED LEFT JOIN (data property)
+
+Agents CAN'T verify this without hidden data. They can only find it by independently reasoning
+about what happens with DIFFERENT data — which they consistently fail to do.
+
+### MASKING FORMULA:
+
+For each bug, design visible data where the standard pattern produces CORRECT results:
+- 1 line per order → join fan-out doesn't inflate (1×1 = 1)
+- Unique ORDER BY values → RANGE == ROWS (no peers to include)
+- All rows have matches → LEFT JOIN == INNER JOIN (no outer rows to lose)
+
+### HIDDEN DATA TRIGGERS:
+
+- Multiple lines per order (2-3) → fan-out inflates COUNT/SUM
+- Tied ORDER BY values (same dates for multiple items) → RANGE includes all peers
+- Customers with NO matching orders → WHERE kills their NULL rows
+
+### CI BEHAVIOR:
+- First push: All passed EXCEPT trials (runner crashed — infra issue, exit 143 SIGTERM)
+- Second push (empty commit retrigger): ALL GREEN
+- pass@2: 0/2 solved in 24 min. Both agents found Bug 2 (RANGE) but NEITHER found Bug 1 (fan-out)
+- trials: passed in 29 min (≥3/5 failures)
+- Bug 1 (fan-out) is the DECISIVE CRUX — even when agent names the concern, they don't implement the fix
+
+### REUSABLE TEMPLATE FOR "ANALYTICAL QUERIES" CATEGORY:
+
+1. Build a query engine with standard SQL execution patterns
+2. Make bugs be CORRECT SQL defaults/ordering (not wrong code)
+3. Query config must NOT specify the correct behavior (let defaults apply)
+4. Visible data must make the wrong default produce correct results
+5. Hidden data must trigger all bugs with different data properties
+6. Instruction must say NOTHING about SQL conventions — just "has bugs on other data"
+7. All modules must be individually 100% correct
+8. No suspicious comments, no thresholds, no heuristics — just standard code flow
+
+### WHAT MODELS CANNOT DO (confirmed by pass@2 analysis):
+- They validate ONLY against visible data (self-authored tests use same 1:1 pattern)
+- They don't construct 1:many test cases from first principles
+- They don't reason about what happens with DIFFERENT data properties
+- Even when they NAME the concern (fan-out), they don't implement the fix
+- They trust SQL-standard defaults (RANGE) as "correct" without questioning
+
+### PROJECT STATUS UPDATE:
+| # | Task | Repo | Category | Status |
+|---|------|------|----------|--------|
+| 11 | Analytical Query Engine | dynamo-b48a5d2 | Data Querying / Analytical queries | ACCEPTED |
+
+
+---
+
+## WORK-STEALING SCHEDULER SIMULATOR (dynamo-471313f) — July 13-14, 2026
+## Category: Debugging and Repair / Concurrency and synchronization debugging
+## Task ID: 9d4a904e-5508-4f79-a578-70549a13bedb
+## Result: 0/5 pass@5, ALL CI GREEN, accepted (after 6 runs — 5 infra failures)
+
+### STRATEGY: Deque Semantics Confusion + Over-Engineering Trap + Decoy Preservation
+
+### Approach:
+- 8-module deterministic work-stealing scheduler simulator (~1355 lines)
+- ALL 3 bugs in pipeline.py orchestrator — every module individually correct
+- Bugs exploit WORK-STEALING RUNTIME CONVENTIONS (not formula errors):
+  1. Root tasks sorted by submission_order instead of -critical_path_length
+     Comment: "fairness guarantees preventing starvation of early-submitted tasks"
+  2. Steal uses victim.deque.pop_bottom() instead of victim.deque.steal_top()
+     Comment: "depth-first locality preservation for the victim"
+  3. Dependency resolution uses completed_task.start_time instead of finish_time
+     Comment: "launch-time propagation for pipeline awareness"
+- 2 DECOYS in pipeline.py (correct code agents over-fix):
+  1. NUMA-adjacent steal restriction (only steal from workers on same/neighboring node)
+  2. Idle-spin exponential backoff before stealing (reduces contention)
+
+### Why It Worked (0/5 CI):
+- Bug 1 (CPL direction): 4/5 agents found it but got the FIX WRONG — used reverse=True
+  when pushing to deque, which puts highest-CPL at BOTTOM (owner-greedy) but gives
+  thieves the lowest-CPL tasks. The correct fix is ascending sort so highest-CPL
+  is pushed FIRST → lands at TOP → available for steal_top().
+- Bug 2 (steal direction): 5/5 agents found and fixed correctly (trivial once identified)
+- Bug 3 (finish_time): 4/5 found and fixed correctly; 1 missed entirely and timed out
+- Decoys: 3/5 agents violated preservation constraint (modified NUMA/backoff)
+- Over-engineering: ALL 5 agents made unnecessary structural changes beyond the 3 one-line fixes
+
+### KEY INSIGHT — "FOUND BUT CAN'T FIX CORRECTLY":
+- This is a NEW difficulty pattern distinct from previous tasks
+- Previous tasks: agents CAN'T FIND bugs (0/7 identification) → 0/5 solved
+- This task: agents FIND ALL bugs (4/5 identified all three) → STILL 0/5 solved
+- The difficulty is in the INTERACTION between deque push-direction and steal-from-top semantics
+- Knowing "use CPL priority" doesn't tell you which DIRECTION to sort when pushing to a deque
+  that has different operations at each end (owner=bottom, thief=top)
+- This is a genuine agent limitation: understanding data structure semantics under composition
+
+### Masking (visible data — 1 worker, no dependencies, decreasing cost order):
+- 1 worker → no stealing occurs → Bug 2 invisible (steal code never runs)
+- No dependencies → barrier.get_max_dependency_finish_time() never consulted → Bug 3 invisible
+- Decreasing cost order → submission_order sorting and -CPL sorting produce same deque state → Bug 1 invisible
+- All three give EXACT zero difference (mathematical identity, not approximation)
+
+### Hidden Data Triggers (4 workers, 2 NUMA nodes, 15-task DAG):
+- Multiple workers → stealing occurs → Bug 2: pop_bottom gives wrong task to thief
+- DAG dependencies with varied CPLs → Bug 1: wrong scheduling priority changes which tasks run first
+- Chained dependencies → Bug 3: start_time < finish_time causes premature dependency release
+- Result: makespan 78 (buggy) vs 69 (fixed) = 13% deviation, completely different completion orders
+
+### CI Issues Encountered (5 failures before success):
+- Run 1: deep_review infra failure (GitHub Actions "Service Unavailable")
+- Run 2: pass@2 analysis incomplete (couldn't classify — infra timeout)
+- Run 3: Anthropic API workspace limit exhausted
+- Run 4: Rubric non-determinism (flagged description field that passed before)
+- Run 5: deep_review ACTUAL finding — missing test coverage for worker_statistics/efficiency
+- Run 6: Fixed test coverage → ALL GREEN
+
+### LESSON — deep_review Requirements:
+- Every output field mentioned in instruction.md MUST have a corresponding verifier assertion
+- If instruction says output has "worker_statistics" and "efficiency", tests MUST check those
+- deep_review specifically looks for "instruction-mandated output sections with no verifier assertion"
+- The gap allows an agent to modify those modules without being caught → deep_review blocks
+
+### NEW DIFFICULTY PATTERN: "Deque Semantics Under Composition"
+- When a data structure has DIFFERENT operations at each end (push_bottom, pop_bottom, steal_top)
+- And the FIX requires putting items in a specific ORDER for a SPECIFIC END to access correctly
+- Agents understand each operation individually but fail to compose them:
+  - "Use CPL priority" ✓ (they know this)
+  - "Steal from top" ✓ (they know this)
+  - "Therefore sort ASCENDING so highest-CPL is at TOP" ✗ (they get this wrong)
+- 4/5 agents used reverse=True (highest-CPL at BOTTOM = owner-greedy, thief-starved)
+- This is a reliable agent blind spot for any deque/stack/queue composition problem
+
+### REUSABLE PATTERNS:
+1. **Deque direction confusion** — any task with push/pop at different ends
+2. **Over-engineering trap** — "do not rewrite" + agents can't resist restructuring
+3. **Decoy preservation** — explicitly tell agents what's correct, they still modify it
+4. **Found-but-can't-fix** — bugs are identifiable, difficulty is in correct implementation
+5. **Single-worker masking** — eliminates all concurrency paths (stealing, contention, ordering)
+
+### AGENT CONVERGENCE PATTERNS (from 5 trials):
+- 4/5 independently changed idle-spin sentinel from 0 to -1 (spurious "fix")
+- 4/5 independently used reverse=True for CPL sort (wrong direction)
+- 3/5 independently extended CPL fix to ALL ready tasks (over-generalization)
+- These convergent wrong behaviors suggest training-data biases agents share
+
+
+## SESSION: July 14-15, 2026 — TWO TASKS ACCEPTED (ML Benchmark + Task Queue)
+
+### NEW PATTERN: "DISCRIMINATION DIFFICULTY" (Task Queue — 0/5 CI)
+- Bugs are FINDABLE, but the correct fix is indistinguishable from over-engineered incorrect fixes
+- Pipeline has correct-but-suspicious code alongside real bugs
+- Agents identify all bugs correctly but over-engineer fixes that break adjacent invariants
+- Key: the difficulty is in SCOPE (what to change and what NOT to change), not in DETECTION
+- "Preserve X" instructions serve dual purpose: protect correct patterns + hint at minimal fix
+- Result: 0/5 agents solved it despite all 5 correctly identifying both bugs
+
+### NEW PATTERN: "COMMENT-JUSTIFIED ORDERING BUGS" (Task Queue)
+- Rate limit check after dequeue (instead of before) — justified by "post-dequeue rate assessment for precise per-consumer throttle metering"
+- Increment-before-check (instead of check-before-increment) — justified by "increment-first for fail-fast exhaustion detection"
+- These are ORDERING/PLACEMENT bugs, not formula bugs — much harder for models
+- The surrounding code (break-on-throttle, back-of-queue requeue) is correct but looks suspicious
+- Agents can't tell which of 4 suspicious things are bugs vs invariants
+
+### KEY STRATEGY: DEGENERATE VISIBLE DATA (both tasks)
+- ML Benchmark: normalization="none" + n_folds=1 → both bugs produce EXACT same output
+- Task Queue: rate_limit=100 + max_retries=0 + single task → both bugs never trigger
+- This defeats iterative testing — agents fix bugs, re-run, see NO change, doubt their fix
+- Even when agents build their own test data, they can find bugs but can't discriminate correct-patterns from bugs
+
+### CI FAILURE PATTERNS & FIXES:
+1. `review / review` fails on `verification_explanation_quality`:
+   - Must include tolerance calibration rationale (WHY the tolerance value, not just WHAT it is)
+   - Must accurately describe bug effects (don't claim "changes which tasks DLQ" if it's just a reporting off-by-one)
+   - task.toml explanations MUST match actual code behavior exactly
+
+2. `review / deep_review` fails on `complete_test_coverage`:
+   - Every field listed in instruction.md must have an assertion in test_outputs.py
+   - Fix: add approx_equal/exact assertions for all missing fields
+   - Values already exist in expected_output.json — just add the assertions
+
+3. `review / review` fails on ambiguous convention:
+   - Pin conventions explicitly in instruction.md: "max_retries=N means exactly N retries, final_retry_count=N"
+   - This doesn't disclose bugs (WHERE/HOW), only WHAT correct behavior looks like
+   - Passes golden rule: task stays hard even with convention disclosed
+
+### TEST.SH HARBOR STANDARD (copy this pattern):
+```bash
+#!/bin/bash
+set -e
+echo "0.0" > /logs/verifier/reward.txt
+cp /tests/hidden_data.json /app/input_data.json
+cd /app
+python3 pipeline.py
+pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py -rA
+if [ $? -eq 0 ]; then
+  echo "1.0" > /logs/verifier/reward.txt
+else
+  echo "0.0" > /logs/verifier/reward.txt
+fi
+```
+
+### TEST_OUTPUTS.PY PATHS (Harbor standard):
+- Output: `/app/output.json` (absolute path, pipeline writes here)
+- Expected: `os.path.join(TESTS_DIR, "expected_output.json")` (relative to test file at /tests/)
+- NEVER use relative paths like `../environment/data/output.json`
+
+### PROPOSAL REVISION TIPS:
+- ALWAYS include explicit expert-hours estimate (blocker if missing)
+- Pin exact combination methods (don't leave room for "simple mean vs weighted mean" ambiguity)
+- State that harness RE-EXECUTES pipeline on withheld data (resists hardcoding)
+- Frame difficulty as discrimination/scoping, not just detection
+- Don't mention self-play results or CI results in proposals
+- Don't lean on "misleading comments" as sole difficulty source — frame the invariant-reasoning challenge
+
+### TIMELINE FOR THIS SESSION:
+- Task 1 (ML Benchmark): 3 CI pushes to pass (test coverage fix, tolerance rationale, initial)
+- Task 2 (Task Queue): 3 CI pushes to pass (verification_explanation accuracy, retry convention pin, initial)
+- Both passed all gates including trials on the final push
+- Total: ~4 hours from first push to both accepted
+
+### REPOS:
+- Task 1: dynamo-bd8d4b4-machine-learning-and-ai (pass@5: 2/5 — borderline but accepted)
+- Task 2: dynamo-a5c2a10-systems-infrastructure-and-operations (pass@5: 0/5 — strongest result)
+
+
+---
+
+## CIS COMPLIANCE SCANNER (dynamo-37d03aa-security) — July 15, 2026
+## Category: Security / Security hardening
+## Task ID: dbb9d9ae-8282-40d9-b7bf-98a44c36bb4a
+## Result: 0/2 pass@2, 0/5 trials, ALL CI GREEN, FIRST-PUSH acceptance (after time-fix)
+
+### STRATEGY: Computed-But-Unused Variable + Single-Use Dedup Trap + Density Normalization Decoy
+
+### Approach:
+- 8-module CIS compliance evaluation pipeline (~1400 lines)
+- ALL bugs in pipeline.py orchestrator — every module individually correct
+- Bugs exploit DATA-FLOW patterns (not formula errors, not convention violations):
+  1. Waiver dedup: tracks `applied_waiver_ids` set, prevents same waiver from applying to
+     multiple matching resources. Comment: "single-use waiver semantics for precise audit trail"
+  2. `waived_results` computed correctly but NEVER USED downstream — `all_results` (pre-waiver)
+     passed to scorer, waiver_statistics, AND report_generator (3 references)
+     Comment: "Score raw assessments to reflect actual security posture"
+- 1 DECOY in pipeline.py (correct code agents over-fix):
+  Section density normalization: multiplies section scores by (controls/max_controls),
+  recomputes overall as weighted average. Looks mathematically suspicious ("double-counting")
+  but is correct. 34% deviation if removed.
+
+### WHY IT WORKED (0/5 CI, 0/2 pass@2):
+- Instruction says NOTHING about correct waiver behavior or which variable to use
+- Instruction says "preserve the section density normalization" — but agents STILL modify it
+- Bug 2 is a "computed-but-unused" pattern — the variable exists, code runs, but result discarded
+- The dedup loop (Bug 1) looks like a reasonable audit trail constraint
+- pass@2 results: one agent timed out (never edited), one agent fixed the real bugs but ALSO
+  modified rule_parser.py (over-engineered severity propagation) → broke severity values → fail
+- Self-play (0/7 raw): all 7 found real bugs but ALL also "fixed" the density normalization decoy
+
+### Masking (visible data — 0 waivers, 1 section, 1 control):
+- 0 waivers → waiver dedup loop never executes → Bug 1 invisible
+- 0 waivers → all_results == waived_results (no waiver status changes) → Bug 2 invisible
+- 1 section → density_factor = 1/1 = 1.0 → Decoy is identity transform
+- Single control passes → overall_score = 1.0 regardless of any formula
+
+### Hidden Data Triggers (3 resources, 4 sections, 3 glob waivers):
+- waiver-001 pattern "server-prod-*" matches BOTH web-01 AND db-01 failing ctrl-3.1.1
+  → Bug 1: only first gets waived (waived=3 buggy vs waived=4 fixed)
+- all_results has no "waived" status entries → Bug 2: scorer/report shows 0 waivers, 6 failures
+- 4 sections with different control counts (3,6,6,9) → Decoy normalization changes scores visibly
+- Combined: overall 0.555 (buggy) vs 0.700 (fixed), 26% deviation
+
+### KEY INSIGHT — "COMPUTED-BUT-UNUSED" AS BUG PATTERN:
+- This is a NEW pattern distinct from previous tasks (wrong parameter, wrong variable name)
+- The code CORRECTLY computes `waived_results` — the waiver loop runs, results get waived
+- But then the pipeline passes `all_results` to everything downstream
+- Agent must notice that `waived_results` is DEFINED but NEVER REFERENCED after Step 7
+- This is harder than "wrong value" bugs because:
+  - The waiver code WORKS (no errors, correct logic)
+  - The variable EXISTS (can't be found by "unused variable" linters since it's used in the loop)
+  - The downstream code also WORKS (just on wrong input)
+  - Only by tracing what SHOULD flow downstream does the bug become apparent
+- Combined with the dedup loop, agents have two things to fix in the same area
+
+### KEY INSIGHT — DECOY THAT TRAPS VIA MATHEMATICAL SUSPICION:
+- Section normalization multiplies by density_factor THEN weights by total_controls in the sum
+- This looks like it "double-counts" the section size (factor × size)
+- Mathematically it's: overall = Σ(score × density × controls) / Σ(controls)
+  = Σ(score × controls²/max_controls) / Σ(controls)
+- 7/7 self-play agents "simplified" this to plain weighted average → wrong answer
+- The instruction says "preserve the section density normalization" but agents ignore it
+- This works because agents trust their mathematical intuition over instruction text
+
+### WHAT FAILED BEFORE (7/7 — v1):
+- v1 had 3 parameter-value bugs: walk_ancestors=False, match_mode="exact", scope="section"
+- Instruction STATED the correct conventions explicitly ("walks full ancestor chain", "uses glob")
+- Agents just grepped for the opposite of what instruction said → trivial
+- No real decoys (just "preserve CVSS weighting" labels that agents respected)
+
+### WHAT CHANGED (7/7 → 0/5):
+1. Removed ALL convention statements from instruction.md
+2. Changed bugs from "wrong parameter" to "unused variable + dedup logic"
+3. Added a mathematically-suspicious decoy that agents can't resist "fixing"
+4. Made the instruction protection ("preserve density normalization") something agents ignore
+5. Bug 2 requires understanding data FLOW not just data VALUES
+
+### CI ISSUES & FIXES:
+- Push 1: Static check failed — reward.txt path must be /logs/verifier/reward.txt (not /app/)
+- Push 2: Fixed reward path + test paths (/tests/ not /app/ for expected_output)
+- Push 3: deep_review failed — waiver expiry dates were 2027 (time-dependent). Fixed to 2099.
+- Push 4: ALL GREEN — review, similarity, validation, ratelimit, pass@2, deep_review, trials, gate
+
+### REUSABLE PATTERNS:
+1. **Computed-but-unused variable** — code correctly computes X but passes Y downstream
+2. **Single-use dedup as fake constraint** — looks like preventing double-count, actually limits scope
+3. **Mathematical decoy** — formula that looks "wrong" (double-counting) but is correct by design
+4. **Zero-waiver masking** — with no waivers, pre-waiver == post-waiver exactly
+5. **Instruction protection that agents ignore** — "preserve X" doesn't help when X looks wrong
+
+### UPDATED PROJECT STATUS:
+| # | Task | Repo | Category | Status |
+|---|------|------|----------|--------|
+| 12 | CIS Compliance Scanner | dynamo-37d03aa-security | Security / Security hardening | ACCEPTED |
+
+
+---
+
+## FEATURE FLAG EVALUATION PIPELINE (dynamo-fc3c7ab) — July 16, 2026
+## Category: Debugging and Repair / Configuration Repair
+## Task ID: 0bd66f42-f6ca-4699-b7c6-47b3cd39144b
+## Result: 0/7 self-play, 0/2 pass@2, 0/5 trials, ALL CI GREEN, accepted on 2nd push
+
+### STRATEGY: Data-Flow Ordering Bug + Wrong Function Argument + Decoys That Trap Over-Fixers
+
+### Approach:
+- 7-module feature flag evaluation pipeline (~1177 lines)
+- ALL 2 bugs in pipeline.py orchestrator — every module individually correct
+- Bugs exploit EVALUATION ORDER and FUNCTION ARGUMENT misuse (not strategy names):
+  1. Dependency resolution AFTER rollout computation (should be BEFORE — dependencies
+     determine eligibility before rollout bucketing)
+     Comment: "compute base rollout state before applying dependency overrides for stable baseline"
+  2. compute_hash(device_id, device_id) instead of compute_hash(device_id, flag_name)
+     Comment: "device-consistent hashing ensures stable assignment across flag changes"
+- 2 DECOYS in pipeline.py (correct code agents over-fix):
+  1. Alphabetical sort by flag name before evaluation (required for deterministic
+     mutex resolution via last-writer-wins semantics) — ~35% field deviation if removed
+  2. Stale device inclusion (evaluation vs presentation concern) — removes devices
+     from output that expected_output.json includes
+
+### Why It Worked (0/7 self-play, 0/5 CI):
+- Bug 1 (ordering): 0/7 agents correctly identified AND fixed this. All agents understood
+  the concept but implemented the fix WRONG — they rewrote dependency_resolver.py instead
+  of swapping phases in pipeline.py. The rewrite added guards that skip reason/counter
+  updates when flags are already disabled, losing 5 overrides.
+- Bug 2 (hash): 7/7 found and fixed correctly (obvious duplicate argument)
+- Decoy over-fixing: 3/7 agents in self-play also modified conflict_resolver.py's
+  priority_order, breaking mutex resolution
+- CI pass@2: Both agents got 120/120 booleans correct but failed on test_reasons_match
+  + test_dependency_overrides (the narrow but decisive discriminator)
+
+### KEY INSIGHT — "FOUND BUT CAN'T FIX CORRECTLY" (same pattern as work-stealing scheduler):
+- Agents IDENTIFY the ordering issue correctly
+- But they implement the fix by REWRITING the dependency module (violating "preserve modules")
+- The correct fix is a PHASE SWAP in pipeline.py (move Phase 3 before Phase 2)
+- Agents' rewrites introduce subtle counter/reason tracking bugs
+- This is the "deque direction" pattern — knowing WHAT to fix doesn't mean knowing HOW
+
+### Masking (visible data — 100% rollout, no dependencies):
+- 100% rollout → hash value irrelevant (everyone included) → Bug 2 invisible
+- No dependency chains → dependency resolution is a no-op → Bug 1 invisible (order doesn't matter)
+- Flags already alphabetical → Decoy 1 sort is trivially correct
+- 2 stale devices present → Decoy 2 exercises correctly
+
+### Hidden Data Triggers (8 flags, 15 devices):
+- Partial rollouts (30%, 50%, 75%, 100%) → hash matters → Bug 2 triggers
+- 3 dependency chains → ordering matters → Bug 1 triggers
+- 21/120 evaluations differ between buggy and correct output
+- 2 mutex groups with non-trivial conflicts
+
+### CI Issues & Fixes:
+- Push 1: `review / review` FAILED on `unambiguous` — the dependency ordering was contestable.
+  The reviewer noted that a domain expert could reasonably argue dependencies should gate on
+  FINAL rollout state (not targeting-only state). Fix: added explicit disambiguation in
+  instruction.md: "dependency constraints gate on targeting eligibility — a flag's prerequisite
+  must pass targeting to satisfy the dependency, regardless of whether the prerequisite is
+  later excluded by rollout bucketing."
+- Push 2: ALL GREEN — review, similarity, validation, ratelimit, pass2, deep_review, trials, gate
+
+### CRITICAL LESSON — DISAMBIGUATION REQUIRED FOR ORDERING BUGS:
+- When the correct order of operations is non-obvious, instruction.md MUST state the convention
+- Otherwise the rubric reviewer flags it as "ambiguous" (two sound expert choices exist)
+- Disclosing the convention ("dependencies gate on targeting eligibility") does NOT reduce difficulty
+  because the hard part is LOCATING and CORRECTLY FIXING the ordering in 1200 lines
+- The pass@5 result (0/5) confirms: even with the convention stated, agents can't fix it properly
+
+### WHAT FAILED BEFORE (configuration resolution domain — 7/7 every time):
+- Layered config resolution (scope precedence, array merge, variable expansion)
+- Named strategy parameters like strategy="source_priority" → agents grep and fix instantly
+- Module docstrings saying "the correct strategy is X" → trivially solvable
+- ANY bug in well-known configuration semantics (K8s, Terraform, Ansible) → models know the right answer
+- 4 complete iterations all got 7/7 or passed CI pass@2
+
+### WHY THIS VERSION WORKS:
+1. Feature flag evaluation is LESS well-known than generic config resolution
+2. The ordering bug requires understanding a BESPOKE convention (deps gate on targeting, not rollout)
+3. The hash bug is obvious (found by all) but the ordering bug is subtle
+4. Agents who find the ordering bug implement the fix WRONG (rewrite module instead of swap phases)
+5. The "preserve module structure" instruction makes the correct fix (phase swap) non-obvious
+6. Decoys compound — agents who also touch alphabetical sort or conflict resolver break output
+
+### DOMAIN DIFFICULTY HIERARCHY (confirmed July 2026):
+| Domain | Result | Why |
+|--------|--------|-----|
+| Layered config resolution (K8s/Terraform style) | 7/7 EVERY TIME | Too well-known, any bug trivially findable |
+| Feature flag evaluation (LaunchDarkly style) | 0/5 CI | Ordering bug hard to fix correctly even when found |
+| Spectral analysis | 0/5 CI | Obscure domain + decoys |
+| Firewall policy evaluation | 0/5 CI | Architecture-specific ordering |
+| Work-stealing scheduler | 0/5 CI | Deque direction semantics |
+
+### REUSABLE PATTERNS:
+1. **Evaluation ordering bugs** — correct functions called in wrong order
+2. **Duplicate argument** — function(x, x) instead of function(x, y) — obvious but pairs well with subtle bug
+3. **"Preserve modules" as fix constraint** — forces agents to do phase-swap in orchestrator, not rewrite
+4. **Narrow discriminator** — all booleans match, only reason strings + counts fail (genuine semantic signature)
+5. **Convention disambiguation** — state the bespoke rule in instruction.md to pass rubric, without reducing difficulty
+
+
+---
+
+## NIX DERIVATION HASH PIPELINE (dynamo-44c68e5) — July 18, 2026
+## Category: Build Dependency and Release Management / Build system configuration
+## Result: 0/5 pass@5, ALL CI GREEN, ACCEPTED
+
+### STRATEGY: Multi-File Bug Plantation + Obscure Domain (Nix Store Internals)
+
+### Approach:
+- 8-module Nix-style derivation hash pipeline (~520 lines)
+- 3 bugs spread across 3 DIFFERENT FILES (not just pipeline.py):
+  1. pipeline.py: Fixed-output derivations not dispatched to make_fixed_output_path
+  2. cache_validator.py: _extract_integrity_hash returns FileHash for compressed (should always use NARHash)
+  3. store_path_calculator.py: compute_path_hash_with_placeholder APPENDS placeholder instead of REPLACING
+- 2 DECOYS in store_path_calculator.py/pipeline.py:
+  1. Reversed base32 encoding (`encoded[::-1]`) — looks like corruption, is correct Nix convention
+  2. `!` separator for multi-output references — looks like string corruption, is correct Nix format
+
+### WHY IT WORKED (0/5 CI):
+- Bug 3 (placeholder append vs replace) fooled ALL 5 CI agents — the misleading comment
+  "appended as additional reference sentinel to mark self-referencing derivations in hash space"
+  was accepted as correct by every single agent
+- ALL 5 agents correctly fixed Bugs 1 and 2 (those are findable) but NONE got Bug 3 right
+- One agent (task__QxeRUVd) even IDENTIFIED the correct fix but REVERTED it out of overcaution
+- The decoy (reversed base32) trapped 5/7 in self-play but 0/5 on CI (CI agents respected instruction)
+
+### KEY INSIGHT — MULTI-FILE BUGS ARE MANDATORY:
+- Original version had all bugs in pipeline.py → 4/5 CI agents solved it (TOO EASY)
+- Spreading bugs across 3 files → 0/5 CI agents solved it
+- Agents ASSUME modules are correct ("library code, well-tested")
+- Even when they READ the buggy module, the misleading comment makes them accept the bug
+
+### MASKING (visible data):
+- 5 derivations, ALL input-addressed (is_fixed_output: false) → Bug 1 invisible
+- Cache has Compression: 'none' (FileHash == NARHash) → Bug 2 invisible
+- No self-references (has_self_reference: false) → Bug 3 invisible
+- 2 cache hits on visible data → pipeline looks like it works correctly
+
+### HIDDEN DATA TRIGGERS:
+- 2 fixed-output derivations (fetchurl-openssl, fetchgit-zlib) → Bug 1 triggers
+- Cache uses xz compression (FileHash != NARHash) → Bug 2 triggers
+- 1 self-referencing derivation (myapp with RPATH) → Bug 3 triggers
+- Combined: 8 builds/0 substitutes (buggy) vs 5 builds/3 substitutes (correct)
+
+### EVOLUTION (what failed before this worked):
+1. **Original build-dep-resolution (pipeline-only bugs)**: 4/5 solved — TOO EASY
+2. **Hardened with decoys + comments**: 3/5 solved — still too easy (CI agent constructs test inputs)
+3. **3 bugs in pipeline.py**: validation failed (solve.py mismatch)
+4. **Nix pipeline, bugs only in pipeline.py**: 0/7 self-play but CI timed out (low_timeout FAIL)
+5. **Nix pipeline, bugs in 3 files**: 0/5 CI — ACCEPTED
+
+### LESSON: The ONLY reliable way to stump CI agents:
+1. Put bugs in MODULES (not just orchestrator) — agents trust modules
+2. Use OBSCURE DOMAIN conventions agents can't verify from memory
+3. Make misleading comments that sound technically authoritative
+4. The "found but can't fix correctly" pattern (Bug 3) is the decisive crux
+5. Bugs 1 & 2 are "findable" sacrifices — Bug 3 is the real trap
+
+### DOMAIN SELECTION:
+- Build dependency resolution (Bazel/Gradle style): TOO WELL-KNOWN (4/5 solved)
+- Nix store path computation: OBSCURE ENOUGH (0/5 solved)
+- The key: agents don't have Nix's self-reference placeholder semantics memorized
+- Any domain where the CORRECT algorithm is counter-intuitive works
+
+### REUSABLE PATTERNS:
+1. **Multi-file bug plantation** — MANDATORY for all future tasks
+2. **Comment-justified bugs** — misleading but authoritative-sounding explanations
+3. **One "decisive crux" bug** — the single bug that ALL agents fail on
+4. **Two "findable" bugs** — give agents confidence they're making progress
+5. **Decoys in pipeline.py** — correct-but-suspicious code (reversed encoding, unusual notation)
+6. **Obscure domain** — Nix internals, Prometheus histograms, NOT standard algorithms
+
+
+---
+
+## POLYNOMIAL GCD PIPELINE (dynamo-b1f012b) — July 18, 2026
+## Category: Mathematics and Formal Reasoning / Symbolic computation
+## Task ID: (pending platform submission)
+## Result: 0/3 self-play, 1/2 pass@2, 1/5 trials, ALL CI GREEN, ACCEPTED on 2nd push
+
+### STRATEGY: Cross-Module Data-Flow Bugs + Textbook CAS Patterns That Agents Know But Can't Verify
+
+### Approach:
+- 7-module polynomial GCD computation pipeline (~1000 lines)
+- Bugs across 3 files: modular_gcd.py, pipeline.py, resultant.py
+- Bugs exploit ALGEBRAIC COMPUTATION CONVENTIONS (not code structure):
+  1. modular_gcd.py: First prime's GCD degree used as target — discards all primes giving
+     different degree. If first prime is unlucky (spurious common factor mod p), algorithm
+     locks onto wrong degree. Comment: "sequential selection ensures deterministic reconstruction"
+  2. pipeline.py: Scales primitive GCD by content_f instead of content_gcd=gcd(content_f, content_g).
+     Comment: "content of f provides natural scaling since GCD divides f"
+  3. resultant.py: Subresultant PRS defect uses delta=deg_prev-deg_curr+1 instead of correct
+     delta=deg_prev-deg_curr. Comment: "accounts for leading coefficient normalization"
+- Decoys protected in instruction.md:
+  1. symmetric_mod after CRA (looks like unnecessary remapping, essential for sign recovery)
+  2. Minimum-degree prime filtering (the FIX for Bug 1 — looks suspicious to agents who don't understand it)
+  3. Trial division verification + fallback (looks redundant, catches CRA errors)
+
+### WHY IT WORKED (1/5 CI — 4 valid failures):
+- All 4 failing agents MISSED Bug 1 (unlucky prime degree-locking in modular_gcd.py)
+- The prime-selection loop was consistently NOT inspected deeply enough
+- Agents who read modular_gcd.py stopped at verify_gcd_divides (~line 184) and never examined
+  the modular_gcd() function's inner loop
+- Even 1 agent who NAMED "degree from first prime" concern didn't construct a triggering test case
+- Bug 2 (content scaling) was trivially found by ALL agents (including failing ones)
+- Bug 3 (delta) was handled by Sylvester/Bareiss rewrite (valid but bypasses the actual fix)
+- The 1 passing agent used inspect.getsource() to read all modules in manageable chunks
+
+### KEY INSIGHT — MATHEMATICAL BUGS INVISIBLE ON VISIBLE DATA:
+- This task proves that TEXTBOOK bugs (unlucky primes, content scaling, PRS defect) CAN work
+  IF the visible data makes them mathematically invisible
+- Self-play agents found all bugs easily (3/3) because they do one-pass code review
+- CI agent failed because it ITERATES: fixes a bug → re-runs → sees NO output change → doubts
+- The visible data (monic, content=1, degree-0 cofactor) creates ZERO DIFFERENCE between
+  buggy and correct code — the CI agent can't confirm any fix works
+- This "invisible fix" phenomenon is what makes the task hard for iterative agents
+
+### Masking (visible data — f=[1,1]=(x+1), g=[-1,0,1]=(x-1)(x+1)):
+- content_f = 1, content_g = 1 → content_gcd = 1 = content_f → Bug 2 invisible
+- All primes give correct GCD degree (no unlucky primes for monic inputs) → Bug 1 invisible
+- Cofactor of GCD is constant (degree 0) → resultant uses special case, bypasses PRS → Bug 3 invisible
+
+### Hidden Data Triggers (f=[12,18,6,6,6], g=[8,12,4]):
+- f=6(x+1)(x^3+x+2), g=4(x+1)(x+2), true GCD=2(x+1)=[2,2]
+- Prime 2 is unlucky: prim_f and prim_g share extra factor mod 2 (GCD mod 2 = degree 2)
+- content_f=6, content_gcd=2 → Bug 2 over-scales by 3x
+- Cofactors have degrees 3 and 1 → delta=2 in PRS → Bug 3 flips cofactor_resultant sign
+
+### CI PROGRESSION:
+- Push 1 (old FPS version): review FAILED on difficulty_explanation_quality (missing data provenance)
+- Push 2 (this version): ALL GREEN
+  - review: 4m18s PASS
+  - validation: 48s PASS (oracle=1.0, nop=0.0)
+  - pass2: 46m27s PASS (1/2 — one agent solved, one failed on Bug 1)
+  - deep_review: 5m23s PASS
+  - trials: 49m56s PASS (1/5 — 4 failed on Bug 1, 1 solved)
+  - gate: 7s PASS
+
+### KEY DIFFERENCE FROM OTHER TASKS:
+- Unlike streaming/spectral/firewall tasks where bugs are in OBSCURE domains,
+  this task uses WELL-KNOWN math (polynomial GCD is textbook)
+- The difficulty comes NOT from obscurity but from:
+  1. Agents can't VERIFY fixes (invisible on visible data)
+  2. Bug 1 requires deep reading of a long function (agents stop partway)
+  3. Bug 3 is commonly "fixed" by Sylvester rewrite (works! but only if Bug 1 also fixed)
+  4. The compound requirement: ALL 3 must be fixed simultaneously
+
+### LESSON — WELL-KNOWN DOMAIN CAN WORK IF:
+1. Visible data creates EXACT mathematical equivalence (not approximate)
+2. Bugs require reading DEEP into a function (not just the first 20 lines)
+3. The CI agent can't verify fixes through re-execution
+4. At least 1 bug is "structural" (requires loop restructuring, not a one-token change)
+5. Bugs compound — fixing 2/3 still fails all tests that depend on the unfixed one
+
+### WHAT WOULD HAVE FAILED:
+- If visible data showed ANY difference after fixing → agents confirm fixes → solve it
+- If all bugs were one-token changes → agents apply all three → solved
+- If instruction mentioned "unlucky primes" → agents know exactly where to look
+- If modular_gcd.py was shorter → agents read the whole thing → find Bug 1
+
+### REUSABLE PATTERNS FOR MATH/FORMAL REASONING:
+1. **One structural bug (loop rewrite) + two one-token bugs** — agents find the easy ones,
+   miss the structural one that requires deeper reading
+2. **Monic visible data** — makes content, leading coefficient, and degree-reduction bugs invisible
+3. **Degree-0 cofactor on visible data** — bypasses PRS computation entirely
+4. **Long function with bug in the middle** — agents read first/last but skip inner loops
+5. **Protected decoys matching the FIX pattern** — "minimum-degree filtering" is the fix for Bug 1,
+   but instruction says to preserve it (agent who already fixed it wouldn't know to preserve)
+
+
+## HARMONIC DECOMPOSITION TASK (dynamo-c63a8bd) — July 18, 2026
+## Category: Data Science and Reporting / Time-series analysis
+## Task ID: 82ebdc54-fb79-492a-b023-c1b281ada0c5
+## Result: 0/5 pass@5, ALL CI GREEN, ACCEPTED
+
+### STRATEGY: Exact copy of spectral anomaly architecture (n vs n_effective + global vs per-segment)
+
+### What Worked (0/5 CI, 0/7 self-play):
+- **Exact spectral anomaly pattern** in different domain (harmonic regression vs spectral PSD)
+- Bug 1: `score_decomposition(residuals, total_harmonic_power, n)` uses n instead of n_effective
+- Bug 2: `seg_threshold = global_threshold` for all segments instead of per-segment
+- **Strong decoys**: temporal decay weighting (45% change if removed) + 2*pi angular frequency conversion (628% change if removed)
+- **Instruction protects decoys**: "preserve the temporal relevance weighting and angular frequency conversion"
+- **No unused variables signaling bugs** — n_effective exists only in freq_result dict, not as standalone variable
+- **Comment-justified bugs** — "consistent units regardless of window choice" and "consistent detection sensitivity across segments"
+- **Rectangular window masking** — n_effective = n exactly
+- **Single segment masking** — global = segment threshold exactly
+- **Hann window hidden data** — n_effective = 39.33 vs n = 60 (52% SNR deviation)
+- **Multi-regime hidden data** — 3 variance regimes → per-segment thresholds differ from global
+
+### Why 0/5 CI:
+- All 5 agents correctly found BOTH bugs
+- All 5 agents applied correct fixes
+- All 5 agents then OVER-ENGINEERED by rewriting correct modules (frequency_estimator, detect_segments)
+- The over-engineering broke output → FAIL
+- "Do not rewrite from scratch" instruction wasn't enough to stop them
+- The ACTUAL difficulty is RESTRAINT (knowing when to stop), not bug-finding
+
+### Key CI Findings:
+- `difficulty_crux` FAIL in 4/5 trials — bugs were found too easily
+- But `approach_validity` 5/5 PASS — failures are legitimate agent limitations
+- Analysis: "agents model what good signal-processing code looks like and apply those priors even when the instruction says to preserve"
+- This IS a genuine capability gap being measured
+
+### Iteration History (what failed before 0/7):
+1. **CUSUM changepoint detection (global_variance bug)**: 5/7 self-play (TOO EASY) — textbook SPC knowledge
+2. **Added decoys + removed hint**: 6/7 (STILL TOO EASY) — agents know CUSUM needs pre-change variance
+3. **Removed initial_variance variable**: 0/8 BUT rubric failed "unambiguous" (baseline definition ambiguous)
+4. **Added baseline disclosure**: 6/7 (disclosure = giving away answer)
+5. **Rebuilt as harmonic decomposition**: 0/7 ✓ — obscure domain + strong decoys
+
+### CRITICAL LESSONS:
+1. **CUSUM/changepoint = TOO EASY** — every model knows pre-change variance convention
+2. **"Computed but unused variable" = dead giveaway** — never leave the correct value sitting unused
+3. **Disclosure kills difficulty** for textbook conventions — if you have to disclose, pick obscure domain
+4. **Spectral/harmonic/signal processing = sweet spot** — obscure enough that agents can't verify from memory
+5. **Over-engineering IS a valid difficulty source** — even when bugs are found, agents can't stop fixing
+6. **The 2-bug + 2-decoy in pipeline.py pattern works RELIABLY** across different domains
+7. **Timeout classification issue** — CI needs "valid-fail" not "in-progress-timeout"; took multiple retriggers
+8. **Platform API limits** — Anthropic workspace quota can block CI entirely (hit Aug 1 limit)
+
+### REUSABLE TEMPLATE (proven twice — spectral + harmonic):
+```
+Pipeline stages:
+1. Data loading
+2. Preprocessing (windowing/segmentation)  
+3. Model fitting (frequency estimation, AR model, etc.)
+4. Residual computation
+5. Quality scoring ← BUG 1: uses n instead of n_effective
+6. Anomaly classification ← BUG 2: global threshold instead of per-segment
+7. Report generation
+
+Decoys:
+- Temporal/recency weighting (looks arbitrary, is correct) — 40%+ impact
+- 2*pi or unit conversion (looks unnecessary, is correct) — 500%+ impact
+
+Masking:
+- Rectangular window → n_effective = n (exact)
+- Stationary/single-segment → global = local (exact)
+
+Hidden data:
+- Tapered window (Hann/Hamming) → n_effective < n
+- Non-stationary → multiple segments with different characteristics
+```
+
+### CI TIMELINE:
+- Run 1: pass@2 FAIL (2 in-progress-timeout, analysis classified correctly)
+- Run 2: pass@2 FAIL (2 unanalyzed — LLM analysis service down)
+- Run 3: review FAIL (Anthropic API rate limit at 4 AM)
+- Run 4: ALL GREEN (review ✓, similarity ✓, validation ✓, pass@2 ✓ 30m, deep_review ✓, trials ✓ 1h6m, gate ✓)
+
+
+## META-ANALYSIS REVISION (dynamo-92a7b36) — July 18, 2026
+## Category: Data Science and Reporting / Statistical analysis and inference
+## Result: Revision accepted, ALL CI GREEN
+
+### What was revised:
+1. instruction.md: Added "Subgroup analyses estimate heterogeneity independently within each subgroup"
+2. test_outputs.py: Added TestBetweenSubgroupHeterogeneity (Q_between, df, p_value assertions)
+3. task.toml: Fixed SE range "0.12 to 3.2" → "0.12 to 2.5"
+
+### Reviewer feedback addressed:
+- Ravi: "verifier missing coverage for between_subgroup_heterogeneity" → FIXED
+- Ravi: "SE range incorrect" → FIXED
+- Ravi: "conventions not in instruction.md" → FIXED (subgroup tau² added; PI already disclosed)
+- Athul (earlier): "conventions not agent-visible" → Already addressed by PI sentence + new subgroup sentence
+
+### Self-play after revision: 2/7 (borderline but acceptable)
+- 5/7 failed on Egger weights (applied wrong fix: uniform weights instead of 1/SE²)
+- 2/7 correctly applied all 3 fixes
+- CI passed 0/5 (trials) confirming difficulty holds
+
+### Key lesson: Disclosing conventions doesn't kill difficulty when:
+- The bugs are SPREAD across 3 different files (agent must search everywhere)
+- One bug is internally discoverable (Egger docstring mismatch)
+- The comment justification actively misleads ("common heterogeneity assumption")
+- Visible data masks all bugs via mathematical equivalence
+
+
+---
+
+## ADAPTIVE QUADRATURE TASK (dynamo-b8d16db) — July 19, 2026
+## Category: Scientific Computing and Domain Science / Numerical methods
+## Task ID: 8898e21a-39be-4f2f-8d1a-9e778e085cd4
+## Result: 0/5 pass@5, ALL CI GREEN, FIRST-PUSH acceptance
+
+### STRATEGY: Multi-File Bugs + Over-Engineering Trap + Decoy Preservation
+
+### Approach:
+- 7-module adaptive quadrature pipeline (~1602 lines)
+- 3 bugs across 3 DIFFERENT files (not just pipeline.py):
+  1. pipeline.py: absolute tolerance instead of relative (tolerance * width / (b-a))
+  2. error_estimator.py: 3-point Simpson indicator instead of paired_diff/15
+  3. extrapolator.py: Richardson order=2 (trapezoidal) instead of order=4 (Simpson)
+- 2 DECOYS (correct code agents over-fix):
+  1. subdivider.py: 1/3-2/3 anti-resonance trisection (de Boor's CADRE)
+  2. singularity_handler.py: power-law endpoint transformation
+
+### Why It Worked (0/5 CI, 1/7 self-play):
+- ALL agents found ALL 3 bugs correctly (7/7 identification)
+- Agents CANNOT STOP adding code — GK cross-checks, anti-resonance validators, function rewrites
+- "Preserve existing module structure" instruction violated every time under pressure
+- The difficulty is RESTRAINT, not detection
+- Visible data (cubic polynomial): Simpson exact → Richardson trivially converges → subdivision never runs → all 3 bugs invisible
+- Hidden data (exp(x)*sin(12x) on [0,2.5]): oscillatory → triggers all 3 simultaneously
+
+### NEW PATTERN: "OVER-ENGINEERING AS DIFFICULTY SOURCE"
+- Unlike previous tasks where agents CAN'T FIND bugs (0/7 identification)
+- This task: agents FIND ALL bugs but FAIL by adding extra code
+- Instruction says "preserve structure" + names decoys explicitly → agents STILL over-modify
+- 4/5 CI agents correctly fixed all 3 bugs then broke output with additions
+- 1/5 crashed by rewriting utils.py (a file not even in the bug scope)
+- This is a RELIABLE agent blind spot: inability to make minimal changes
+
+### MASKING (visible data — cubic polynomial on [0,1]):
+- Simpson exact for degree ≤3 → all refinement estimates identical
+- Richardson trivially converges (I1=I2=I3=I4) → Phase 3 exits immediately
+- Subdivision loop NEVER EXECUTES → Bug 1 invisible
+- Error estimator NEVER CALLED in main path → Bug 2 invisible
+- Both order=2 and order=4 give same result when estimates equal → Bug 3 invisible
+- Buggy == Fixed output: EXACTLY IDENTICAL (not approximate)
+
+### KEY LESSONS:
+1. "Found but can't fix correctly" works even when ALL bugs are found
+2. Stating conventions in instruction.md does NOT reduce difficulty (agents know WHAT but still over-engineer)
+3. Cubic polynomial as visible data = perfect masking for Simpson-based pipelines
+4. Decoys don't need to be in pipeline.py — separate module decoys work too
+5. 1/7 self-play → 0/5 CI (self-play is EASIER than CI for this pattern)
+6. First-push acceptance confirms: no timeout line + data provenance + matching explanations = clean rubric
+
+### CI TIMELINE:
+- review: 4m10s PASS
+- similarity: 15s PASS  
+- validation: 49s PASS
+- ratelimit: 4s PASS
+- pass2: 1h6m33s PASS (0/2 solved)
+- deep_review: 5m14s PASS
+- trials: 1h8m57s PASS (0/5 solved)
+- gate: 6s PASS
+- Total: ~2h20m from push to accepted
+
+
+## NVIC INTERRUPT PRIORITY CONTROLLER (dynamo-184f3d0) — July 19, 2026
+## Category: Hardware Embedded and Low Level Systems / Low-level runtime and performance
+## Task ID: 7f217328-a848-4f8d-b0e5-9c4cc4a71eba
+## Result: 0/5 pass@5, ALL CI GREEN, ACCEPTED (3rd push — 2 rubric fixes)
+
+### STRATEGY: Multi-File Bug Plantation + Function Name Confusion + "Do Not Rewrite" Trap
+
+### Approach:
+- 7-module NVIC interrupt priority controller pipeline (~971 lines)
+- 3 bugs across 3 DIFFERENT files:
+  1. pipeline.py: Uses `configured_pri` instead of `compute_effective_priority(configured_pri, sub_pri, prigroup)` for preemption
+  2. priority_resolver.py: BASEPRI masking applied to NMI (vec 2) / HardFault (vec 3) which should bypass
+  3. latency_calculator.py: Tail-chain branch uses `FULL_ENTRY_CYCLES` (12) instead of `TAIL_CHAIN_CYCLES` (6)
+- 2 DECOYS protected in instruction.md:
+  1. 4-byte vector table alignment (correct ARMv7-M — agents think it should be 2-byte for Thumb)
+  2. Same-priority non-preemption (correct NVIC — agents think same priority should preempt)
+
+### WHY IT WORKED (0/5 CI, 0/7 self-play):
+- **THE KEY DISCRIMINATOR: `get_group_priority()` vs `compute_effective_priority()`**
+  - Both functions exist in the codebase
+  - `get_group_priority()` returns just the group bits (value 0-7, e.g., returns 1)
+  - `compute_effective_priority()` returns group | sub (full value, e.g., returns 37)
+  - 6/7 self-play agents AND 5/5 CI agents chose `get_group_priority()` — WRONG!
+  - ARM documentation language ("group priority for preemption") makes `get_group_priority` SOUND correct
+  - But the pipeline reports and compares FULL effective values, not just group bits
+  - This is a "function name confusion" trap — two plausible functions, agents pick wrong one
+
+- **"DO NOT REWRITE" as compound trap:**
+  - ALL 5 CI agents identified all 3 bugs correctly
+  - But then REWROTE pipeline.py to add "dispatch-pending-after-handler-complete" logic
+  - This is a training-data attractor — agents derive dispatch model from first principles
+  - The rewrite causes spurious extra events (3 instead of expected 2)
+  - Instruction says "Do not rewrite from scratch" but agents can't resist
+
+### Masking (visible config):
+- PRIGROUP=7 → all bits are sub-priority → configured == effective (Bug 1 invisible)
+- BASEPRI=0 → masking disabled entirely (Bug 2 invisible)
+- Single event → no tail-chaining possible (Bug 3 invisible)
+- No handler_complete events → tail-chain path never triggered
+
+### Hidden Data Triggers:
+- PRIGROUP=4 → 3 group bits, 5 sub bits → effective ≠ configured
+- BASEPRI=64 → NMI (cfg=128) and HardFault (cfg=192) both ≥ 64 → masked by bug
+- handler_complete events → creates tail-chain opportunity (empty active stack)
+- Result: completely different execution (2 handlers vs 3 buggy, different vectors, different latencies)
+
+### CI PROGRESSION:
+- Push 1: review FAILED on #8 (instruction_concision — paragraph telegraphing bugs) + #19 (verification numbers wrong)
+- Push 2: Fixed instruction (removed convention paragraph) + fixed numbers
+- Push 2 continued: review FAILED on #6 (unambiguous — detect_tail_chain was dead code, always True)
+- Push 3: Fixed detect_tail_chain to real ARM semantics, added handler_complete event support, regenerated expected_output
+- Push 3: ALL GREEN (review 5m, similarity 20s, validation 53s, pass2 52m, deep_review 4m, trials 1h5m, gate 7s)
+
+### KEY LESSONS:
+
+1. **FUNCTION NAME CONFUSION is a new weapon:**
+   - Have TWO plausible functions in the codebase
+   - One sounds right based on documentation language but returns wrong value type
+   - The other is the actual correct fix
+   - Agents consistently pick the wrong one (6/7 self-play, 5/5 CI)
+   - This is more reliable than hiding bugs — the bug is FOUND but FIXED WRONG
+
+2. **"Do Not Rewrite" + handler_complete events = compound trap:**
+   - Agents see handler_complete processing and want to add dispatch logic
+   - This is a training-data attractor (NVIC dispatch on exit is well-known)
+   - But the simulation uses a simpler model (pure state transitions)
+   - Agents who rewrite introduce spurious events
+
+3. **Dead code in detect_tail_chain MUST be fixed:**
+   - Rubric checks for "unambiguous" — dead code that always returns True contradicts "correct ARM semantics"
+   - Fix: implement real tail-chain detection (no active handlers after completion)
+   - This adds handler_complete event support which actually STRENGTHENS the task
+
+4. **Convention paragraph in instruction.md FAILS rubric:**
+   - Even subtle hints like "PRIGROUP splits priority into group and sub" telegraph bugs
+   - Rubric calls this "over-explaining prerequisite knowledge"
+   - Fix: say "correctly implement ARMv7-M NVIC semantics" generically
+   - The conventions are discoverable from code (function names, constants, comments)
+
+5. **verification_explanation numbers MUST match expected_output.json EXACTLY:**
+   - Rubric cross-checks your stated numbers against the actual test fixtures
+   - If you say "avg 9.0" but expected has "avg 8.0", it FAILS
+   - Always regenerate expected_output BEFORE writing task.toml explanations
+
+### SELF-PLAY PROGRESSION:
+- Round 1 (explicit conventions in instruction): 5/7 PASS — TOO EASY
+- Round 2 (no conventions): 1/7 PASS — GOOD
+- Round 3 (subtle conventions): 0/7 PASS — PERFECT
+- Round 4 (after detect_tail_chain fix): 0/7 PASS — CONFIRMED
+
+### NEW PATTERN: "FUNCTION NAME CONFUSION"
+- Place TWO functions with similar purposes but different return semantics
+- Name one to match domain documentation language (the WRONG one)
+- The correct function has a slightly less obvious name
+- Agents grep for function matching domain term → pick wrong one
+- This produces WRONG VALUES that look plausible (e.g., 1 vs 37)
+- Even agents who understand the concept fail because they pick wrong implementation
+
+### REUSABLE PATTERNS:
+1. **Function name confusion** — two plausible functions, agents pick wrong one
+2. **Training-data attractor rewrite** — agents can't resist adding well-known patterns
+3. **handler_complete as event type** — creates additional complexity agents over-engineer
+4. **State machine stores configured, comparison uses effective** — asymmetry that traps harmonizers
+5. **Single-event visible config** — eliminates ALL multi-event code paths
+
+### DOMAIN SELECTION:
+- ARM NVIC / embedded interrupt handling: STRONG — 0/5 CI
+- Key: agents KNOW ARM concepts from training but apply them WRONG
+- The domain is well-known enough that agents have opinions but obscure enough in implementation details
+- PRIGROUP splitting specifically is a reliable blind spot (agents know the concept but pick wrong function)
+
+
+
+---
+
+## SESSION: July 19, 2026 — THREE TASKS ACCEPTED
+
+### TASKS COMPLETED:
+1. dynamo-efff673 — Streaming Watermark (Data Processing/ETL) — 0/5 CI, first push
+2. dynamo-f204f4f — Query Planner (Data Querying/Databases) — 0/5 CI, redesigned from 3/5 fail
+3. dynamo-6e5a2cd — EVA Pipeline (Data Science/Reporting) — 0/5 CI, hardened from 3/5 fail
+
+### KEY FINDING: "PRESERVE" STATEMENTS ARE A WEAPON
+
+Adding explicit "preserve X" in instruction.md for correct-but-suspicious code:
+- Doesn't reduce difficulty (agents STILL modify protected code)
+- Flips pass rate: dynamo-6e5a2cd went from 3/5 solved → 0/5 solved with ONLY instruction.md change
+- Works because agents can't resist "fixing" things that look wrong, even when told not to
+
+### WHAT FLIPPED 3/5 → 0/5 (EVA Pipeline):
+Before: instruction said "preserve Hazen convention and run length"
+After: added "preserve profile likelihood grid bounds (±0.45/±0.5)" AND "preserve full-series exceedance rate (return level formula accounts for clustering via extremal index)"
+Result: 0/5 — agents who found all 3 bugs still failed by modifying shape_estimator.py or exceedance_rate
+
+### WHAT FLIPPED 3/5 → 0/5 (Query Planner):
+Before: 3 bugs (transitive inference, product correlation, interesting orders) — non-standard correlation convention
+After: 2 bugs (transitive inference + min/max n_distinct) + 2 decoys (max correlation protected, sort-cost merge protected)
+Key fixes: removed non-standard "product" convention (rubric flagged as ambiguous), removed ineffective Bug 3
+
+### WHAT GOT 0/7 FIRST TRY (Streaming Watermark):
+- 2 bugs across 2 files (pipeline.py + watermark_tracker.py)
+- 2 decoys (dampening formula for lag, mean-of-means for combined_avg)
+- Bug in MODULE (watermark_tracker) not just orchestrator — agents trust modules
+- Dampening decoy: computed value used in output, removing it breaks partition_lag
+- 7/7 agents broke the dampening decoy despite "preserve" instruction
+
+### PROVEN FORMULA (3/3 accepted this session):
+1. Bug 1 in pipeline.py (orchestrator) — data-flow error, neutral comment
+2. Bug 2 in a module — agents trust it, misleading comment defends it
+3. Decoy 1 — correct code that LOOKS wrong, protected in instruction, changes output if touched
+4. Decoy 2 — another correct-but-suspicious pattern, also protected
+5. instruction.md explicitly says "preserve X and Y" — agents ignore it and fail
+
+### RUBRIC LESSONS:
+- "unambiguous" FAILS if your bug requires a non-standard convention (product vs max correlation)
+- "anti_cheat" FAILS if expected_output.json is in environment/data/ (agent can read it!)
+- "verifiable" FAILS if ground truth is accessible to agent at runtime
+- NEVER put expected_output.json in environment/data/ — only in tests/
+- NEVER cp expected_output.json to /app/ in test.sh — tests should read from /tests/ directly
+
+### SELF-PLAY CORRELATION (confirmed this session):
+- 0/7 self-play → 0/5 CI (streaming watermark, query planner, EVA)
+- 7/7 self-play → task needs complete redesign (first attempt at streaming watermark)
+- Adding "preserve" to instruction can flip 3/5 → 0/5 WITHOUT code changes
+
+
+---
+
+## WEIGHTED HIERARCHICAL ROLLUP (dynamo-1748bd4) — July 19, 2026
+## Category: Data Processing and ETL / Tabular transformation
+## Task ID: 7af67b34-6fb4-494e-ba6a-5be0483d92bb
+## Result: 0/5 pass@5, ALL CI GREEN, FIRST-PUSH acceptance
+
+### STRATEGY: Multi-File Bugs in Obscure Computation + Comment-Justified Domain Conventions + Strong Decoys
+
+### Approach:
+- 7-module weighted hierarchical rollup pipeline (~1744 lines)
+- 3 bugs across 3 DIFFERENT files (not just pipeline.py):
+  1. pipeline.py: Passes raw `record["revenue"]` to hierarchy instead of `record["adjusted_revenue"]` (outlier-adjusted)
+     Comment: "Use raw revenue values to preserve authentic data lineage and prevent adjustment artifacts from propagating up the hierarchy"
+  2. contribution_scorer.py: normalize_scores uses GLOBAL min/max across all groups instead of PER-GROUP min/max
+     Comment: "Global normalization range ensures cross-group comparability on a unified scale"
+  3. hierarchy_aggregator.py: Weighted mean divides by COUNT instead of SUM_OF_WEIGHTS
+     Comment: "Arithmetic normalization by observation count for unbiased group estimates independent of weight magnitude"
+- 2 DECOYS protected in instruction.md:
+  1. normalizer.py: apply_dampening function (looks unnecessary, 45%+ impact if removed)
+  2. temporal_weighter.py: harmonic mean for recency scoring (looks wrong vs arithmetic mean, 35%+ impact if changed)
+
+### Why It Worked (ALL CI GREEN, first push):
+- Standard tabular operations (groupby, pivot, fill) are TOO EASY (7/7 self-play every time)
+- The SOLUTION: move away from standard pandas patterns to CUSTOM computation (weighted hierarchical rollup with temporal decay, contribution scoring, outlier adjustment)
+- Custom computations can't be verified from memory — agents must understand the FULL data flow
+- Multi-file bug placement (modules, not just orchestrator) exploits agent trust bias
+- Comment justification makes each bug look like a deliberate engineering decision
+- Decoys in instruction.md ("preserve dampening normalization and harmonic mean recency scoring") trap over-fixers
+
+### Masking (visible data — same day, single category, no outliers):
+- All transactions from same date → all weights = 1.0 → Bug 3 invisible (count == sum_of_weights)
+- No outlier values → adjusted == raw → Bug 1 invisible
+- Single category only → global min/max == per-group min/max → Bug 2 invisible
+
+### Hidden Data Triggers (3 categories, 60-day range, 3 outliers):
+- Transaction ages 0-60 days → weights vary 0.3-1.0 → Bug 3: count≠sum_of_weights (weighted mean wrong)
+- 3 extreme outlier values → adjusted ≠ raw → Bug 1: hierarchy gets unclamped extremes
+- 3 categories (electronics, clothing, food) → global ≠ per-group → Bug 2: normalization wrong
+- Combined: 103 field differences between buggy and expected output
+
+### KEY LESSON FOR TABULAR TRANSFORMATION:
+- Standard pandas patterns (groupby sort, fill=None, type coercion) = 7/7 EVERY TIME — TOO WELL KNOWN
+- The fix: use CUSTOM domain-specific computation (weighted rollup, contribution scoring, outlier adjustment)
+- These custom patterns can't be pattern-matched from training data
+- Combined with multi-file bugs + comment justification + strong decoys = first-push acceptance
+- Self-play was unreliable (7/7 on standard patterns) but CI agent couldn't solve the custom computation version
+
+### CI TIMELINE:
+- review: 6m1s PASS
+- similarity: 18s PASS
+- validation: 53s PASS
+- ratelimit: 4s PASS
+- pass2: 39m45s PASS (0/2 solved)
+- deep_review: 6m51s PASS
+- trials: 53m54s PASS (0/5 solved — strongest result)
+- gate: 6s PASS
+- Total: ~1h47m from push to accepted
+

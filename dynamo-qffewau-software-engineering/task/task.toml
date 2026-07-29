@@ -1,32 +1,38 @@
-artifacts = ["/app/output_eval_1.json", "/app/output_eval_2.json"]
+artifacts = []  # paths the verifier reads from the agent (e.g. ["/app/output.json"]) — must be above the first [section]
 
 [task]
-name = "dynamo/task-runner"
-description = "Debug a multi-stage task execution pipeline with dependency resolution, parallel execution, and retry support."
+name = "dynamo/your-task-name"  # required format: org/name (Harbor needs the slash); name part lowercase kebab-case, <=3 words
+description = ""                 # one-line summary of the task
 
 [metadata]
-category = "software_engineering"
-subcategory = "scripting_and_automation"
-model_tested = "GPT-5.4"
-agent_tested = "Terminus-2"
-task_objective = ["fix", "debug"]
-artifact_type = ["codebase", "generated_output_artifact"]
-expert_time_estimate_hours = 5.0
-difficulty_explanation = "The task runner spans 6 modules (~1100 lines) implementing a realistic CI/CD pipeline executor. Three bugs are distributed across executor.py and runner.py, with two decoy patterns (correct-but-suspicious code) that agents must leave untouched. Bug 1: two-pass variable expansion where the second pass must search the partially-expanded result rather than the original template. Bug 2: the runner calls get_scheduled_groups() (priority ordering) instead of get_parallelizable_groups() (alphabetical ordering) for parallel group computation—agents must choose between two similar resolver functions where the priority-based one sounds more correct but produces wrong task order. Bug 3: retry state management rebuilds the environment, losing captured exports. The decoys compound difficulty: a post-collection alphabetical sort looks redundant but is essential for deterministic output, and a captured-value sanitizer looks like data corruption but handles shell control characters. Visible taskfile uses parallelism=1 with no chained vars and no retries, making all bugs invisible. Data is synthetic, shaped like real CI/CD pipeline configurations. A build systems engineer familiar with DAG scheduling semantics and template expansion would identify these issues."
-solution_explanation = "Three patches in two files: (1) executor.py _expand_variables() changes the second-pass regex iteration from searching 'command' (the original template) to searching 'result' (the partially-expanded string after ${VAR} processing)—this enables chained expansion where $VAR references introduced by ${VAR} substitution are correctly resolved. (2) executor.py _execute_with_retry() removes the 'env = self._build_env(task)' line that rebuilds environment on retry—this preserves captured stdout exports from prior successful commands so that downstream commands can reference exported variables like ARTIFACT_TAG. (3) runner.py _run_parallel() replaces resolver.get_scheduled_groups() with resolver.get_parallelizable_groups()—the scheduled variant orders tasks by priority within each level, but the pipeline requires alphabetical ordering for deterministic output. The post-collection sort (group_results.sort) and sanitize_captured_value helper are correct behaviors that must be preserved."
-verification_explanation = "The verifier grades pre-existing output files that the agent produced during its run phase — it never re-executes agent code. The instruction tells the agent to run the fixed pipeline on two evaluation taskfiles (eval_taskfile.json with parallelism=3 and three build services, eval_taskfile_2.json with a different set of deploy services) and write output_eval_1.json and output_eval_2.json. The verifier compares these against pre-computed expected outputs. The two structurally different eval taskfiles prevent hardcoding: build services are named build-api/build-gateway/build-worker while deploy services are deploy-auth/deploy-backend/deploy-proxy, with different sleep durations and different variable names (ARTIFACT_TAG vs RELEASE_TAG). All three bugs must be fixed to pass both datasets: Bug 1 causes unresolved variable references in the build_vars.sh / runtime.cfg command (literal '$ARTIFACT_TAG' / '$RELEASE_TAG' instead of resolved values). Bug 2 causes parallel tasks to appear in completion-time order rather than alphabetical order. Bug 3 causes the exported variable to disappear after retry, so the downstream command writes an empty/wrong value."
+# --- Pre-seeded for you when this repo was created — DO NOT EDIT ---
+category = "software_engineering"                      # diversity category, assigned to your task by the Dynamo team
+subcategory = "scripting_and_automation"                   # diversity subcategory, assigned by the Dynamo team
+# --- Fixed for this dataset — LEAVE AS-IS ---
+model_tested = "GPT-5.4"           # difficulty-benchmarking model (do not change)
+agent_tested = "Terminus-2"        # difficulty-benchmarking agent (do not change)
+# --- You fill these in ---
+# task_objective / artifact_type: pick from .dynamo/diversity-taxonomy.toml (lowercase snake_case).
+task_objective = []                # e.g. ["implement", "debug"]
+artifact_type = []                 # e.g. ["codebase", "configuration_file"]
+expert_time_estimate_hours = 0     # best-case hours for a focused domain expert with the intended insight
+difficulty_explanation = ""        # why this task is hard for agents and humans
+solution_explanation = ""          # high-level approach and key insights
+verification_explanation = ""      # how the tests verify correctness
 
 [verifier]
-timeout_sec = 120.0
+timeout_sec = 120.0                # increase based on your test suite's runtime demands
+# Canonical TB2: the verifier runs in the environment image (no separate tests/Dockerfile).
+# Harbor overlays tests/ at verify time; leave environment_mode unset for this shared model.
 
 [agent]
-timeout_sec = 3600.0
+timeout_sec = 120.0                # raise for hard tasks — agents may run for many minutes or hours
 
 [environment]
-build_timeout_sec = 600.0
-cpus = 1
-memory_mb = 2048
-storage_mb = 10240
-gpus = 0
-allow_internet = true
-mcp_servers = []
+build_timeout_sec = 600.0          # max seconds for the Docker build
+cpus = 1                           # increase for parallel/compute-heavy workloads
+memory_mb = 2048                   # increase for large datasets or in-memory processing
+storage_mb = 10240                 # increase for tasks with large files or build artifacts
+gpus = 0                           # max 1, expect H100
+allow_internet = true              # open internet is available to the agent
+mcp_servers = []                   # optional MCP servers to expose to the agent

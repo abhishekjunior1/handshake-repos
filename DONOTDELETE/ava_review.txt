@@ -1,0 +1,307 @@
+# AVA_REVIEW & QC_GATE — Complete Reference (July 2026)
+# ============================================================================
+# ⚠️  THE OLD "set -e + run pipeline in test.sh" PATTERN IS DEPRECATED.
+#     It FAILS the new qc_gate check. Use the NEW PATTERN below for ALL tasks.
+# ============================================================================
+
+## WHAT IS QC_GATE? (replaced old AVA as the main gate)
+- Runs AFTER pass2, BEFORE trials
+- qc_eval (LLM static analysis, ~8-13 min) + qc_exec (execution probes, ~3-8 min)
+- Both must PASS → if either fails, gate blocks, trials skipped
+- 30 checks across 5 families: A (oracle), B (spec), C (verifier), D (fixtures), E (anti-cheat)
+
+## THE NEW PROVEN PATTERN (passes ALL checks)
+
+### Architecture:
+1. Eval configs in /app/ (environment/data/) — agent-visible during agent run
+2. instruction.md tells agent to run pipeline on eval configs and save outputs
+3. Agent fixes bugs + runs pipeline during ITS OWN run
+4. test.sh ONLY runs pytest — NEVER runs agent code
+5. Expected outputs as plain JSON in tests/
+
+### test.sh (copy exactly):
+```bash
+#!/bin/bash
+mkdir -p /logs/verifier
+
+echo "0" > /logs/verifier/reward.txt
+
+# Agent was instructed to run pipeline on eval configs during its turn.
+# Verifier only reads pre-existing outputs — never re-runs agent code.
+pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py -rA
+
+if [ $? -eq 0 ]; then
+  echo "1" > /logs/verifier/reward.txt
+else
+  echo "0" > /logs/verifier/reward.txt
+fi
+```
+
+### instruction.md must include:
+```
+After fixing, run the pipeline on the evaluation configurations:
+
+    python3 /app/pipeline.py /app/eval_config_1.json /app/output_eval_1.json
+    python3 /app/pipeline.py /app/eval_config_2.json /app/output_eval_2.json
+```
+
+### test_outputs.py required pattern:
+```python
+import json, os
+TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def _load_output(path):
+    """Load output with symlink protection."""
+    assert os.path.exists(path), f"Output not found: {path}"
+    assert not os.path.islink(path), f"Must not be a symlink: {path}"
+    real = os.path.realpath(path)
+    assert real.startswith("/app/"), f"Escapes /app: {real}"
+    with open(path) as f: return json.load(f)
+
+def _load_expected(filename):
+    """Load expected from sealed fixtures."""
+    with open(os.path.join(TESTS_DIR, filename)) as f: return json.load(f)
+
+# REQUIRED: input-derivation test (proves output was computed, not hardcoded)
+def test_output_derived_from_input():
+    """Prove output was computed from running the fixed pipeline on the eval config.
+    
+    Read from /app/eval_config.json directly and cross-check output fields
+    that can only be correct if the pipeline was actually run on this input.
+    """
+    with open("/app/eval_config_1.json") as f:
+        config = json.load(f)
+    output = _load_output("/app/output_eval_1.json")
+    # Assert output fields derived from this specific config's values
+    # e.g.: assert output["some_field"] == config["some_input_field"]
+    # This proves the output is tied to this input, not a static copy
+```
+
+### task.toml:
+```toml
+artifacts = ["/app/output_eval_1.json", "/app/output_eval_2.json"]
+```
+
+### File structure:
+```
+environment/data/
+  pipeline.py, modules...
+  metrics.json           ← simple visible (masks bugs, single service/window)
+  eval_config_1.json     ← agent-visible, triggers bugs
+  eval_config_2.json     ← agent-visible, different structure
+
+tests/
+  expected_output_1.json ← plain JSON only (no encoding, no Python files)
+  expected_output_2.json ← plain JSON only
+  test_outputs.py        ← symlink guard + input-derivation test
+  test.sh                ← only pytest, zero pipeline execution
+```
+
+## HOW TO PASS EACH COMMON CHECK
+
+### A6 (Oracle Edge-Case) — usually FALSE POSITIVE
+- QC confuses output-shaped standalone files with input files
+- Fix: ONLY plain JSON in tests/ — no conftest.py, expected_data.py with dicts
+- If still blocking: rename files or push new commit to bust stale QC cache
+
+### B6 (Unstated Data Anomaly) — CATCH-22
+- Document → rubric fails "essential_difficulty"; Don't → QC flags B6
+- Solution: Use 2 eval configs with DIFFERENT service/key structures
+  so hardcoding one config's answer fails the other
+
+### E3 (Reward Exploit):
+- Fix: NEVER run pipeline.py in test.sh
+
+### E4 (Root/Elevated Access):
+- Fix: Agent runs pipeline in agent phase; /tests/ not mounted then
+
+### E5 (Symlink):
+- Fix: assert not os.path.islink(path) + realpath check in _load_output()
+
+### AVA sound_verifier (hardcoding concern):
+- Fix: Add input-derivation test that reads /app/eval_config.json and
+  cross-checks output fields derived from that specific input's values
+- Example: read VERSION env var from eval config, verify output contains
+  the expanded value (proves pipeline was run, not output hardcoded)
+
+## COMMON FAILURE MODES
+
+| Failure | Cause | Fix |
+|---------|-------|-----|
+| qc_eval times out 1hr | base64-encoded expected outputs | Use plain JSON |
+| A6 false positive | output-shaped Python files in tests/ | Plain JSON only |
+| metrics.json triggers bugs | Accidentally overwritten with hidden data | Keep metrics.json simple |
+| AVA sound_verifier FAIL | No input-derivation test | Add test reading eval config |
+| QC stuck on old base | Cached commit hash | Push new commit |
+| Stale numbers in task.toml | Changed hidden data | Regenerate numbers |
+
+## OLD vs NEW PATTERN
+
+| | OLD (DEPRECATED) | NEW (CURRENT) |
+|-|------------------|---------------|
+| test.sh | set -e + python3 pipeline.py | Only pytest |
+| reward | echo "0.0"/"1.0" | echo "0"/"1" + if/then |
+| set -e | Required | NOT used |
+| Agent code at verify | Runs pipeline | Never runs |
+| Eval configs | /tests/ hidden | /app/ agent-visible |
+
+## REFERENCE REPOS (all pass qc_gate, July 2026):
+- dynamo-782c53b-software-engineering
+- dynamo-3e0e605-data-science-and-reporting
+- dynamo-f1c8db0-systems-infrastructure-and-operations
+
+
+## DYNAMO-C4752DB LEARNINGS (July 26, 2026) — AVA + deep_review patterns
+
+### Task: dynamo-c4752db-data-processing-and-etl (Streaming ETL)
+### AVA result: PASSED on run 3+ after fixing window sort
+
+---
+
+### AVA FAILURE: String sort of integer-derived window IDs (run 2 → run 3)
+**What happened:**
+- Pipeline used `sorted(windowed_events.keys())` — string sort on window IDs like "16", "17", "18"
+- AVA flagged: for window IDs across decades (e.g. "9" and "16"), string sort ≠ integer sort → coverage gap
+- Our eval datasets only had 2-digit IDs (same width), so string == integer in practice
+- But AVA reasons about the GENERAL CASE, not just our specific data
+
+**Fix:**
+```python
+window_ids = sorted(windowed_events.keys(), key=int)
+```
+
+**And add to test_outputs.py:**
+```python
+def test_window_ids_order(self):
+    """Window IDs must appear in ascending integer order."""
+    out = _load_output("/app/output_eval_1.json")
+    exp = _load_expected("expected_eval_1.json")
+    out_ids = [w["window_id"] for w in out["windows"]]
+    exp_ids = [w["window_id"] for w in exp["windows"]]
+    assert out_ids == exp_ids, f"Window ID order: got {out_ids}, expected {exp_ids}"
+```
+
+---
+
+### deep_review FAILURE: no_contradictions (run 3 → run 4)
+**What happened:**
+- pipeline.py had comment: "Raw event volume reflects true sensor load for rate estimation, independent of semantic deduplication which applies to alert triggering only."
+- Code right after: `compute_window_stats(events=deduped_events, count=effective_count, ...)`
+- The comment said "raw event volume" but code used deduped events
+- One pass2 agent correctly fixed both bugs, then read this comment and changed rate_calculator.py to use raw events — causing failure
+- deep_review flagged: `no_contradictions FAIL`, `decisive_answer_discoverable FAIL`
+
+**Fix:** Delete the misleading comment entirely. 3 lines removed.
+
+**RULE:** Any comment near a bug that says "raw", "volume", or describes what the parameter SHOULD be must be removed if it contradicts the correct behavior. If the comment was placed there to "justify" the buggy value, it creates a spec contradiction.
+
+---
+
+### pass2 FAILURE: Undisclosed baseline convention (run 4 → run 5)
+**What happened:**
+- Bug 2 (EMA smoothing) was correctly removed by one agent
+- Agent then additionally changed `baseline=global_baseline` → leave-one-out baseline (excluding current window)
+- Leave-one-out is a LEGITIMATE statistical practice for anomaly detection
+- instruction.md only protected "IQR capping" and "cumulative mean_value" as intentional
+- The global baseline convention was never disclosed
+- pass2 classified it as `approach_validity: FAIL` (spec gap, not valid agent failure)
+
+**Fix:** Add to instruction.md's "intentional behaviors" sentence:
+```
+Anomaly scoring uses a self-inclusive global baseline — all windows' rate 
+statistics are used as the baseline when scoring each window.
+```
+
+**RULE:** For ANY computation where multiple valid implementations exist, instruction.md MUST pin the specific convention used. Common alternatives agents will try:
+- Leave-one-out vs self-inclusive baseline
+- Sample variance (ddof=1) vs population variance (ddof=0)
+- Mean vs median for baseline
+- Global normalization vs per-group normalization
+- Chronological ordering vs alphabetical ordering
+
+---
+
+### WHAT PASSED AVA (self-inclusive after run 3):
+1. `sorted(windowed_events.keys(), key=int)` — unambiguous integer sort
+2. `window_ids_order` assertion in tests — proves correct order enforced
+3. `TESTS_DIR = os.path.dirname(os.path.abspath(__file__))` — not hardcoded
+4. Symlink guard: `os.path.islink` + `realpath.startswith("/app/")`
+5. `if [ $? -eq 0 ]; then ... else ... fi` — explicit else branch in test.sh
+6. Class-based test structure matching reference repo (dynamo-3e0e605)
+7. Per-field granular assertions (dedup_counts, mean_values, anomaly_scores separately)
+8. 2 structurally DIFFERENT eval datasets (3 windows vs 5 windows) → B6 safe
+
+### THE CLASS-BASED TEST PATTERN THAT PASSES (copy from dynamo-3e0e605 reference):
+
+```python
+TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def _load_output(path):
+    """Load an output file with symlink protection."""
+    assert os.path.exists(path), f"Output not found: {path}"
+    assert not os.path.islink(path), f"Output must not be a symlink: {path}"
+    real_path = os.path.realpath(path)
+    assert real_path.startswith("/app/"), f"Output escapes /app: {real_path}"
+    with open(path, "r") as f:
+        return json.load(f)
+
+def _load_expected(filename):
+    """Load expected output from sealed test fixtures."""
+    with open(os.path.join(TESTS_DIR, filename), "r") as f:
+        return json.load(f)
+
+# Standalone existence checks (flat functions)
+def test_eval1_output_exists():
+    """The agent must produce /app/output_eval_1.json."""
+    assert os.path.exists("/app/output_eval_1.json")
+
+# Class-based structural tests
+class TestEval1Structure:
+    """Structural assertions (different values from eval2 — proves not hardcoded)."""
+    
+    def test_window_count(self):
+        """Must produce exactly N windows."""
+        out = _load_output("/app/output_eval_1.json")
+        exp = _load_expected("expected_eval_1.json")
+        assert len(out["windows"]) == len(exp["windows"])
+    
+    def test_window_ids_order(self):
+        """Window IDs must appear in ascending integer order."""
+        out = _load_output("/app/output_eval_1.json")
+        exp = _load_expected("expected_eval_1.json")
+        assert [w["window_id"] for w in out["windows"]] == [w["window_id"] for w in exp["windows"]]
+    
+    def test_total_events(self):
+        """summary.total_events must match."""
+        out = _load_output("/app/output_eval_1.json")
+        exp = _load_expected("expected_eval_1.json")
+        assert out["summary"]["total_events"] == exp["summary"]["total_events"]
+
+# Class-based per-field tests (name the specific discriminator in docstring)
+class TestEval1Fields:
+    def test_mean_values(self):
+        """mean_value must match (Bug 1 discriminator)."""
+        out = _load_output("/app/output_eval_1.json")
+        exp = _load_expected("expected_eval_1.json")
+        for i, (ow, ew) in enumerate(zip(out["windows"], exp["windows"])):
+            assert ow["rates"]["mean_value"] == ew["rates"]["mean_value"]
+    
+    def test_anomaly_scores(self):
+        """Anomaly scores must match (Bug 2 discriminator)."""
+        out = _load_output("/app/output_eval_1.json")
+        exp = _load_expected("expected_eval_1.json")
+        for i, (ow, ew) in enumerate(zip(out["windows"], exp["windows"])):
+            assert ow["anomaly"]["score"] == ew["anomaly"]["score"]
+    
+    def test_full_equality(self):
+        """Full JSON equality."""
+        out = _load_output("/app/output_eval_1.json")
+        exp = _load_expected("expected_eval_1.json")
+        assert out == exp
+```
+
+### REFERENCE REPOS (confirmed passing AVA + qc_gate, July 2026):
+- dynamo-3e0e605-data-science-and-reporting (REFERENCE — use as template)
+- dynamo-782c53b-software-engineering
+- dynamo-f1c8db0-systems-infrastructure-and-operations
+- dynamo-c4752db-data-processing-and-etl (this session — run 5 passed all gates)
