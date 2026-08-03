@@ -1,0 +1,159 @@
+{
+  "summary": {
+    "total_bytes_transferred": 4160,
+    "total_transfer_operations": 9,
+    "total_preemptions": 8,
+    "total_cycles_used": 9,
+    "completed_transfers": 2,
+    "average_burst_size": 7.56
+  },
+  "transfers": [
+    {
+      "cycle": 0,
+      "channel_id": 0,
+      "source_bus_addr": 2093064,
+      "dest_bus_addr": 3141640,
+      "burst_size": 8,
+      "total_transfers": 2,
+      "bytes_transferred": 8,
+      "chain_length": 2,
+      "preempted": true,
+      "complete": false
+    },
+    {
+      "cycle": 1,
+      "channel_id": 0,
+      "source_bus_addr": 2093064,
+      "dest_bus_addr": 3141640,
+      "burst_size": 8,
+      "total_transfers": 2,
+      "bytes_transferred": 8,
+      "chain_length": 2,
+      "preempted": true,
+      "complete": false
+    },
+    {
+      "cycle": 2,
+      "channel_id": 0,
+      "source_bus_addr": 2093064,
+      "dest_bus_addr": 3141640,
+      "burst_size": 8,
+      "total_transfers": 2,
+      "bytes_transferred": 8,
+      "chain_length": 2,
+      "preempted": true,
+      "complete": false
+    },
+    {
+      "cycle": 3,
+      "channel_id": 0,
+      "source_bus_addr": 2093064,
+      "dest_bus_addr": 3141640,
+      "burst_size": 8,
+      "total_transfers": 2,
+      "bytes_transferred": 8,
+      "chain_length": 2,
+      "preempted": true,
+      "complete": false
+    },
+    {
+      "cycle": 4,
+      "channel_id": 0,
+      "source_bus_addr": 2093064,
+      "dest_bus_addr": 3141640,
+      "burst_size": 8,
+      "total_transfers": 2,
+      "bytes_transferred": 8,
+      "chain_length": 2,
+      "preempted": true,
+      "complete": false
+    },
+    {
+      "cycle": 5,
+      "channel_id": 0,
+      "source_bus_addr": 2093064,
+      "dest_bus_addr": 3141640,
+      "burst_size": 8,
+      "total_transfers": 2,
+      "bytes_transferred": 8,
+      "chain_length": 2,
+      "preempted": true,
+      "complete": false
+    },
+    {
+      "cycle": 6,
+      "channel_id": 0,
+      "source_bus_addr": 2093064,
+      "dest_bus_addr": 3141640,
+      "burst_size": 8,
+      "total_transfers": 2,
+      "bytes_transferred": 8,
+      "chain_length": 2,
+      "preempted": true,
+      "complete": false
+    },
+    {
+      "cycle": 7,
+      "channel_id": 0,
+      "source_bus_addr": 2093064,
+      "dest_bus_addr": 3141640,
+      "burst_size": 8,
+      "total_transfers": 2,
+      "bytes_transferred": 8,
+      "chain_length": 2,
+      "preempted": true,
+      "complete": true
+    },
+    {
+      "cycle": 8,
+      "channel_id": 1,
+      "source_bus_addr": 4190212,
+      "dest_bus_addr": 5238788,
+      "burst_size": 4,
+      "total_transfers": 4,
+      "bytes_transferred": 4096,
+      "chain_length": 2,
+      "preempted": false,
+      "complete": true
+    }
+  ],
+  "channel_statistics": [
+    {
+      "channel_id": 0,
+      "priority": 0,
+      "total_bytes": 64,
+      "transfer_count": 8,
+      "preemption_count": 8,
+      "efficiency": 0.125
+    },
+    {
+      "channel_id": 1,
+      "priority": 2,
+      "total_bytes": 4096,
+      "transfer_count": 1,
+      "preemption_count": 0,
+      "efficiency": 2.0
+    }
+  ],
+  "interrupt_log": [
+    {
+      "channel_id": 0,
+      "cycle": 7,
+      "status_hex": "0x00000001",
+      "completion_pending": true,
+      "error_pending": false
+    },
+    {
+      "channel_id": 1,
+      "cycle": 8,
+      "status_hex": "0x00020003",
+      "completion_pending": true,
+      "error_pending": true
+    }
+  ],
+  "performance": {
+    "bus_utilization": 1.0,
+    "average_latency_cycles": 4.5,
+    "throughput_bytes_per_cycle": 462.22
+  }
+}

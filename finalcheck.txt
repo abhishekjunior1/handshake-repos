@@ -1,5 +1,4 @@
 # DYNAMO TASK — COMPLETE CI GUIDE
-# Written from: dynamo-3c1bc1c, dynamo-04a62da, dynamo-b56f28d, dynamo-6b6e49d (Jul 2026)
 # Goal: another Kiro reads this, avoids every failure we hit, accepts on ≤3 pushes
 # ============================================================================
 
@@ -21,7 +20,10 @@ Rate limit: 6 CI runs per day per task.
 
   task/
   ├── task.toml                    # metadata — artifacts at TOP above all [sections]
-  ├── instruction.md               # agent sees ONLY this — no headers, no timeout line
+  ├── instruction.md               # agent sees ONLY this — no headers, NO TIMEOUT LINE
+  │                                # (the onboarding doc says to add one. IT IS WRONG.
+  │                                #  it is a blocking instruction_concision FAIL.
+  │                                #  see PART 14a)
   ├── solution/
   │   ├── solve.sh                 # #!/bin/bash + python3 "$(dirname "$0")/solve.py"
   │   └── solve.py                 # patches buggy files + runs pipeline
@@ -277,6 +279,116 @@ EVERYTHING in it. Never put expected outputs, solve.py, or answer keys here.
       print('OK — task.toml mentions all patched files')
   EOF
 
+### CHECK 11: output schema is enumerated PER SECTION (added Jul 30 — cost 1 push)
+  Never grep the whole instruction for a field name. A field named anywhere else
+  (e.g. "priority" appearing in a prose rule about the CONFIG) makes a naive
+  substring check report "documented" when that section never lists it.
+  Compare each section's parenthetical against THAT section's real keys:
+
+  python3 - <<'EOF'
+  import json, re
+  exp  = json.load(open('task/tests/expected_output_1.json'))
+  inst = open('task/instruction.md').read()
+  PROSE = {'per','channel','event','list','of','with','and','totals','record','records'}
+  ok = True
+  for name, v in exp.items():
+      m = re.search(r'`%s` \(([^)]*)\)' % name, inst)
+      if not m:
+          print(f'FAIL {name}: no enumeration in instruction.md'); ok = False; continue
+      listed = {t.strip().split()[-1] for t in m.group(1).split(',') if t.strip()}
+      actual = set(v[0]) if isinstance(v, list) else set(v)
+      missing, spurious = sorted(actual - listed), sorted(listed - actual - PROSE)
+      if missing or spurious: ok = False
+      print(f'{"OK  " if not (missing or spurious) else "FAIL"} {name}: '
+            f'missing={missing or "-"} spurious={spurious or "-"}')
+  print('exact 1:1:', ok)
+  EOF
+  # missing  = graded but undocumented -> ava_review/no_false_rejection BLOCK
+  # spurious = documented but not graded -> agent builds a field nothing wants
+
+### CHECK 12: hidden fixtures use the SAME schema as the visible config
+  A hidden config with a differently-named key is silently swallowed by
+  dict.get(key, default) — the answer key then encodes an accident, not the rule.
+
+  python3 - <<'EOF'
+  import json
+  files = [('visible','task/environment/data/dma_config.json')] + \
+          [(f'hidden{n}', f'task/tests/hidden_config_{n}.json') for n in (1,2,3)]
+  ref = None
+  for name, p in files:
+      c = json.load(open(p))
+      keys = sorted({k for ch in c['channels'] for d in ch.get('descriptors',[]) for k in d})
+      print(f'  {name:8} nested-record keys={keys}')
+      if ref is None: ref = keys
+      elif keys != ref: print(f'  FAIL — {name} is OFF-SCHEMA vs visible config')
+  EOF
+  # Adapt 'channels'/'descriptors' to your task's nested structure.
+
+### CHECK 13: every rule stated in instruction.md is exercised by a fixture
+  A rule you state but no config triggers -> ava_review/sound_verifier advisory.
+  A rule a config triggers but you never state -> qc_gate B1/B4 BLOCK.
+  For each behavioural rule in instruction.md, name the fixture that exercises it.
+  If none does: delete the rule (preferred) or add a fixture that exercises it.
+  Ties, disabled/skipped entries and "first/lowest wins" clauses are the usual offenders.
+
+### CHECK 14: rival-reading test (catches qc_gate B1 before CI does)
+  For every rule with two defensible readings, IMPLEMENT the rival reading on top of
+  the full fix and run it against every graded fixture.
+    - rival output == oracle output on all fixtures -> unpinned but harmless
+    - rival differs on ANY fixture and instruction.md does not forbid it -> B1 BLOCK
+  Fix by pinning the deciding choice in instruction.md — pin ONLY the choice that
+  changes the graded answer, never the method that reveals a bug.
+
+### CHECK 15: every bug must be load-bearing (added Aug 1 — cost 1 redesign cycle)
+  A bug that another layer silently compensates for is a free pass: the agent fixes
+  n-1 bugs and still scores 1. Run ALL proper subsets of your fixes, not just "none"
+  and "all". With 3 bugs that is 6 runs; every one must score 0.
+
+  for c in "1" "2" "3" "1,2" "1,3" "2,3"; do run_with_only_those_fixes "$c"; done
+  # every line must print reward=0
+
+  How it bit us (dynamo-qffewau): the variable-expansion bug wrote
+  `tag=$ARTIFACT_TAG` into a double-quoted shell command, so the SHELL re-expanded it
+  from the environment and produced the correct file anyway. Fixing bugs 2+3 alone gave
+  byte-perfect output. Fix was to single-quote the write so the shell cannot paper over
+  Python's failure. Watch for compensators generally: shell expansion, defaults,
+  clamps, retries, `or`-fallbacks.
+
+### CHECK 16: pin any agent-writable input the VERIFIER derives from (E2)
+  If tests compute expected values from a file under /app, the submission can edit that
+  file to bend the expectations. Hash-pin it and check inside the loader so every
+  derivation path is covered by construction:
+
+    def load_taskfile(path):
+        raw = open(path,'rb').read()
+        assert hashlib.sha256(raw).hexdigest() == PINNED[path], f"{path} was modified"
+        return json.loads(raw)
+
+  Then add a named test per input so tampering fails loudly instead of silently
+  shifting what "expected" means. Verify with a tamper probe: edit the input, solve
+  correctly against the EDITED file, and confirm reward=0.
+
+### CHECK 17: tests/ must not contain a copyable answer (qc_gate C3)
+  If tests/expected_output.json is byte-identical to what the agent must produce, then
+  anywhere it is readable, `cp` beats the task — and NO content assertion can detect it,
+  because the copy IS the correct answer. Input-derivation tests do not help.
+  Ship logic, not an answer:
+    - derive granular expectations from the agent-visible inputs (pinned per CHECK 16)
+    - pin whole-output exactness with a SHA-256 over a canonical projection that drops
+      wall-clock fields — a digest cannot be copied into /app as a passing output
+  Probe: `cp /tests/<any fixture> /app/<output>` must score 0, and `ls tests/` should
+  show no file shaped like the deliverable.
+
+### CHECK 18: keep the verifier in ONE file
+  73 of 74 accepted tasks ship tests/test_outputs.py with no helper module. A separate
+  module in tests/ is the outlier, and AVA reads one as "the verifier imports its oracle
+  module". Inline the helpers. (qc_gate.txt says the same for a different reason:
+  "ONLY plain JSON expected outputs in /tests/ — no Python files".)
+  Note test.sh must still literally contain the string "test_outputs.py" — a static
+  check greps for it.
+
+---
+
 ---
 
 ## PART 5 — WHAT TRIGGERS EACH CI FAILURE
@@ -320,6 +432,89 @@ FIX: Remove ALL comments from test.sh (zero exceptions)
 TEST: python3 /Users/ABKUMAR2501/Desktop/handshake-repos/ava_simulator.py
       # attacks 2-5 must all be BLOCKED
       # attack 1 (copy_expected) always passes locally — that's OK, Harbor prevents it in production
+
+### ava_review / no_false_rejection (BLOCK)   [Jul 30 — cost 1 push]
+TRIGGERS: instruction.md enumerates an output section but omits a key the verifier grades,
+          especially right after you tighten the contract with wording like
+          "Every field above is compared exactly"
+          -> a submission that builds EXACTLY the documented schema is rejected with
+             "missing key(s) ['priority']"
+NOTE: This is the OPPOSITE direction from every other AVA finding. AVA checks BOTH
+      "can a cheat pass" AND "can a correct answer fail". Tightening the verifier
+      without re-verifying the contract against real data creates this.
+FIX: Enumerate EVERY key of EVERY graded section (run CHECK 11).
+     Only claim "compared exactly" after CHECK 11 prints exact 1:1.
+
+### ava_review / verifier_coverage (BLOCK)   [Jul 30 — cost 1 push]
+TRIGGERS: The harness records a status/diagnostic field that NO test consumes.
+          Typical: answer_key_removed, tests_dir_sealed, sandbox_ok, unprivileged.
+          If the guarantee could not be established, the verifier grades anyway
+          -> it FAILS OPEN on the exact property the harness exists to guarantee.
+FIX: Every status field must be asserted or deleted. Fail closed:
+       def test_answer_key_was_isolated(self):
+           s = harness_status()
+           assert s["answer_key_removed"] == [1,2,3] or \
+                  (s["tests_dir_sealed"] and s["unprivileged"]), s
+RULE: Never add a diagnostic field "for the report". If it is worth recording,
+      it is worth asserting. Graceful degradation in a VERIFIER is a bug —
+      if isolation could not be established, refuse to grade.
+
+### qc_gate / B1 ambiguous rule (BLOCK)   [Jul 30 — cost 2 pushes]
+TRIGGERS: Two readings of one rule agree on the visible config AND most hidden configs
+          but diverge on exactly one -> "nothing agent-visible forces one".
+CAUSE THAT BIT US: adding a hidden config to close a MINOR advisory introduced a
+          BLOCKING ambiguity. The new config was the sole discriminator for a whole
+          family of readings, not just the one we intended to exercise.
+FIX: Pin the deciding choice in instruction.md in one sentence, WITHOUT revealing the
+     bug. Pin WHICH quantity applies where; never state the comparison direction.
+       good: "selection uses the configured priority; the urgency-adjusted effective
+              priority governs preemption eligibility only"
+       bad:  "a channel preempts when its effective priority is numerically lower"  <- leaks the fix
+RULE: Never add a fixture to chase a non-blocking advisory late in the cycle.
+      Trade a minor advisory for a blocking issue and you lose ~3h per push.
+
+### cosine_similarity (BLOCK or INFRA)   [Aug 1 — cost 4 runs]
+A newly-enforced gate that runs FIRST; everything else skips when it fails. It has two
+completely different failure modes and they look identical in the checks list.
+
+REAL VERDICT — read the "Task Similarity Check" sticky comment:
+  | Instruction | 1.0000000000000018 |   Threshold: 0.9
+  | Verifier    | 0.9711             |
+  It scores on EMBEDDINGS, not text. Rewriting wording does not move it: we replaced
+  the entire verifier (literal char-diff 0.097) and the verifier score stayed 0.97.
+  A score near 1.0 means the task is semantically the same task — same modules, same
+  inputs, same outputs. Cause for us: the same task had ALREADY been delivered from
+  this repo, so it matched itself. Not fixable by editing; needs a genuinely new task
+  or an admin decision.
+
+INFRA — no verdict was produced, log shows one of:
+  ##[error]The DYNAMO_TASK_SIMILARITY_API_TOKEN secret is not available to this workflow.
+  curl: (28) Operation timed out after 30002 milliseconds with 0 bytes received
+  "could not produce a verdict (HTTP status: 000)"   <- 000 means NO response at all
+FIX: git commit --allow-empty -m "Retry pipeline after similarity API timeout" && push.
+LESSON: the empty-commit retry DOES work here — we saw it fail 3x then pass. Do not
+conclude "persistent, stop pushing" from two identical infra failures; the token was
+absent, then present-but-timing-out, then fine. Distinguish "service answered with a
+verdict" from "service never answered" before deciding.
+
+### ava_review BLOCK with ONLY advisory findings   [Aug 3]
+SYMPTOM: the AVA box lists its findings under "Advisory (non-blocking)" and the only
+blocking line is "Blocked by the union gate; see the deep-review comment" — while
+deep_review itself reports PASS with "Blocking Issues: None". The two contradict.
+CAUSE (official_dox.txt:1211): "Empty or unparseable output is treated as a fail
+(fail-closed) — silence never passes." So AVA's routing came back empty and was failed
+closed; the advisories are incidental.
+DECISION RULE (ava_review.txt:432): adversarial_review PASSING puts you in the
+non-determinism column. dynamo_master.txt:356 — "adversarial_review passing proves the
+architecture is correct."
+WHAT WORKED: fix whichever advisory is actually TRUE, push once (the push doubles as
+the retrigger), and it cleared. Do not chase advisories that are false — but do not
+retrigger blind either if one of them is real.
+NOTE: AVA's "the verifier imports its own oracle module" is listed in official_dox.txt
+:1227 as an example of a NON-BLOCKING Minor. Its "tests pass despite unfixed source" is
+filed in your notes under sound_verifier, and the recorded fix is input-derivation
+tests — NEVER source scanning (dynamo_playbook.txt:2099: "Source scanning tests →
+ALWAYS bypassed").
 
 ### deep_review / complete_test_coverage (FAIL)
 TRIGGERS: Any field in instruction.md output schema with no test assertion
@@ -399,6 +594,15 @@ FIX: eval1 and eval2 must have DIFFERENT session/group IDs AND different n_recor
   - Agents WILL modify protected decoys — that's the compound trap
 
 ### SELF-PLAY RESULT → CI PREDICTION:
+  ⚠️ CORRECTED Aug 1 — this table only holds when the self-play model is comparable to
+  the model CI actually benchmarks with. If you self-play with a STRONGER model than the
+  graded one, self-play is an upper bound on solvability, not a prediction.
+  Evidence (dynamo-qffewau): 2 strong-model solvers scored 2/2 by code reading alone and
+  we nearly redesigned the task again — the real gate then returned pass@2 1/2 and
+  pass@5 2/5 (accepted). A 2/2 self-play with a stronger model does NOT mean too easy.
+  Always record WHICH model self-played next to the number, and check task.toml's
+  model_tested before drawing a conclusion.
+
   - 0/7 self-play → likely 0/5 CI (strong)
   - 1-2/7 self-play → likely 0-2/5 CI (acceptable)
   - 7/7 self-play → CI will likely pass too (too easy — redesign)
@@ -611,5 +815,445 @@ Rule: If oracle=1.0 locally and the single remaining FAIL looks mathematically w
 ### PUSH 4 — ALL CI GREEN, ACCEPTED ✅
 
 All 31 review criteria PASS. pass@2 PASS. ava_review PASS. qc_gate PASS. trials PASS.
+
+---
+
+## PART 13 — OLD-PATTERN TASKS (verifier re-runs the agent's pipeline)
+
+If test.sh runs `python3 pipeline.py` on hidden configs, you have signed up for the
+whole E3/E4/E5 family. PART 10 says prefer the new QC_GATE pattern — this part is for
+tasks already built on the old one. Everything below was required to get one such task
+past AVA + qc_gate.
+
+The problem: at grade time the verifier executes AGENT-AUTHORED code while the answer
+key sits on disk. Three concrete exploits, all of which scored reward 1.0 before fixing:
+
+  1. pipeline.py globs /tests/expected_output_*.json and echoes it
+  2. /app/output.json is a dangling symlink to /tests/expected_output_1.json
+     (dangles during the agent run, resolves at verify time)
+  3. pipeline.py writes /logs/verifier/reward.txt itself
+
+Plus two the harness itself introduced:
+
+  4. agent pre-creates the staging dir with actual_N.json -> symlink -> expected_N.json,
+     so the verifier compares the answer key against itself   (scored 1.0)
+  5. agent plants sitecustomize.py in site-packages, which patches pytest into
+     reporting passes                                          (scored 1.0)
+
+The defences that made all five fail:
+
+  - read the expected outputs into memory and DELETE them from /tests before any
+    agent code runs; write them back only after the last run, into a 0700 dir
+  - chmod 0700 /tests and /logs during the runs; drop the run to uid 65534
+  - capture the graded output only after an lstat guard: not a symlink, a regular
+    file, and os.path.realpath(p) == p
+  - wipe+recreate the staging dir, and write every staged file with
+    os.open(p, O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0o600)
+  - run BOTH the harness and pytest under `python3 -S` (skips site.py, so a planted
+    sitecustomize never executes); restore site-packages via sysconfig.get_paths()
+  - test.sh must still literally name test_outputs.py or static checks fail
+    ("test.sh does not invoke test_outputs.py") — pass the pytest args FROM test.sh:
+      python3 -S /tests/run_pytest.py --ctrf /logs/verifier/ctrf.json \
+        /tests/test_outputs.py /tests/test_outputs_2.py -rA
+  - assert the isolation actually held (see PART 5 / verifier_coverage)
+
+Residual risk you cannot close in a shared image: the agent is root, so it can edit
+_pytest's own source. `-S` stops sitecustomize, not that. Only a separate verifier
+image closes it.
+
+---
+
+## SESSION LOG — dynamo-ccd0c00-hardware-embedded-and-low-level-systems (Jul 29-31, 2026)
+## Category: Hardware / Low-level — DMA scatter-gather controller, 3 seeded bugs
+## ACCEPTED — pass@5 0/5, qc_gate PASS (39 checks), AVA PASS. 6 pushes, ~3 days.
+
+Start state: task had ALREADY passed everything once (pass@5 0/5, gate green, Jul 21).
+A new qc_gate layer shipped Jul 26 and re-ran on the SAME commit -> 4 must-fix issues.
+Lesson: a green PR can go red without you touching it. Re-check before assuming regression.
+
+PUSH 1 (qc_gate 4 must-fix -> 0) — E3/E4/E5 sandbox, see PART 13.
+  Also fixed: test.sh had `set -e` (aborts before writing reward) and ran pytest twice,
+  the second run overwriting the first's ctrf.json. One pytest invocation over all
+  modules; no set -e; always exit 0.
+  NOTE: one of the 4 "must-fix" was a FALSE POSITIVE — qc_gate claimed
+  hidden_config_1.json was an output file, quoting expected_output_1.json's keys.
+  Verify every finding against the real file before acting. It self-resolved.
+
+PUSH 2 (static checks) — moving the pytest call into a helper made test.sh stop
+  containing the string "test_outputs.py" -> static check failed, everything skipped.
+  Static checks grep test.sh for the literal filename. See PART 13.
+
+PUSH 3 (qc_gate B1 BLOCK) — self-inflicted. We added hidden_config_3 to close a MINOR
+  advisory ("preemption never exercised"). Preemption could only fire if selection and
+  preemption used DIFFERENT priority notions, which nothing agent-visible stated ->
+  a rival reading reproduced configs 1-2 exactly and diverged only on config 3.
+  See PART 5 / qc_gate B1. Cost 2 pushes.
+
+PUSH 4 (ava_review verifier_coverage BLOCK) — harness recorded answer_key_removed /
+  tests_dir_sealed and no test consumed them -> failed OPEN. See PART 5.
+  Same push: stripped all 7 comments from test.sh. They asserted security properties
+  ("last writer wins", "keeps a planted sitecustomize out") that AVA reads as claims
+  to falsify. CHECK 6 exists for exactly this.
+
+PUSH 5 (ava_review no_false_rejection BLOCK) — we added "Every field above is compared
+  exactly" while the enumeration omitted channel_statistics.priority. A correct
+  submission was rejected. Our own verification script had reported "all fields
+  documented" because it grepped the WHOLE instruction — "priority" appears in an
+  unrelated prose rule. See CHECK 11. Cost 1 push.
+
+PUSH 6 — ALL GREEN. pass@2 1/2, pass@5 0/5 (4 good valid fails), qc_gate 39 checks PASS.
+
+WHAT WOULD HAVE SAVED 4 OF THE 6 PUSHES:
+  CHECK 11 (per-section schema)      -> push 5
+  CHECK 13 (stated rules exercised)  -> pushes 3 and 4 advisories
+  CHECK 14 (rival-reading test)      -> push 3
+  PART 5 / verifier_coverage         -> push 4
+  Not adding a fixture to chase a non-blocking advisory -> pushes 3 and 5
+
+TWO HABITS THAT COST THE MOST TIME:
+  1. Chasing MINOR advisories with new fixtures late in the cycle. Both times it
+     turned a non-blocking advisory into a BLOCKING issue. If it does not block,
+     leave it and say so in the PR.
+  2. Trusting a verification script instead of the data. A substring check over the
+     whole instruction reported 30/30 fields documented while one was missing.
+     Always compare per-section, against the real expected_output_*.json.
+
+NOTE ON LOCAL HARBOR: harbor was NOT installed for this session (`uv` absent). A Docker
+rig reproduced image build / agent step / tests-at-verify-time / reward.txt and drove an
+11-case adversarial matrix. It does NOT read task.toml, so it cannot catch a bad
+`artifacts` path, a too-tight verifier timeout_sec, or an OOM under memory_mb.
+CI's `validation` stage runs real Harbor — treat that as the authority.
+
+---
+
+## PART 14 — dynamo-f932faf (offline-lock-resolver, Jul 31 2026)
+# First non-fix/debug task: task_objective = ["implement"]. Result: 30/31 criteria
+# PASS on push 1, one blocking fail, ALL GREEN on push 2. Full pipeline ~10h wall.
+
+### 14-PRE. COMMIT AUTHORSHIP
+  Never add Claude as co-author or any Claude/Co-Authored-By/Claude-Session trailer —
+  commits must show only Abhishek <abhishek.kumar8@nielsen.com>. Trailers cannot be
+  removed later without a force-push and a full CI re-run, so set it once up front:
+  ~/.claude/settings.json -> { "attribution": { "commit": "", "pr": "" } }
+
+### 14a. THE ONE BLOCKER — AND IT WAS ALREADY IN THIS FILE
+
+  FAIL: instruction_concision — "instruction.md:36 contains the TB3 time-budget
+        / anti-cheat artifact."
+
+  The line was:
+    You have 3600 seconds to complete this task. Do not cheat by using online
+    solutions or hints specific to this task.
+
+  DELETE IT. The agent's budget lives in task.toml as [agent].timeout_sec. The
+  rubric names this boilerplate as an explicit FAIL condition.
+
+  *** THE ONBOARDING DOCS ARE STALE ON THIS POINT. ***
+  The Handshake guide ("Build a task -> step 7") says instruction.md MUST end with
+  that exact sentence and that a static check `check-instruction-suffix` fails the
+  PR otherwise. That check DOES NOT EXIST in the current static suite (25 checks ran,
+  none of them was it). Following the guide costs you a push.
+
+  PART 2 of this file already said "no timeout line" in the tree comment. It was
+  missed because the session worked from the pasted onboarding doc instead of
+  reading finalcheck.txt first.
+  => READ THIS FILE BEFORE WRITING instruction.md, NOT AFTER THE FIRST CI FAILURE.
+
+  Corroboration: 71 of the 72 tasks in Accepted/ have no timeout line. Only one does.
+  Check with:
+    for f in Accepted/*/task/instruction.md; do
+      grep -q "You have .* seconds to complete" "$f" && echo "HAS LINE: $f"; done
+
+### 14b. SETUP BLOCKERS (cost ~40 min, none are task defects)
+
+  gh IS NOT INSTALLED. `gh repo fork` is unavailable.
+    Symptom: you clone the BASE repo, so origin = handshake-project-dynamo/...,
+    and `git push` returns 403 "Write access to repository not granted".
+    Fork without gh, using the token git already has:
+      TOKEN=$(printf 'protocol=https\nhost=github.com\n\n' | git credential fill \
+              | sed -n 's/^password=//p')
+      curl -s -X POST -H "Authorization: Bearer $TOKEN" \
+        https://api.github.com/repos/handshake-project-dynamo/<repo>/forks
+    Then:
+      git remote rename origin upstream
+      git remote add origin https://github.com/abhishekjunior1/<repo>.git
+      git push -u origin submission
+    (Keep the token in a shell variable. Never echo it.)
+
+  uv AND harbor ARE NOT INSTALLED. Install both before claiming local validation:
+      curl -LsSf https://astral.sh/uv/install.sh | sh
+      export PATH="$HOME/.local/bin:$PATH"
+      uv tool install harbor          # installs harbor, hb, hr
+  `which harbor` fails from the sandboxed shell even after install — call it as
+  ~/.local/bin/harbor or export PATH in the same command.
+
+  GIT IDENTITY IS UNSET in a fresh clone. Commits get authored as
+  <user>@<hostname>.local, which GitHub will not link to the account. Set it BEFORE
+  the first commit:
+      git config user.email "abhishek.kumar8@nielsen.com"
+      git config user.name  "Abhishek"
+
+  COMMIT ATTRIBUTION -> see 14-PRE.
+
+### 14c. VERIFIER PATTERN — RUNNING THE AGENT'S PROGRAM IS ALLOWED
+
+  qc_gate.txt PART "THE PROVEN PASSING PATTERN" says the verifier must only read
+  pre-existing outputs and never re-run agent code. That is right for pipeline-fix
+  tasks. It is NOT a universal rule.
+
+  When the DELIVERABLE IS A PROGRAM, the verifier must execute it, and this passed
+  every gate (qc_gate, ava_review, adversarial_review, deep_review all success):
+
+    verifier_harness.py, run from test.sh as `python3 -S /tests/verifier_harness.py`:
+      1. read every expected_*.json into memory, then DELETE it from /tests
+         -> no answer key on disk while submitted code runs
+      2. copy hidden scenario inputs OUT to a scratch dir, then chmod 700 /tests
+         and /logs  (the submitted program needs its inputs; /tests must stay shut)
+      3. os.setuid/setgid to nobody (65534) via preexec_fn, best-effort
+      4. run the program with -S, minimal env, cwd=/app, subprocess timeout
+      5. capture each output ONLY behind an lstat guard: reject symlink,
+         reject non-regular, reject realpath != path
+      6. stage actual+expected into a 0700 dir, every write O_EXCL|O_NOFOLLOW,
+         dir wiped and recreated first
+      7. restore /tests and /logs perms in a finally:
+    Tests then read ONLY the staging dir — never /app, never /tests.
+    Add guard tests that REFUSE TO SCORE if the key was not isolated or if a
+    sitecustomize/usercustomize was planted.
+
+  `python3 -S` does double duty: enforces a stated "standard library only" rule
+  (verified: `import pytest` fails under -S, stdlib still imports) and stops a
+  planted sitecustomize from executing.
+
+### 14d. THE CALIBRATION ARTIFACT THAT MADE THE DIFFERENCE
+
+  Build a DISCRIMINATION MATRIX before writing a single test. Script N deliberately
+  wrong implementations, run each against visible + every hidden scenario, and
+  assert two properties:
+
+     every SUBTLE wrong variant  -> passes visible, fails >=1 hidden
+     every GROSS wrong variant   -> caught by visible (this is GOOD, it lets an
+                                    honest solver converge, and it is what keeps
+                                    the task fair rather than a gotcha)
+
+  9 variants were used here. It caught two real design holes that no amount of
+  re-reading would have:
+    - one rule was NOT DISCRIMINATED BY ANY SCENARIO (the highest release matching
+      the pin had to be the yanked one for the wrong impl to diverge — fixed by
+      reordering which release carries the flag)
+    - one "wrong" variant was unrealistic and had to be rewritten to model what a
+      competent implementation actually does
+
+  Cite this matrix verbatim in verification_explanation. The reviewer quoted it back
+  as the reason `verifiable` and `anti_cheat` passed.
+
+### 14e. DESIGN TRAPS FOUND WHILE BUILDING (cost ~1h)
+
+  ORDER-DEPENDENT ELIGIBILITY IS AMBIGUITY, NOT DIFFICULTY.
+  v1 of the spec judged candidate eligibility against the constraint set active AT
+  THAT MOMENT in the search. Two scenarios then had answers that depended on which
+  project the solver happened to pick first. A reviewer would rightly call that
+  underspecified. Fix: define admissibility as a property of the COMPLETED
+  assignment, and state a canonical search order for the tie-break. Any correct
+  implementation then agrees regardless of how its search is organised.
+  => If your answer can change with resolution order, you have an ambiguity bug.
+
+  A PRE-RELEASE SORTS BELOW ITS OWN RELEASE. `2.0.0b3 >= 2.0` is FALSE. Two hidden
+  scenarios were unsatisfiable because of this. Always run the oracle on every
+  scenario immediately after generating it — do not batch-generate then test.
+
+  PICK A DOMAIN WITH NO FLOATS. Every graded value here is a string, int, or bool,
+  so exact type+value equality is correct and the "tolerance too tight / too loose"
+  criteria cannot be argued at all. strict_diff comparing `type(a) is not type(b)`
+  also blocks Python's True == 1 from passing a bool where a count is required.
+
+### 14f. WHAT PASSED FIRST TIME (reuse these)
+
+  - normative spec shipped in environment/data/, declared authoritative by
+    instruction.md, stating EVERY rule the verifier enforces. Reviewer: "a competent
+    expert can produce a passing answer". This is the direct answer to the #1
+    rejection reason (grading on an undisclosed rule).
+  - visible scenario exercises the BASIC form of each rule and none of the subtle
+    forms. Reviewer read the unreachable index entries as intentional decoys and
+    passed no_extraneous_files.
+  - a "guarantees" section in the spec (§5.1) saying what the input data promises,
+    which closes qc_gate B3/B6 (missing definition / unstated data anomaly).
+  - sha256 digest manifest in tests/ + a harness check that the shipped read-only
+    inputs were not modified, with the read-only requirement STATED in
+    instruction.md. Closes E2 without becoming an undocumented requirement.
+  - 9 adversarial submissions run end-to-end through a two-phase Docker rig
+    (agent phase with NO /tests mounted, then verify phase with tests overlaid).
+    All scored 0, each on the guard aimed at it.
+
+### 14g. OPEN RISK CARRIED FORWARD
+
+  The reviewer flagged, as a PASS with a note: `[task].description` sits inside the
+  [task] table, and the rubric's task_toml_schema criterion enumerates recognized
+  [metadata]/root fields without explicitly listing it. Graded PASS because it is
+  natural and ships in the scaffold template. If a future task gets a minor FAIL on
+  task_toml_schema, this is the first thing to look at.
+
+---
+
+## SESSION LOG — dynamo-qffewau-software-engineering (Aug 1-3, 2026)
+## Category: Software engineering — task-runner pipeline, 3 seeded bugs (NEW QC_GATE pattern)
+## ALL GATES GREEN — pass@2 1/2, pass@5 2/5 (avg@5 0.400), qc_gate 41 checks, ava PASS.
+
+Start state: stuck for weeks. pass@2 came back 2/2 "too easy — blocked" TWICE, and each
+push traded one red check for another (356ec35 → AVA, d781ab1 → pass2, 3a07b38 → review).
+
+ROOT CAUSE of the difficulty failure: all three bugs were in the WHAT-FAILS list in
+PART 7 — a one-token mismatch, an always-true guard, and a wrong-function-call where the
+CORRECT sibling function sat 26 lines above, unused, with a docstring naming the exact
+required behaviour ("sorted alphabetically") that instruction.md also demands. An agent
+grepping the requirement landed straight on the answer.
+
+WHAT FIXED IT
+  - deleted both dead correct-siblings (get_parallelizable_groups, _sort_group) and the
+    two docstrings that asserted alphabetical ordering while the code sorted by priority
+  - moved each bug behind an interaction: expansion defect one call-frame away; parallel
+    ordering visible only in output (an agent who "fixes" the submission order changes
+    nothing, because as_completed reorders anyway); retry policy dropped at ONE call site
+  - CHECK 15: found bug 1 was NOT load-bearing (shell re-expanded the variable), so 2 of
+    3 fixes scored 1. Single-quoting the write made all six subsets score 0.
+    ^ this is most likely what actually moved pass@2 from 2/2 to 1/2
+
+WHAT FIXED qc_gate (C3 "Narrow / Hardcodable")
+  The probe reset /app to pristine-buggy and ran
+    cp /tests/expected_output.json /app/output_eval_1.json
+  and passed. The fixture WAS the answer. Replaced with derive-from-inputs + SHA-256
+  digests (CHECK 17). Went from 1 must-fix to 41 checks passed.
+
+WHAT FIXED ava_review
+  Pinned the eval taskfiles (CHECK 16) and inlined the tests/ helper module (CHECK 18),
+  then pushed once — the push is also the retrigger. Cannot separate "the fix worked"
+  from "AVA parsed cleanly this time"; both changes were worth making regardless.
+
+MISTAKES I MADE — worth not repeating
+  1. Told the user to stop retriggering the similarity failure as "persistent, not
+     fixable". They pushed anyway and it cleared. Infra failures can look identical
+     across runs and still be transient.
+  2. Ran self-play with a much stronger model than CI benchmarks with, got 2/2, and
+     nearly redesigned a task that was actually fine. See the PART 7 correction.
+  3. Wrote a status script that reported "all green" when it had fetched ZERO checks.
+     Any verification script must assert its input is non-empty before reporting success
+     — same class of bug as CHECK 11's substring search reporting "all documented".
+
+STILL OPEN AT HAND-OFF
+  - pass@5 = 2/5 sits exactly on the ≤2/5 boundary; a human reviewer may read
+    avg@5 = 0.400 as borderline.
+  - deep_review noted one valid failure missed Bug 1 partly because terminal output was
+    truncated at 10,000 bytes, hiding the unexpanded $ARTIFACT_TAG — i.e. partly an
+    artifact of output truncation rather than reasoning.
+
+---
+
+## PART 15 — HOW TO MAKE AGENTS FAIL (distilled from strategy_for_sessions.txt)
+
+PART 7 lists bug SHAPES. This is the DESIGN RECIPE — properties shared by tasks that
+reached 0/7 self-play and 0/5 CI, across 19 recorded outcomes. Run it BEFORE writing
+bugs; the 18 CHECKs only prove the verifier is sound and say nothing about difficulty.
+
+There are THREE proven difficulty sources. Pick one as primary — you do not need all
+three, and several accepted tasks used only one.
+
+### Source 1 — RESTRAINT: agents find every bug and still fail (MOST RELIABLE)
+This is the strongest pattern in the log and the one most often overlooked. It does not
+require hiding anything.
+  - adaptive quadrature (0/5): **ALL agents found ALL 3 bugs (7/7 identification)**, then
+    could not stop adding code — GK cross-checks, validators, rewrites. 4/5 fixed correctly
+    then broke output with additions; 1/5 crashed rewriting a file not even in bug scope.
+  - harmonic decomposition (0/5): all 5 found both bugs, applied correct fixes, then
+    over-engineered by rewriting correct modules. *"The ACTUAL difficulty is RESTRAINT
+    (knowing when to stop), not bug-finding."*
+  - firewall policy (0/5): agents who found all 3 bugs still failed by rewriting pipeline.py
+    instead of patching, introducing new bugs.
+Why it is the best lever: **"Stating conventions in instruction.md does NOT reduce
+difficulty (agents know WHAT but still over-engineer)."** That sidesteps the qc_gate B1
+tension entirely — you can be fully unambiguous and still be hard. "Do not rewrite from
+scratch" is violated every time under time pressure; it acts as a decoy for the whole
+codebase.
+CALIBRATION WARNING: for this pattern **self-play is EASIER than CI** (1/7 self-play → 0/5
+CI). Do not dismiss a design because self-play solved it.
+
+### Source 2 — CAN'T FIX CORRECTLY: the bug is found but the fix direction is unknowable
+  - work-stealing scheduler (0/5): 4/5 agents identified all three bugs and still scored 0.
+    Knowing "use CPL priority" does not tell you which DIRECTION to sort into a deque whose
+    ends have different operations (owner=bottom, thief=top).
+Aim at semantics-under-composition, not at a value.
+
+### Source 3 — CAN'T FIND: the classic hidden-bug task
+  - Prometheus histograms (0/7 on the crux bug), Nix store paths, spectral analysis.
+Hardest to get right, and the one that repeatedly stalls at 7/7 when the domain is
+well-known. Prefer sources 1 or 2 unless you have a genuine domain blind spot.
+
+### Structure — 2+2 is proven; 3 bugs is optional
+  - **"The 2-bug + 2-decoy in pipeline.py pattern works RELIABLY across different domains"**
+    (spectral, harmonic — both 0/5). Two bugs is ENOUGH when paired with two real decoys.
+  - 3 bugs also works (firewall, metrics, quadrature). If you use 3, make them unequal:
+    findable ones give false confidence, one is the crux.
+  - MULTI-FILE is a lever, NOT a rule. Several 0/5 tasks put every bug in pipeline.py
+    (firewall, metrics, harmonic, spectral). It became decisive only for build-dependency
+    resolution, a domain so well-known that pipeline-only scored 4/5 — spreading to 3 files
+    took it to 0/5. Reach for it when the domain is familiar to models.
+
+### Decoys — measure them, protect them, expect them to be ignored
+  - Strength is measured, not assumed: temporal decay weighting = **45% change if removed**;
+    2π angular-frequency conversion = **628%**. Verify by "fixing" each decoy on top of all
+    real fixes — if reward stays 1, it is not a decoy.
+  - **Name them in instruction.md as things to preserve.** Agents modify them anyway —
+    that is the trap, and it keeps the task fair. "preserve the temporal relevance weighting
+    and angular frequency conversion" → agents still over-fixed.
+  - BEST FORM is ACCIDENTAL: realistic code with unusual-but-correct conventions (harmonic
+    mean, θ=1.0, n+1 faces for n cells, diagnostic computations that look wrong). Organic
+    beats designed — nothing reads as "intentionally suspicious".
+  - ADVANCED: a decoy matching the FIX pattern of another bug — an agent who already applied
+    that fix elsewhere will not know to preserve it here.
+  - CAVEAT: a decoy that traps self-play may not trap CI (reversed base32 trapped 5/7 in
+    self-play; CI agents respected the instruction). Do not rely on decoys alone.
+  - Decoys need not live in pipeline.py — separate-module decoys work.
+
+### Bug shape
+  - Domain-convention violations, not formula errors or anti-patterns. Processing ORDER
+    bugs are hardest for agents.
+  - **Never leave the correct value sitting in an unused standalone variable** — that is a
+    dead giveaway. Hide it inside a returned dict/struct instead (`n_effective` lives only
+    in `freq_result`, never as a bare local). "Computed-but-unused" works as a MECHANISM
+    (compute `waived_results`, pass `all_results` downstream) but never as a bare unused local.
+  - Long function with the bug in the middle — agents read the first and last lines and skip
+    inner loops.
+  - Domain hierarchy (measured): layered config resolution (K8s/Terraform) 7/7 EVERY TIME;
+    build-dependency resolution (Bazel/Gradle) 4/5; CUSUM/changepoint 5-6/7 — all too
+    well-known. Working: feature flags, firewall ordering, work-stealing deques, Nix store
+    paths, Prometheus histograms, spectral/harmonic signal processing, adaptive quadrature.
+  - **Disclosure kills difficulty for textbook conventions.** If the rubric forces you to
+    disclose a rule and that makes it trivial, the domain is wrong — switch domains rather
+    than hiding the rule (that path failed: removing a variable gave 0/8 but failed
+    "unambiguous"; adding the disclosure back gave 6/7).
+
+### Comment justification — keep it
+The #1 weapon: 0/7 agents questioned "comprehensive percentile estimation"; "stable
+linearization at ambient" was accepted on first read. A comment only reads as a fingerprint
+when the code beneath it is ALREADY anomalous — in that case remove the anomaly, not the
+comment. Keep comment density uniform across correct and buggy lines.
+
+### Masking
+Visible config must COMPLETELY DISABLE each buggy path — literally never executed, and the
+agreement an EXACT identity, never a small numeric gap. Worked: cubic polynomial → Simpson
+exact → subdivision loop never runs; 1 worker → stealing never runs; 1 histogram source →
+merge branch never taken; identity DNAT → pre-NAT == post-NAT; rectangular window →
+n_effective == n exactly.
+
+### CORRECTIONS TO EARLIER DRAFTS OF THIS PART (Aug 3)
+  - "three bugs, not two" was WRONG. 2 bugs + 2 decoys works reliably (spectral, harmonic).
+  - "multi-file is mandatory" was OVERSTATED. It is a lever for well-known domains only;
+    firewall / metrics / harmonic / spectral all scored 0/5 with every bug in pipeline.py.
+  - "computed-but-unused" needs the nuance above: fine as a mechanism, fatal as a bare
+    unused local.
+  - RESTRAINT / over-engineering was missing entirely and is the most reliable source.
+
+### FULL CASE STUDIES
+  strategy_for_sessions.txt — 19 outcomes with masking tables, hidden-data triggers and
+  the evolution of each task from 7/7 to accepted. Mirrored for lazy loading at
+  ~/.claude/skills/dynamo-task/references/proven-patterns.md
 
 ---

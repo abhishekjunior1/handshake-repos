@@ -1,7 +1,7 @@
-"""Tests for DMA transfer controller output verification (hidden config 1).
+"""Tests for DMA transfer controller output verification (hidden config 3).
 
 The output under test is the report the submitted pipeline produced when the
-harness ran it on hidden config 1 — a configuration the agent never saw.
+harness ran it on hidden config 3 — a configuration the agent never saw.
 """
 
 import os
@@ -16,14 +16,14 @@ from dma_verify import (
     strict_diff,
 )
 
-CONFIG = 1
+CONFIG = 3
 
 
-class TestPipelineRun:
+class TestPipelineRun3:
     """Tests that the submitted pipeline ran and produced a real graded file."""
 
     def test_pipeline_completed(self):
-        """The submitted pipeline must run to completion on hidden config 1."""
+        """The submitted pipeline must run to completion on hidden config 3."""
         status = run_status(CONFIG)
         assert status["ok"], status["error"] or status["stderr"]
 
@@ -51,7 +51,7 @@ class TestPipelineRun:
             f"unprivileged={status['unprivileged']}")
 
 
-class TestFullReport:
+class TestFullReport3:
     """Test that the whole report matches the expected report exactly."""
 
     def test_report_matches_expected_exactly(self):
@@ -60,8 +60,8 @@ class TestFullReport:
         assert diff is None, diff
 
 
-class TestSummary:
-    """Tests for the summary section of the DMA output."""
+class TestSummary3:
+    """Tests for the summary section of the DMA output (config 3)."""
 
     def test_total_bytes_transferred(self):
         """Verify total bytes transferred matches expected value."""
@@ -100,8 +100,8 @@ class TestSummary:
         assert output["summary"]["total_cycles_used"] == expected["summary"]["total_cycles_used"]
 
 
-class TestTransfers:
-    """Tests for individual transfer records."""
+class TestTransfers3:
+    """Tests for individual transfer records (config 3)."""
 
     def test_transfer_count(self):
         """Verify number of transfer records matches expected."""
@@ -172,16 +172,9 @@ class TestTransfers:
         for i, (out_t, exp_t) in enumerate(zip(output["transfers"], expected["transfers"])):
             assert out_t["cycle"] == exp_t["cycle"], f"Transfer {i} cycle mismatch"
 
-    def test_total_transfers_per_record(self):
-        """Verify total_transfers count per record matches expected."""
-        output = load_output(CONFIG)
-        expected = load_expected(CONFIG)
-        for i, (out_t, exp_t) in enumerate(zip(output["transfers"], expected["transfers"])):
-            assert out_t["total_transfers"] == exp_t["total_transfers"], f"Transfer {i} total_transfers mismatch"
 
-
-class TestChannelStatistics:
-    """Tests for per-channel statistics."""
+class TestChannelStatistics3:
+    """Tests for per-channel statistics (config 3)."""
 
     def test_channel_stats_count(self):
         """Verify number of channel statistics entries."""
@@ -194,7 +187,7 @@ class TestChannelStatistics:
         output = load_output(CONFIG)
         expected = load_expected(CONFIG)
         for out_ch, exp_ch in zip(output["channel_statistics"], expected["channel_statistics"]):
-            assert out_ch["total_bytes"] == exp_ch["total_bytes"], f"Channel {out_ch['channel_id']} bytes mismatch"
+            assert out_ch["total_bytes"] == exp_ch["total_bytes"]
 
     def test_channel_preemption_count(self):
         """Verify per-channel preemption count matches expected."""
@@ -204,8 +197,8 @@ class TestChannelStatistics:
             assert out_ch["preemption_count"] == exp_ch["preemption_count"]
 
 
-class TestInterrupts:
-    """Tests for interrupt log entries."""
+class TestInterrupts3:
+    """Tests for interrupt log entries (config 3)."""
 
     def test_interrupt_count(self):
         """Verify number of interrupt events matches expected."""
@@ -213,16 +206,9 @@ class TestInterrupts:
         expected = load_expected(CONFIG)
         assert len(output["interrupt_log"]) == len(expected["interrupt_log"])
 
-    def test_interrupt_status_bits(self):
-        """Verify interrupt status register values match expected."""
-        output = load_output(CONFIG)
-        expected = load_expected(CONFIG)
-        for i, (out_irq, exp_irq) in enumerate(zip(output["interrupt_log"], expected["interrupt_log"])):
-            assert out_irq["status_hex"] == exp_irq["status_hex"], f"IRQ {i} status mismatch"
 
-
-class TestPerformance:
-    """Tests for performance metrics."""
+class TestPerformance3:
+    """Tests for performance metrics (config 3)."""
 
     def test_bus_utilization(self):
         """Verify bus utilization metric matches expected."""
@@ -243,7 +229,7 @@ class TestPerformance:
         assert output["performance"]["average_latency_cycles"] == expected["performance"]["average_latency_cycles"]
 
 
-class TestAdvertisedConventions:
+class TestAdvertisedConventions3:
     """Tests for the two conventions instruction.md requires be preserved."""
 
     def test_bus_addresses_use_negative_offset_translation(self):

@@ -1,16 +1,14 @@
 #!/bin/bash
-set -e
-echo "0.0" > /logs/verifier/reward.txt
-
-cp /tests/hidden_config_1.json /app/dma_config.json
-cd /app
-python3 pipeline.py
-
-pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py -rA
-
-cp /tests/hidden_config_2.json /app/dma_config.json
-python3 pipeline.py
-
-pytest --ctrf /logs/verifier/ctrf.json /tests/test_outputs_2.py -rA
-
-echo "1.0" > /logs/verifier/reward.txt
+mkdir -p /logs/verifier
+rm -f /logs/verifier/reward.txt
+echo "0" > /logs/verifier/reward.txt
+python3 -S /tests/verifier_harness.py
+python3 -S /tests/run_pytest.py --ctrf /logs/verifier/ctrf.json /tests/test_outputs.py /tests/test_outputs_2.py /tests/test_outputs_3.py -rA
+rc=$?
+rm -f /logs/verifier/reward.txt
+if [ "$rc" -eq 0 ]; then
+  echo "1" > /logs/verifier/reward.txt
+else
+  echo "0" > /logs/verifier/reward.txt
+fi
+exit 0
